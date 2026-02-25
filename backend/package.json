@@ -1,0 +1,22 @@
+{
+  "name": "painel-autorizador-debito-backend",
+  "version": "0.0.1",
+  "description": "Backend API for Painel Autorizador Debito - ISO8583 mock parser",
+  "private": true,
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.15.0",
+    "tsx": "^4.19.0",
+    "typescript": "~5.9.2"
+  }
+}
