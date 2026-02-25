@@ -56,6 +56,7 @@ router.post('/parse', (req: Request, res: Response) => {
   }
 
   const result = pickMockResponse(message);
+  console.log('/parse - Parsed message:', result);
   res.json(result);
 });
 
@@ -73,6 +74,7 @@ router.post('/build', (req: Request, res: Response) => {
   for (const key of sortedKeys) {
     hexMessage += fields[key];
   }
+  console.log('/build - Built message:', hexMessage);
 
   res.json({ message: hexMessage });
 });
