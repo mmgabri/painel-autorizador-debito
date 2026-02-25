@@ -28,7 +28,7 @@
           mat-raised-button
           color="primary"
           type="submit"
-          [disabled]="formIso.invalid || loading"
+          [disabled]="formIso.invalid || loading()"
         >
           Parsear ISO
         </button>
@@ -38,21 +38,21 @@
       </div>
     </form>
 
-    @if (loading) {
+    @if (loading()) {
       <mat-progress-bar mode="indeterminate" class="loading-bar"></mat-progress-bar>
     }
   </mat-card-content>
 </mat-card>
 
 <!-- Secao B — Campos dinamicos por bits -->
-@if (parsed && sortedKeys.length > 0) {
+@if (parsed() && sortedKeys().length > 0) {
   <mat-card class="bits-card">
     <mat-card-header>
       <mat-card-title>Campos ISO8583</mat-card-title>
     </mat-card-header>
     <mat-card-content>
-      <form [formGroup]="bitsForm" class="bits-grid">
-        @for (key of sortedKeys; track key) {
+      <form [formGroup]="bitsForm()" class="bits-grid">
+        @for (key of sortedKeys(); track key) {
           <mat-form-field appearance="outline">
             <mat-label>Bit {{ key }}</mat-label>
             <input matInput [formControlName]="key" />
@@ -63,7 +63,7 @@
   </mat-card>
 }
 
-@if (parsed && sortedKeys.length === 0) {
+@if (parsed() && sortedKeys().length === 0) {
   <mat-card class="empty-card">
     <mat-card-content>
       <p class="empty-text">Nenhum campo encontrado</p>

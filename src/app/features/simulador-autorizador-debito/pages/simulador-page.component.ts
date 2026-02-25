@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -30,10 +30,10 @@ export class SimuladorPageComponent {
     message: new FormControl('', [Validators.required, Validators.minLength(4)]),
   });
 
-  bitsForm = new FormGroup<Record<string, FormControl<string>>>({});
-  sortedKeys: string[] = [];
-  loading = false;
-  parsed = false;
+  bitsForm = signal(new FormGroup<Record<string, FormControl<string>>>({}));
+  sortedKeys = signal<string[]>([]);
+  loading = signal(false);
+  parsed = signal(false);
 
   constructor(
     private readonly isoParserService: IsoParserService,
@@ -45,17 +45,17 @@ export class SimuladorPageComponent {
       return;
     }
 
-    this.loading = true;
+    this.loading.set(true);
     const message = this.formIso.controls.message.value ?? '';
 
     this.isoParserService.parseIso(message).subscribe({
       next: (result) => {
-        this.loading = false;
-        this.parsed = true;
+        this.loading.set(false);
+        this.parsed.set(true);
         this.buildBitsForm(result);
       },
       error: () => {
-        this.loading = false;
+        this.loading.set(false);
         this.snackBar.open('Erro ao parsear ISO', 'Fechar', { duration: 5000 });
       },
     });
@@ -63,19 +63,20 @@ export class SimuladorPageComponent {
 
   onClear(): void {
     this.formIso.reset();
-    this.bitsForm = new FormGroup<Record<string, FormControl<string>>>({});
-    this.sortedKeys = [];
-    this.parsed = false;
+    this.bitsForm.set(new FormGroup<Record<string, FormControl<string>>>({}));
+    this.sortedKeys.set([]);
+    this.parsed.set(false);
   }
 
   private buildBitsForm(map: Record<string, string>): void {
     const group: Record<string, FormControl<string>> = {};
-    this.sortedKeys = Object.keys(map).sort((a, b) => Number(a) - Number(b));
+    const keys = Object.keys(map).sort((a, b) => Number(a) - Number(b));
+    this.sortedKeys.set(keys);
 
-    for (const key of this.sortedKeys) {
+    for (const key of keys) {
       group[key] = new FormControl(map[key], { nonNullable: true });
     }
 
-    this.bitsForm = new FormGroup(group);
+    this.bitsForm.set(new FormGroup(group));
   }
 }
