@@ -45,10 +45,10 @@ describe('SimuladorPageComponent', () => {
     fixture.detectChanges();
 
     const compiled = fixture.nativeElement as HTMLElement;
-    const matFormFields = compiled.querySelectorAll('.bits-grid mat-form-field');
+    const matFormFields = compiled.querySelectorAll('.bits-vertical mat-form-field');
     expect(matFormFields.length).toBe(3);
 
-    const labels = Array.from(compiled.querySelectorAll('.bits-grid mat-label')).map(
+    const labels = Array.from(compiled.querySelectorAll('.bits-vertical mat-label')).map(
       (el) => el.textContent?.trim(),
     );
     expect(labels).toEqual(['Bit 02', 'Bit 03', 'Bit 04']);
