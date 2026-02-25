@@ -59,4 +59,22 @@ router.post('/parse', (req: Request, res: Response) => {
   res.json(result);
 });
 
+router.post('/build', (req: Request, res: Response) => {
+  const fields = req.body as Record<string, string> | undefined;
+
+  if (!fields || Object.keys(fields).length === 0) {
+    res.status(400).json({ error: 'fields map is required' });
+    return;
+  }
+
+  // Mock build: concatenate MTI (from field structure) + field values as hex-like string
+  const sortedKeys = Object.keys(fields).sort((a, b) => Number(a) - Number(b));
+  let hexMessage = '0200'; // default MTI
+  for (const key of sortedKeys) {
+    hexMessage += fields[key];
+  }
+
+  res.json({ message: hexMessage });
+});
+
 export default router;
