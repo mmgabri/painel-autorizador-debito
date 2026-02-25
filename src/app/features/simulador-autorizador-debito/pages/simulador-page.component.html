@@ -1,10 +1,8 @@
 <h1>Simulador Autorizador Debito</h1>
 
 <!-- Secao A — Entrada ISO8583 -->
-<mat-card class="input-card">
-  <mat-card-header>
-    <mat-card-title>Entrada ISO8583</mat-card-title>
-  </mat-card-header>
+<mat-card class="input-card outlined-card">
+  <span class="card-legend">Entrada ISO8583</span>
   <mat-card-content>
     <form [formGroup]="formIso" (ngSubmit)="onParse()">
       <mat-form-field appearance="outline" class="full-width">
@@ -48,10 +46,8 @@
 @if (parsed() && sortedKeys().length > 0) {
   <div class="cards-row">
     <!-- Campos ISO Request -->
-    <mat-card class="bits-card">
-      <mat-card-header>
-        <mat-card-title>Campos ISO Request</mat-card-title>
-      </mat-card-header>
+    <mat-card class="bits-card outlined-card">
+      <span class="card-legend">Campos ISO Request</span>
       <mat-card-content>
         <form [formGroup]="bitsForm()" class="bits-vertical">
           @for (key of sortedKeys(); track key) {
@@ -82,10 +78,8 @@
 
     <!-- Campos ISO Response -->
     @if (transactionDone() && responseSortedKeys().length > 0) {
-      <mat-card class="response-card">
-        <mat-card-header>
-          <mat-card-title>Campos ISO Response</mat-card-title>
-        </mat-card-header>
+      <mat-card class="response-card outlined-card">
+        <span class="card-legend">Campos ISO Response</span>
         <mat-card-content>
           <form [formGroup]="responseBitsForm()" class="bits-vertical">
             @for (key of responseSortedKeys(); track key) {

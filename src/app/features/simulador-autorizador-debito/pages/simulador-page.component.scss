@@ -11,6 +11,23 @@ h1 {
   margin-bottom: 24px;
 }
 
+.outlined-card {
+  position: relative;
+  overflow: visible;
+  margin-top: 12px;
+
+  .card-legend {
+    position: absolute;
+    top: -10px;
+    left: 12px;
+    padding: 0 4px;
+    font-size: 12px;
+    line-height: 20px;
+    color: var(--mat-sys-on-surface-variant, rgba(0, 0, 0, 0.6));
+    background: var(--mat-sys-surface, #fff);
+  }
+}
+
 .cards-row {
   display: flex;
   gap: 24px;
