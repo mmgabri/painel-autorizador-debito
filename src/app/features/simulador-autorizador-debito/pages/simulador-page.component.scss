@@ -7,10 +7,21 @@ h1 {
 }
 
 .input-card,
-.bits-card,
-.empty-card,
-.response-card {
+.empty-card {
   margin-bottom: 24px;
+}
+
+.cards-row {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 24px;
+  align-items: flex-start;
+
+  .bits-card,
+  .response-card {
+    flex: 1;
+    min-width: 0;
+  }
 }
 
 .full-width {
