@@ -44,71 +44,74 @@
   </mat-card-content>
 </mat-card>
 
-<!-- Secao B — Campos ISO Request -->
+<!-- Secao B + C — Campos ISO Request & Response lado a lado -->
 @if (parsed() && sortedKeys().length > 0) {
-  <mat-card class="bits-card">
-    <mat-card-header>
-      <mat-card-title>Campos ISO Request</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <form [formGroup]="bitsForm()" class="bits-vertical">
-        @for (key of sortedKeys(); track key) {
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Bit {{ key }}</mat-label>
-            <input matInput [formControlName]="key" />
-          </mat-form-field>
+  <div class="cards-row">
+    <!-- Campos ISO Request -->
+    <mat-card class="bits-card">
+      <mat-card-header>
+        <mat-card-title>Campos ISO Request</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <form [formGroup]="bitsForm()" class="bits-vertical">
+          @for (key of sortedKeys(); track key) {
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Bit {{ key }}</mat-label>
+              <input matInput [formControlName]="key" />
+            </mat-form-field>
+          }
+        </form>
+
+        <div class="actions">
+          <button
+            mat-raised-button
+            color="accent"
+            type="button"
+            [disabled]="loadingTransaction()"
+            (click)="onDispararTransacao()"
+          >
+            Disparar transação
+          </button>
+        </div>
+
+        @if (loadingTransaction()) {
+          <mat-progress-bar mode="indeterminate" class="loading-bar"></mat-progress-bar>
         }
-      </form>
+      </mat-card-content>
+    </mat-card>
 
-      <div class="actions">
-        <button
-          mat-raised-button
-          color="accent"
-          type="button"
-          [disabled]="loadingTransaction()"
-          (click)="onDispararTransacao()"
-        >
-          Disparar transação
-        </button>
-      </div>
+    <!-- Campos ISO Response -->
+    @if (transactionDone() && responseSortedKeys().length > 0) {
+      <mat-card class="response-card">
+        <mat-card-header>
+          <mat-card-title>Campos ISO Response</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <form [formGroup]="responseBitsForm()" class="bits-vertical">
+            @for (key of responseSortedKeys(); track key) {
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Bit {{ key }}</mat-label>
+                <input matInput [formControlName]="key" />
+              </mat-form-field>
+            }
+          </form>
 
-      @if (loadingTransaction()) {
-        <mat-progress-bar mode="indeterminate" class="loading-bar"></mat-progress-bar>
-      }
-    </mat-card-content>
-  </mat-card>
+          @if (responseMessage()) {
+            <mat-form-field appearance="outline" class="full-width processing-message">
+              <mat-label>Mensagem de processamento</mat-label>
+              <input matInput [value]="responseMessage()" readonly />
+            </mat-form-field>
+          }
+        </mat-card-content>
+      </mat-card>
+    }
+  </div>
 }
 
 @if (parsed() && sortedKeys().length === 0) {
   <mat-card class="empty-card">
     <mat-card-content>
       <p class="empty-text">Nenhum campo encontrado</p>
-    </mat-card-content>
-  </mat-card>
-}
-
-<!-- Secao C — Campos ISO Response -->
-@if (transactionDone() && responseSortedKeys().length > 0) {
-  <mat-card class="response-card">
-    <mat-card-header>
-      <mat-card-title>Campos ISO Response</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <form [formGroup]="responseBitsForm()" class="bits-vertical">
-        @for (key of responseSortedKeys(); track key) {
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Bit {{ key }}</mat-label>
-            <input matInput [formControlName]="key" />
-          </mat-form-field>
-        }
-      </form>
-
-      @if (responseMessage()) {
-        <mat-form-field appearance="outline" class="full-width processing-message">
-          <mat-label>Mensagem de processamento</mat-label>
-          <input matInput [value]="responseMessage()" readonly />
-        </mat-form-field>
-      }
     </mat-card-content>
   </mat-card>
 }
