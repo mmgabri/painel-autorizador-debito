@@ -14,16 +14,18 @@ h1 {
 .outlined-card {
   position: relative;
   overflow: visible;
-  margin-top: 12px;
+  margin-top: 16px;
+  padding-top: 24px;
 
   .card-legend {
     position: absolute;
-    top: -10px;
+    top: -12px;
     left: 12px;
-    padding: 0 4px;
-    font-size: 12px;
-    line-height: 20px;
-    color: var(--mat-sys-on-surface-variant, rgba(0, 0, 0, 0.6));
+    padding: 0 6px;
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 24px;
+    color: var(--mat-sys-on-surface, rgba(0, 0, 0, 0.87));
     background: var(--mat-sys-surface, #fff);
   }
 }
