@@ -15,7 +15,8 @@ export const transacoes = new Map<string, Transacao>();
 const router = Router();
 
 router.post('/salvar', (req: Request, res: Response) => {
-  const { nomeProduto, descricao, mensagemIso } = req.body as {
+  const { id: existingId, nomeProduto, descricao, mensagemIso } = req.body as {
+    id?: string;
     nomeProduto?: string;
     descricao?: string;
     mensagemIso?: string;
@@ -31,6 +32,19 @@ router.post('/salvar', (req: Request, res: Response) => {
     return;
   }
 
+  // If id is provided and exists, update the existing record
+  if (existingId && transacoes.has(existingId)) {
+    const existing = transacoes.get(existingId)!;
+    existing.nomeProduto = nomeProduto.trim();
+    existing.descricao = (descricao ?? '').trim();
+    existing.mensagemIso = mensagemIso.trim();
+    transacoes.set(existingId, existing);
+    console.log('/transacao/salvar - Updated transaction:', existingId, existing.nomeProduto);
+    res.json({ id: existingId, message: 'Transação atualizada com sucesso' });
+    return;
+  }
+
+  // Otherwise create a new record
   const id = randomUUID();
   const transacao: Transacao = {
     id,
@@ -41,7 +55,7 @@ router.post('/salvar', (req: Request, res: Response) => {
   };
 
   transacoes.set(id, transacao);
-  console.log('/transacao/salvar - Saved transaction:', id, transacao.nomeProduto);
+  console.log('/transacao/salvar - Created transaction:', id, transacao.nomeProduto);
 
   res.json({ id, message: 'Transação salva com sucesso' });
 });

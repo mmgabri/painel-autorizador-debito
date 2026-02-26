@@ -9,6 +9,7 @@ export interface SimuladorResponse {
 }
 
 export interface SalvarTransacaoRequest {
+  id?: string;
   nomeProduto: string;
   descricao: string;
   mensagemIso: string;
