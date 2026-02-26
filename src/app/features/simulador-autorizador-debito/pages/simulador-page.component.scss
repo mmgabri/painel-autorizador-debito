@@ -108,3 +108,48 @@ h1 {
   margin-bottom: 32px;
   padding-bottom: 16px;
 }
+
+// Disparar transacao panel
+.disparar-panel {
+  .panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+
+    h2 {
+      margin: 0;
+    }
+  }
+}
+
+// Side-by-side cards
+.cards-row {
+  display: flex;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.flex-card {
+  flex: 1;
+  min-width: 0;
+}
+
+.empty-text {
+  text-align: center;
+  color: rgba(0, 0, 0, 0.54);
+  padding: 16px;
+}
+
+.message-field {
+  margin-top: 8px;
+}
+
+// Disparar view action buttons
+.disparar-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+  margin-bottom: 32px;
+  padding-bottom: 16px;
+}

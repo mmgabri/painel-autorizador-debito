@@ -9,8 +9,10 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { switchMap } from 'rxjs';
-import { IsoParserService } from '../services/iso-parser.service';
+import { IsoParserService, TransacaoItem } from '../services/iso-parser.service';
+import { BuscarTransacaoDialogComponent } from '../components/buscar-transacao-dialog.component';
 
 @Component({
   selector: 'app-simulador-page',
@@ -26,48 +28,79 @@ import { IsoParserService } from '../services/iso-parser.service';
     MatSnackBarModule,
     MatIconModule,
     MatSelectModule,
+    MatDialogModule,
   ],
   templateUrl: './simulador-page.component.html',
   styleUrl: './simulador-page.component.scss',
 })
 export class SimuladorPageComponent {
-  // Active view: 'main' | 'incluir'
-  activeView = signal<'main' | 'incluir'>('main');
+  // Active view: 'main' | 'incluir' | 'disparar'
+  activeView = signal<'main' | 'incluir' | 'disparar'>('main');
 
-  // Incluir transacao form
+  // ─── Incluir transacao ───
   incluirForm = new FormGroup({
     nomeProduto: new FormControl('', [Validators.required]),
     descricao: new FormControl(''),
     message: new FormControl('', [Validators.required, Validators.minLength(4)]),
   });
 
-  // Request fields
+  // Request fields (shared between incluir and disparar views)
   bitsForm = signal(new FormGroup<Record<string, FormControl<string>>>({}));
   sortedKeys = signal<string[]>([]);
   loading = signal(false);
 
   // Save state
   saving = signal(false);
+  editingTransacaoId = signal<string | null>(null);
 
   // Available bits for "Incluir campo" (2-128, excluding already added)
   availableBits = signal<number[]>([]);
 
+  // ─── Disparar transacao ───
+  selectedTransacao = signal<TransacaoItem | null>(null);
+  executing = signal(false);
+
+  // Response fields
+  responseFields = signal<Record<string, string>>({});
+  responseSortedKeys = signal<string[]>([]);
+  responseMessage = signal('');
+  showResponse = signal(false);
+
   constructor(
     private readonly isoParserService: IsoParserService,
     private readonly snackBar: MatSnackBar,
+    private readonly dialog: MatDialog,
   ) {}
+
+  // ─── Main view actions ───
 
   onIncluirTransacao(): void {
     this.activeView.set('incluir');
     this.incluirForm.reset();
-    this.bitsForm.set(new FormGroup<Record<string, FormControl<string>>>({}));
-    this.sortedKeys.set([]);
-    this.updateAvailableBits();
+    this.resetBitsForm();
+    this.editingTransacaoId.set(null);
+  }
+
+  onDispararTransacao(): void {
+    const dialogRef = this.dialog.open(BuscarTransacaoDialogComponent, {
+      width: '600px',
+      maxHeight: '80vh',
+    });
+
+    dialogRef.afterClosed().subscribe((selected: TransacaoItem | undefined) => {
+      if (selected) {
+        this.openDispararView(selected);
+      }
+    });
   }
 
   onVoltarMain(): void {
     this.activeView.set('main');
+    this.showResponse.set(false);
+    this.selectedTransacao.set(null);
   }
+
+  // ─── Incluir view actions ───
 
   onCarregarCampos(): void {
     const message = this.incluirForm.controls.message.value ?? '';
@@ -152,23 +185,122 @@ export class SimuladorPageComponent {
         switchMap((buildResult) => {
           this.incluirForm.controls.message.setValue(buildResult.message);
 
-          return this.isoParserService.salvarTransacao({
+          const payload: import('../services/iso-parser.service').SalvarTransacaoRequest = {
             nomeProduto: nomeProduto.trim(),
             descricao: (this.incluirForm.controls.descricao.value ?? '').trim(),
             mensagemIso: buildResult.message,
-          });
+          };
+          const currentId = this.editingTransacaoId();
+          if (currentId) {
+            payload.id = currentId;
+          }
+          return this.isoParserService.salvarTransacao(payload);
         }),
       )
       .subscribe({
-        next: () => {
+        next: (result) => {
           this.saving.set(false);
-          this.snackBar.open('Transação incluída com sucesso!', 'Fechar', { duration: 5000 });
+          this.editingTransacaoId.set(result.id);
+          this.snackBar.open(result.message, 'Fechar', { duration: 5000 });
         },
         error: () => {
           this.saving.set(false);
           this.snackBar.open('Erro ao salvar transação', 'Fechar', { duration: 5000 });
         },
       });
+  }
+
+  // ─── Disparar view actions ───
+
+  onExecutarTransacao(): void {
+    const transacao = this.selectedTransacao();
+    if (!transacao) return;
+
+    this.executing.set(true);
+    this.showResponse.set(false);
+
+    this.isoParserService.executarTransacao(transacao.mensagemIso).subscribe({
+      next: (result) => {
+        this.executing.set(false);
+        this.responseFields.set(result.fields);
+        const keys = Object.keys(result.fields).sort((a, b) => Number(a) - Number(b));
+        this.responseSortedKeys.set(keys);
+        this.responseMessage.set(result.message);
+        this.showResponse.set(true);
+      },
+      error: () => {
+        this.executing.set(false);
+        this.snackBar.open('Erro ao executar transação', 'Fechar', { duration: 5000 });
+      },
+    });
+  }
+
+  onEditarTransacao(): void {
+    const transacao = this.selectedTransacao();
+    if (!transacao) return;
+
+    // Switch to incluir view and populate fields from the selected transaction
+    this.activeView.set('incluir');
+    this.showResponse.set(false);
+    this.editingTransacaoId.set(transacao.id);
+
+    this.incluirForm.patchValue({
+      nomeProduto: transacao.nomeProduto,
+      descricao: transacao.descricao,
+      message: transacao.mensagemIso,
+    });
+
+    // Load ISO fields from the message
+    if (transacao.mensagemIso && transacao.mensagemIso.trim().length >= 4) {
+      this.loading.set(true);
+      this.isoParserService.parseIso(transacao.mensagemIso).subscribe({
+        next: (result) => {
+          this.loading.set(false);
+          this.buildBitsForm(result);
+        },
+        error: () => {
+          this.loading.set(false);
+        },
+      });
+    }
+  }
+
+  onExcluirTransacao(): void {
+    const transacao = this.selectedTransacao();
+    if (!transacao) return;
+
+    this.isoParserService.excluirTransacao(transacao.id).subscribe({
+      next: (result) => {
+        this.snackBar.open(result.message, 'Fechar', { duration: 5000 });
+        this.activeView.set('main');
+        this.showResponse.set(false);
+        this.selectedTransacao.set(null);
+      },
+      error: () => {
+        this.snackBar.open('Erro ao excluir transação', 'Fechar', { duration: 5000 });
+      },
+    });
+  }
+
+  // ─── Private helpers ───
+
+  private openDispararView(transacao: TransacaoItem): void {
+    this.selectedTransacao.set(transacao);
+    this.activeView.set('disparar');
+    this.showResponse.set(false);
+
+    // Load ISO request fields from the stored message
+    this.loading.set(true);
+    this.isoParserService.parseIso(transacao.mensagemIso).subscribe({
+      next: (result) => {
+        this.loading.set(false);
+        this.buildBitsForm(result);
+      },
+      error: () => {
+        this.loading.set(false);
+        this.snackBar.open('Erro ao carregar campos da transação', 'Fechar', { duration: 5000 });
+      },
+    });
   }
 
   private getRequestFieldsMap(): Record<string, string> {
@@ -190,6 +322,12 @@ export class SimuladorPageComponent {
     }
 
     this.bitsForm.set(new FormGroup(group));
+    this.updateAvailableBits();
+  }
+
+  private resetBitsForm(): void {
+    this.bitsForm.set(new FormGroup<Record<string, FormControl<string>>>({}));
+    this.sortedKeys.set([]);
     this.updateAvailableBits();
   }
 
