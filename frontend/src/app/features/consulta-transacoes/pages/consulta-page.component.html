@@ -8,6 +8,9 @@
       <mat-form-field appearance="outline" class="filter-field filter-cartao">
         <mat-label>Cartao</mat-label>
         <input matInput [formControl]="cartaoControl" />
+        @if (cartaoControl.hasError('required') && cartaoControl.touched) {
+          <mat-error>Cartao e obrigatorio</mat-error>
+        }
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="filter-field filter-data">
@@ -15,6 +18,9 @@
         <input matInput [matDatepicker]="picker" [formControl]="dataControl" />
         <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
         <mat-datepicker #picker></mat-datepicker>
+        @if (dataControl.hasError('required') && dataControl.touched) {
+          <mat-error>Data e obrigatoria</mat-error>
+        }
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="filter-field filter-time">
@@ -44,7 +50,7 @@
 }
 
 <!-- Search Results -->
-@if (searched()) {
+@if (searched() && !loading()) {
   <mat-card class="outlined-card results-card">
     <span class="card-legend">Resultado da busca</span>
     <mat-card-content>

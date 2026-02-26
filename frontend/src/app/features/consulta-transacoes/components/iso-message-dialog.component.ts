@@ -10,6 +10,7 @@ export interface IsoMessageDialogData {
   title: string; // "Message ISO Request" or "Message ISO Response"
   fields: Record<string, string>;
   loading?: boolean;
+  rawMessage?: string; // full hex ISO message
 }
 
 @Component({
@@ -32,6 +33,12 @@ export interface IsoMessageDialogData {
         <p class="empty-state">Nenhum campo encontrado</p>
       } @else {
         <div class="fields-container">
+          @if (data.rawMessage) {
+            <mat-form-field appearance="outline" class="field-full-width">
+              <mat-label>Mensagem ISO 8583 (hex)</mat-label>
+              <textarea matInput [value]="data.rawMessage" readonly rows="3" class="iso-textarea"></textarea>
+            </mat-form-field>
+          }
           @for (key of sortedKeys; track key) {
             <mat-form-field appearance="outline" class="field-full-width">
               <mat-label>Bit {{ key }}</mat-label>
@@ -53,6 +60,11 @@ export interface IsoMessageDialogData {
       min-width: 400px;
       max-height: 400px;
       overflow-y: auto;
+      padding-top: 8px;
+    }
+    .iso-textarea {
+      word-break: break-all;
+      font-size: 12px;
     }
     .field-full-width {
       width: 100%;
