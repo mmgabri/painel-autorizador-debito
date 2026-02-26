@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -43,8 +43,8 @@ export class ConsultaPageComponent {
   private readonly snackBar = inject(MatSnackBar);
 
   // Filter controls
-  cartaoControl = new FormControl('');
-  dataControl = new FormControl<Date | null>(null);
+  cartaoControl = new FormControl('', { validators: [Validators.required] });
+  dataControl = new FormControl<Date | null>(null, { validators: [Validators.required] });
   horaControl = new FormControl('');
   minutoControl = new FormControl('');
   segundoControl = new FormControl('');
@@ -58,8 +58,16 @@ export class ConsultaPageComponent {
   displayedColumns = ['nomeProduto', 'status', 'hora', 'correlationId', 'valor', 'messageRequest', 'messageResponse', 'detalhes'];
 
   onBuscar(): void {
+    this.cartaoControl.markAsTouched();
+    this.dataControl.markAsTouched();
+
+    if (this.cartaoControl.invalid || this.dataControl.invalid) {
+      return;
+    }
+
     this.loading.set(true);
     this.searched.set(true);
+    this.resultados.set([]);
 
     const filtro: ConsultaFiltro = {};
 
@@ -100,7 +108,7 @@ export class ConsultaPageComponent {
       next: (fields) => {
         this.dialog.open(IsoMessageDialogComponent, {
           width: '500px',
-          data: { title, fields, loading: false } as IsoMessageDialogData,
+          data: { title, fields, loading: false, rawMessage: hexMessage } as IsoMessageDialogData,
         });
       },
       error: () => {

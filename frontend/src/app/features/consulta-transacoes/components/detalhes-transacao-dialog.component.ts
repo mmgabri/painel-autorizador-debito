@@ -59,6 +59,7 @@ export interface DetalhesTransacaoDialogData {
       min-width: 450px;
       max-height: 500px;
       overflow-y: auto;
+      padding-top: 8px;
     }
     .field-row {
       display: flex;
@@ -88,13 +89,13 @@ export class DetalhesTransacaoDialogComponent {
       next: (fields) => {
         this.dialog.open(IsoMessageDialogComponent, {
           width: '500px',
-          data: { title, fields, loading: false } as IsoMessageDialogData,
+          data: { title, fields, loading: false, rawMessage: hexMessage } as IsoMessageDialogData,
         });
       },
       error: () => {
         this.dialog.open(IsoMessageDialogComponent, {
           width: '500px',
-          data: { title, fields: {}, loading: false } as IsoMessageDialogData,
+          data: { title, fields: {}, loading: false, rawMessage: hexMessage } as IsoMessageDialogData,
         });
       },
     });
