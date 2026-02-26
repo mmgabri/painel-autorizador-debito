@@ -6,11 +6,28 @@ h1 {
   margin-bottom: 16px;
 }
 
-.input-card,
-.empty-card {
+// Main view: top action buttons
+.top-actions {
+  display: flex;
+  gap: 16px;
   margin-bottom: 24px;
 }
 
+// Incluir transacao panel
+.incluir-panel {
+  .panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+
+    h2 {
+      margin: 0;
+    }
+  }
+}
+
+// Outlined card with legend
 .outlined-card {
   position: relative;
   overflow: visible;
@@ -30,16 +47,19 @@ h1 {
   }
 }
 
-.cards-row {
+// ISO input row: field + button inline
+.iso-input-row {
   display: flex;
-  gap: 24px;
-  margin-bottom: 24px;
+  gap: 16px;
   align-items: flex-start;
 
-  .bits-card,
-  .response-card {
+  .iso-input-field {
     flex: 1;
-    min-width: 0;
+  }
+
+  .carregar-btn {
+    margin-top: 8px;
+    white-space: nowrap;
   }
 }
 
@@ -47,29 +67,42 @@ h1 {
   width: 100%;
 }
 
-.actions {
-  display: flex;
-  gap: 12px;
-  margin-top: 8px;
+// Incluir campo select
+.incluir-campo-row {
+  margin-bottom: 8px;
+
+  .select-bit-field {
+    width: 250px;
+  }
 }
 
-.loading-bar {
-  margin-top: 16px;
+// Bit field row: field + delete button
+.bit-field-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+
+  .bit-field-input {
+    flex: 1;
+  }
+
+  .remove-btn {
+    margin-top: 8px;
+  }
 }
 
 .bits-vertical {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  margin-top: 8px;
 }
 
-.processing-message {
+.loading-bar {
   margin-top: 16px;
 }
 
-.empty-text {
-  text-align: center;
-  color: var(--mat-sys-on-surface-variant);
-  padding: 24px 0;
+.save-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
 }
