@@ -5,3 +5,113 @@
 h1 {
   margin-bottom: 16px;
 }
+
+// Outlined card with legend (same pattern as simulador)
+.outlined-card {
+  position: relative;
+  overflow: visible;
+  margin-top: 16px;
+  padding-top: 24px;
+
+  .card-legend {
+    position: absolute;
+    top: -12px;
+    left: 12px;
+    padding: 0 6px;
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 24px;
+    color: var(--mat-sys-on-surface, rgba(0, 0, 0, 0.87));
+    background: var(--mat-sys-surface, #fff);
+  }
+}
+
+// Filter row
+.filter-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.filter-field {
+  &.filter-cartao {
+    width: 220px;
+  }
+  &.filter-data {
+    width: 180px;
+  }
+  &.filter-time {
+    width: 100px;
+  }
+}
+
+.buscar-btn {
+  margin-top: 8px;
+  white-space: nowrap;
+}
+
+.loading-bar {
+  margin-top: 16px;
+}
+
+// Results
+.results-card {
+  margin-top: 24px;
+}
+
+.results-table-container {
+  overflow-x: auto;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.results-table {
+  width: 100%;
+}
+
+.correlation-cell {
+  font-size: 11px;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.msg-cell {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.msg-text {
+  font-size: 11px;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.status-badge {
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+
+  &.status-aprovada {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+  }
+
+  &.status-negada {
+    background-color: #ffebee;
+    color: #c62828;
+  }
+}
+
+.empty-text {
+  text-align: center;
+  color: rgba(0, 0, 0, 0.54);
+  padding: 16px;
+}
