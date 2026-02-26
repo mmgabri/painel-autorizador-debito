@@ -8,6 +8,17 @@ export interface SimuladorResponse {
   message: string;
 }
 
+export interface SalvarTransacaoRequest {
+  nomeProduto: string;
+  descricao: string;
+  mensagemIso: string;
+}
+
+export interface SalvarTransacaoResponse {
+  id: string;
+  message: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class IsoParserService {
   private readonly baseUrl = environment.apiBaseUrl;
@@ -28,5 +39,9 @@ export class IsoParserService {
     return this.http.post<SimuladorResponse>(`${this.baseUrl}/api/simulador`, {
       message: hexIso,
     });
+  }
+
+  salvarTransacao(data: SalvarTransacaoRequest): Observable<SalvarTransacaoResponse> {
+    return this.http.post<SalvarTransacaoResponse>(`${this.baseUrl}/api/transacao/salvar`, data);
   }
 }
