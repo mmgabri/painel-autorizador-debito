@@ -1,0 +1,27 @@
+Titulo: Incluir funcionalidade de Disparar Transação
+
+Ajustar as telas e funcionalidades do Simulador, conforme template em drawio anexado aqui.
+
+Resumo das alterações:
+
+Implementar o botão "Disparar transação" . Neste PR vamos atuar somente na funcionalidade de disparar transação.
+
+1) Ao clicar no botão "Disparar transação", deverá ser aberto um modal, conforme template "Buscar transação".  Em backgound disparar a api api/transacao/consultar para trazer todos os produtos contidos na base para montar o Modal.
+
+2) A api api/transacao/consultar deverá trazer todos os campos armazendados no banco de dados em memória, porém na tela/modal serão apresentados apenas os campos nome do produto e descrição, conforme template. Na frente do Nome do produto, incluir um icone representando a execução da transação (montar barra de rolagem para não ocupar muito espaço na tela ) . Ao clicar neste botão, fechar o modal, e abrir a tela "Disparar Transação", conforme template anexado.
+
+3) No Modal, deverá ter um campo para o usuário digitar o nome do produto full ou parcial. E ao clicar no botão "Filtrar transação" chamar a api api/transacao/consultar, porém agora passando como parâmetro  o nome do produto digitado.
+
+4) No backend, desenvolver a rota api/transacao/consultar, uma sem parâmetro, do qual deverá retornar todos os produtos, e outra com parâmetro para retornar apenas os produtos de acordo com o filtro digitado.
+
+5) Na tela Disparar transação, montar os dados de acordo com a transação escolhida no Modal (montar apenas o bloco "Campos ISO Request") , através do icone para executar transação. Em backgound chamar a api /api/iso8583/parse passando o campo "Mensagem Iso 8583" vindo do modal, onde o resultado vai ser usado para montar o bloco "Campos ISO Request"
+
+6) Ajustar rota atual da api /api/simulador para /api/transacao/executar no frontend e backend
+
+7) Ao clicar no botão "Disparar transação" deverá ser chamado a api /api/transacao/executar, e no retorno desta api montar o bloco "Campos ISO Response" ao lado do bloco  "Campos ISO Request". como já atualmente.
+
+8) Ao clicar no botão "Editar transação" levar e montar a outra tela existente de "Incluir transação" levando os dados da tela atual.
+
+9) Ao clicar no botão "Excluir transação" chamar a api /api/transacao/excluir, e no retorno dar uma mensagem, e levar a tela  inicial, onde só tem os 3 botões "Disparar transação", "Incluir transação" e "Excluir transação"
+  
+10) No backend, desenvolver a rota api/transacao/excluir, da qual deverá ser excluido o item da tabela em memória.
