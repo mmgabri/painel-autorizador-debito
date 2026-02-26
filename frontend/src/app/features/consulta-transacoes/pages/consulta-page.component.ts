@@ -1,11 +1,125 @@
-import { Component } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTableModule } from '@angular/material/table';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { ConsultaService, ConsultaResultItem, ConsultaFiltro } from '../services/consulta.service';
+import { IsoMessageDialogComponent, IsoMessageDialogData } from '../components/iso-message-dialog.component';
+import { DetalhesTransacaoDialogComponent, DetalhesTransacaoDialogData } from '../components/detalhes-transacao-dialog.component';
 
 @Component({
   selector: 'app-consulta-page',
   standalone: true,
-  imports: [MatCardModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    MatTableModule,
+    MatProgressBarModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatTooltipModule,
+  ],
   templateUrl: './consulta-page.component.html',
   styleUrl: './consulta-page.component.scss',
 })
-export class ConsultaPageComponent {}
+export class ConsultaPageComponent {
+  private readonly consultaService = inject(ConsultaService);
+  private readonly dialog = inject(MatDialog);
+  private readonly snackBar = inject(MatSnackBar);
+
+  // Filter controls
+  cartaoControl = new FormControl('');
+  dataControl = new FormControl<Date | null>(null);
+  horaControl = new FormControl('');
+  minutoControl = new FormControl('');
+  segundoControl = new FormControl('');
+
+  // State
+  loading = signal(false);
+  searched = signal(false);
+  resultados = signal<ConsultaResultItem[]>([]);
+
+  // Table columns
+  displayedColumns = ['nomeProduto', 'status', 'hora', 'correlationId', 'valor', 'messageRequest', 'messageResponse', 'detalhes'];
+
+  onBuscar(): void {
+    this.loading.set(true);
+    this.searched.set(true);
+
+    const filtro: ConsultaFiltro = {};
+
+    if (this.cartaoControl.value) {
+      filtro.cartao = this.cartaoControl.value;
+    }
+    if (this.dataControl.value) {
+      const d = this.dataControl.value;
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      filtro.data = `${year}-${month}-${day}`;
+    }
+    if (this.horaControl.value) {
+      filtro.hora = this.horaControl.value;
+    }
+    if (this.minutoControl.value) {
+      filtro.minuto = this.minutoControl.value;
+    }
+    if (this.segundoControl.value) {
+      filtro.segundo = this.segundoControl.value;
+    }
+
+    this.consultaService.buscarTransacoes(filtro).subscribe({
+      next: (result) => {
+        this.loading.set(false);
+        this.resultados.set(result);
+      },
+      error: () => {
+        this.loading.set(false);
+        this.snackBar.open('Erro ao buscar transacoes', 'Fechar', { duration: 5000 });
+      },
+    });
+  }
+
+  onViewIso(title: string, hexMessage: string): void {
+    this.consultaService.parseIso(hexMessage).subscribe({
+      next: (fields) => {
+        this.dialog.open(IsoMessageDialogComponent, {
+          width: '500px',
+          data: { title, fields, loading: false } as IsoMessageDialogData,
+        });
+      },
+      error: () => {
+        this.snackBar.open('Erro ao parsear mensagem ISO', 'Fechar', { duration: 5000 });
+      },
+    });
+  }
+
+  onViewDetalhes(correlationId: string): void {
+    this.consultaService.buscarDetalhes(correlationId).subscribe({
+      next: (detalhes) => {
+        this.dialog.open(DetalhesTransacaoDialogComponent, {
+          width: '550px',
+          data: { detalhes } as DetalhesTransacaoDialogData,
+        });
+      },
+      error: () => {
+        this.snackBar.open('Erro ao buscar detalhes da transacao', 'Fechar', { duration: 5000 });
+      },
+    });
+  }
+}
