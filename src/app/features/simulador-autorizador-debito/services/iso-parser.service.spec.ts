@@ -54,4 +54,46 @@ describe('IsoParserService', () => {
     expect(req.request.body).toEqual(payload);
     req.flush(mockResponse);
   });
+
+  it('should call POST /api/transacao/executar with the correct URL and body', () => {
+    const mockResponse = {
+      fields: { '02': '5454545454', '39': '00' },
+      message: 'Transação autorizada com sucesso',
+    };
+
+    service.executarTransacao('0200AABBCC').subscribe((result) => {
+      expect(result).toEqual(mockResponse);
+    });
+
+    const req = httpMock.expectOne(`${environment.apiBaseUrl}/api/transacao/executar`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ message: '0200AABBCC' });
+    req.flush(mockResponse);
+  });
+
+  it('should call GET /api/transacao/consultar without filter', () => {
+    const mockList = [
+      { id: '1', nomeProduto: 'Prod1', descricao: 'Desc1', mensagemIso: '0200AA', criadoEm: '' },
+    ];
+
+    service.consultarTransacoes().subscribe((result) => {
+      expect(result).toEqual(mockList);
+    });
+
+    const req = httpMock.expectOne(`${environment.apiBaseUrl}/api/transacao/consultar`);
+    expect(req.request.method).toBe('GET');
+    req.flush(mockList);
+  });
+
+  it('should call DELETE /api/transacao/excluir/:id', () => {
+    const mockResponse = { message: 'Transação excluída com sucesso' };
+
+    service.excluirTransacao('test-uuid').subscribe((result) => {
+      expect(result).toEqual(mockResponse);
+    });
+
+    const req = httpMock.expectOne(`${environment.apiBaseUrl}/api/transacao/excluir/test-uuid`);
+    expect(req.request.method).toBe('DELETE');
+    req.flush(mockResponse);
+  });
 });

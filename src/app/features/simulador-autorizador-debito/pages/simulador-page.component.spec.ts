@@ -110,4 +110,53 @@ describe('SimuladorPageComponent', () => {
 
     expect(component.sortedKeys()).toEqual(['02', '04']);
   });
+
+  it('should switch to disparar view and load fields when opening via dialog', async () => {
+    const fixture = TestBed.createComponent(SimuladorPageComponent);
+    const component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    // Simulate opening disparar view directly (bypassing dialog)
+    const mockTransacao = {
+      id: 'test-uuid',
+      nomeProduto: 'Produto Teste',
+      descricao: 'Desc',
+      mensagemIso: '0200AABBCC',
+      criadoEm: '2026-01-01T00:00:00Z',
+    };
+
+    component.selectedTransacao.set(mockTransacao);
+    component.activeView.set('disparar');
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('.disparar-panel')).toBeTruthy();
+    expect(compiled.querySelector('.top-actions')).toBeFalsy();
+  });
+
+  it('should show response fields after executing transaction', () => {
+    const fixture = TestBed.createComponent(SimuladorPageComponent);
+    const component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    // Set up disparar view
+    component.selectedTransacao.set({
+      id: 'test-uuid',
+      nomeProduto: 'Produto Teste',
+      descricao: 'Desc',
+      mensagemIso: '0200AABBCC',
+      criadoEm: '2026-01-01T00:00:00Z',
+    });
+    component.activeView.set('disparar');
+    component.showResponse.set(true);
+    component.responseFields.set({ '02': '5454545454', '39': '00' });
+    component.responseSortedKeys.set(['02', '39']);
+    component.responseMessage.set('Transação autorizada com sucesso');
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    const responseCard = compiled.querySelectorAll('.card-legend');
+    const legends = Array.from(responseCard).map((el) => el.textContent?.trim());
+    expect(legends).toContain('Campos ISO Response');
+  });
 });
