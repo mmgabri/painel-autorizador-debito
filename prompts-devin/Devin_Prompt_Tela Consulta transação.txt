@@ -1,0 +1,29 @@
+Titulo: Incluir funcionalidade de Consultar transação Transação
+
+Resumo das alterações/implementações:
+
+Neste PR vamos implementar toda a funcionalidade de Consulta transação:
+
+1) Ao clicar no menu "Consulta transação" deverá ser montado a tela de Consulta transação com os campos de busca (Cartão, Data, Hora, Minuto e Segundo) conforme template anexado. Para o campo data, abrir um calendário para o usuário selecionar a data.
+
+2) Ao clicar no botão "Buscar Transações" chamar a api com a rota api/consulta/transacao. Esta api deverá trazer os campos nome_produto, status, hora, correlationId, valor message_request e message_response para montar o bloco "Resuldado da busca" contendo uma lista , para montar o resultado da busca, conforme template anexado. Passar os campos de busca como parâmetro na api.
+
+3) Na frente (ou outra posição que julgar melhor) dos campos message_request e message_response incluir um icone, do qual deverá ser disparado a api /api/iso8583/parse já existente para realizar o parse. Com o resultado desta api, montar o modal  "Message ISO request" / "Message ISO response"  conforme template anexado. Os campos serão dinâmicos, de acordo com o resultado (map) da api.
+
+4) No final de cada linha de resultado da busca, incluir um icone que melhor represente a função, do qual deverá ser disparado a api api/consulta/{id} . Com o resultado desta api, montar o modal  "Detalhes transação" conforme template anexado. Os campos serão dinâmicos, de acordo com o resultado (map) da api, exceto os campos "Message ISO Request" e "Message ISO Response". Nestes dois também incluir um icone para chamar a api de parse para montar o modal "Message ISO request" / "Message ISO response"
+
+5) No backend, implementar a rota api/consulta/transacao. 
+  - Criar um banco de dados em memória para armazenar os campos nome_produto, status, data, hora, correlationId, valor, message_request (mensagem iso hex), message_response (mensagem iso hex), cartao, clearingId (UUID), situação (AUTORIZADA OU CONCILIADA). A chave primária deverá ser o correlationId
+  - Ao subir o backend, carregar esta tabela com 10 transações, simulando os dados conforme tipo descrito acima. A data deve ser a data do dia, o cartão de ser 5899161234560088, os demais dados pode ser randomico
+  - implementar a rota api/consulta/transacao aplicando os filtros enviados no parâmetro na api, e retornar os campos para montar a lista de transações conforme template anexado.
+  
+6) No backend, implementar a rota api/consulta/{id}. 
+  - implementar a rota api/consulta/{id} , buscando pelo id enviado. Este Id é correlationId do qual será usado para fazer a busca especifica. Retornar todas as colunas da tabela em formato de map (chave/valor) para ser montado dinâmicamente no frontend.
+  
+  
+  ---------------------------------------
+  
+  Comentário no git
+- Nos 3 modals, o primeiro campo esta sendo truncado a parte superior da label.
+- Nos modals "Message ISO Request" e "Message ISO Response", incluir como o primeiro campo a mensagem iso, apresentando a mensagem toda (não truncar)
+- o cartão e a data na busca são obrigaórios. Se o usuário não digitar, mostrar erro.
