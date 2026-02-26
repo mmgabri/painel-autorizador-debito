@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
@@ -19,6 +19,14 @@ export interface SalvarTransacaoResponse {
   message: string;
 }
 
+export interface TransacaoItem {
+  id: string;
+  nomeProduto: string;
+  descricao: string;
+  mensagemIso: string;
+  criadoEm: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class IsoParserService {
   private readonly baseUrl = environment.apiBaseUrl;
@@ -35,13 +43,25 @@ export class IsoParserService {
     return this.http.post<{ message: string }>(`${this.baseUrl}/api/iso8583/build`, fields);
   }
 
-  simular(hexIso: string): Observable<SimuladorResponse> {
-    return this.http.post<SimuladorResponse>(`${this.baseUrl}/api/simulador`, {
+  executarTransacao(hexIso: string): Observable<SimuladorResponse> {
+    return this.http.post<SimuladorResponse>(`${this.baseUrl}/api/transacao/executar`, {
       message: hexIso,
     });
   }
 
   salvarTransacao(data: SalvarTransacaoRequest): Observable<SalvarTransacaoResponse> {
     return this.http.post<SalvarTransacaoResponse>(`${this.baseUrl}/api/transacao/salvar`, data);
+  }
+
+  consultarTransacoes(nomeProduto?: string): Observable<TransacaoItem[]> {
+    let params = new HttpParams();
+    if (nomeProduto && nomeProduto.trim() !== '') {
+      params = params.set('nomeProduto', nomeProduto.trim());
+    }
+    return this.http.get<TransacaoItem[]>(`${this.baseUrl}/api/transacao/consultar`, { params });
+  }
+
+  excluirTransacao(id: string): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(`${this.baseUrl}/api/transacao/excluir/${id}`);
   }
 }
