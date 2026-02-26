@@ -7,6 +7,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSelectModule } from '@angular/material/select';
 import { switchMap } from 'rxjs';
 import { IsoParserService } from '../services/iso-parser.service';
 
@@ -22,12 +24,20 @@ import { IsoParserService } from '../services/iso-parser.service';
     MatButtonModule,
     MatProgressBarModule,
     MatSnackBarModule,
+    MatIconModule,
+    MatSelectModule,
   ],
   templateUrl: './simulador-page.component.html',
   styleUrl: './simulador-page.component.scss',
 })
 export class SimuladorPageComponent {
-  formIso = new FormGroup({
+  // Active view: 'main' | 'incluir'
+  activeView = signal<'main' | 'incluir'>('main');
+
+  // Incluir transacao form
+  incluirForm = new FormGroup({
+    nomeProduto: new FormControl('', [Validators.required]),
+    descricao: new FormControl(''),
     message: new FormControl('', [Validators.required, Validators.minLength(4)]),
   });
 
@@ -35,32 +45,44 @@ export class SimuladorPageComponent {
   bitsForm = signal(new FormGroup<Record<string, FormControl<string>>>({}));
   sortedKeys = signal<string[]>([]);
   loading = signal(false);
-  parsed = signal(false);
 
-  // Response fields
-  responseBitsForm = signal(new FormGroup<Record<string, FormControl<string>>>({}));
-  responseSortedKeys = signal<string[]>([]);
-  responseMessage = signal('');
-  loadingTransaction = signal(false);
-  transactionDone = signal(false);
+  // Save state
+  saving = signal(false);
+
+  // Available bits for "Incluir campo" (2-128, excluding already added)
+  availableBits = signal<number[]>([]);
 
   constructor(
     private readonly isoParserService: IsoParserService,
     private readonly snackBar: MatSnackBar,
   ) {}
 
-  onParse(): void {
-    if (this.formIso.invalid) {
+  onIncluirTransacao(): void {
+    this.activeView.set('incluir');
+    this.incluirForm.reset();
+    this.bitsForm.set(new FormGroup<Record<string, FormControl<string>>>({}));
+    this.sortedKeys.set([]);
+    this.updateAvailableBits();
+  }
+
+  onVoltarMain(): void {
+    this.activeView.set('main');
+  }
+
+  onCarregarCampos(): void {
+    const message = this.incluirForm.controls.message.value ?? '';
+    if (!message || message.trim().length < 4) {
+      this.snackBar.open('Informe a mensagem ISO com no mínimo 4 caracteres', 'Fechar', {
+        duration: 3000,
+      });
       return;
     }
 
     this.loading.set(true);
-    const message = this.formIso.controls.message.value ?? '';
 
     this.isoParserService.parseIso(message).subscribe({
       next: (result) => {
         this.loading.set(false);
-        this.parsed.set(true);
         this.buildBitsForm(result);
       },
       error: () => {
@@ -70,37 +92,81 @@ export class SimuladorPageComponent {
     });
   }
 
-  onClear(): void {
-    this.formIso.reset();
-    this.bitsForm.set(new FormGroup<Record<string, FormControl<string>>>({}));
-    this.sortedKeys.set([]);
-    this.parsed.set(false);
-    this.clearResponse();
-  }
+  onIncluirCampo(bitNumber: number): void {
+    const key = String(bitNumber).padStart(2, '0');
+    const currentForm = this.bitsForm();
+    const currentKeys = this.sortedKeys();
 
-  onDispararTransacao(): void {
-    const fieldsMap = this.getRequestFieldsMap();
-    if (Object.keys(fieldsMap).length === 0) {
+    if (currentKeys.includes(key)) {
       return;
     }
 
-    this.loadingTransaction.set(true);
-    this.transactionDone.set(false);
+    const newGroup = new FormGroup<Record<string, FormControl<string>>>({});
+    for (const existingKey of currentKeys) {
+      newGroup.addControl(existingKey, currentForm.controls[existingKey]);
+    }
+    newGroup.addControl(key, new FormControl('', { nonNullable: true }));
 
-    // Step a: build hex from fields map, then step b: call simulador with hex
+    const newKeys = [...currentKeys, key].sort((a, b) => Number(a) - Number(b));
+
+    this.bitsForm.set(newGroup);
+    this.sortedKeys.set(newKeys);
+    this.updateAvailableBits();
+  }
+
+  onRemoverCampo(key: string): void {
+    const currentForm = this.bitsForm();
+    const currentKeys = this.sortedKeys();
+
+    const newGroup = new FormGroup<Record<string, FormControl<string>>>({});
+    for (const existingKey of currentKeys) {
+      if (existingKey !== key) {
+        newGroup.addControl(existingKey, currentForm.controls[existingKey]);
+      }
+    }
+
+    const newKeys = currentKeys.filter((k) => k !== key);
+    this.bitsForm.set(newGroup);
+    this.sortedKeys.set(newKeys);
+    this.updateAvailableBits();
+  }
+
+  onSalvarTransacao(): void {
+    const fieldsMap = this.getRequestFieldsMap();
+    if (Object.keys(fieldsMap).length === 0) {
+      this.snackBar.open('Adicione pelo menos um campo ISO', 'Fechar', { duration: 3000 });
+      return;
+    }
+
+    const nomeProduto = this.incluirForm.controls.nomeProduto.value ?? '';
+    if (!nomeProduto.trim()) {
+      this.snackBar.open('Informe o Nome do Produto', 'Fechar', { duration: 3000 });
+      return;
+    }
+
+    this.saving.set(true);
+
     this.isoParserService
       .buildIso(fieldsMap)
-      .pipe(switchMap((buildResult) => this.isoParserService.simular(buildResult.message)))
+      .pipe(
+        switchMap((buildResult) => {
+          this.incluirForm.controls.message.setValue(buildResult.message);
+
+          return this.isoParserService.salvarTransacao({
+            nomeProduto: nomeProduto.trim(),
+            descricao: (this.incluirForm.controls.descricao.value ?? '').trim(),
+            mensagemIso: buildResult.message,
+          });
+        }),
+      )
       .subscribe({
-        next: (simResult) => {
-          this.loadingTransaction.set(false);
-          this.transactionDone.set(true);
-          this.buildResponseForm(simResult.fields);
-          this.responseMessage.set(simResult.message);
+        next: () => {
+          this.saving.set(false);
+          this.snackBar.open('Transação incluída com sucesso!', 'Fechar', { duration: 5000 });
         },
         error: () => {
-          this.loadingTransaction.set(false);
-          this.snackBar.open('Erro ao disparar transação', 'Fechar', { duration: 5000 });
+          this.saving.set(false);
+          this.snackBar.open('Erro ao salvar transação', 'Fechar', { duration: 5000 });
         },
       });
   }
@@ -124,24 +190,17 @@ export class SimuladorPageComponent {
     }
 
     this.bitsForm.set(new FormGroup(group));
+    this.updateAvailableBits();
   }
 
-  private buildResponseForm(map: Record<string, string>): void {
-    const group: Record<string, FormControl<string>> = {};
-    const keys = Object.keys(map).sort((a, b) => Number(a) - Number(b));
-    this.responseSortedKeys.set(keys);
-
-    for (const key of keys) {
-      group[key] = new FormControl({ value: map[key], disabled: true }, { nonNullable: true });
+  private updateAvailableBits(): void {
+    const usedKeys = new Set(this.sortedKeys().map((k) => Number(k)));
+    const available: number[] = [];
+    for (let i = 2; i <= 128; i++) {
+      if (!usedKeys.has(i)) {
+        available.push(i);
+      }
     }
-
-    this.responseBitsForm.set(new FormGroup(group));
-  }
-
-  private clearResponse(): void {
-    this.responseBitsForm.set(new FormGroup<Record<string, FormControl<string>>>({}));
-    this.responseSortedKeys.set([]);
-    this.responseMessage.set('');
-    this.transactionDone.set(false);
+    this.availableBits.set(available);
   }
 }

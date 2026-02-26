@@ -25,12 +25,43 @@ describe('SimuladorPageComponent', () => {
     expect(fixture.componentInstance).toBeTruthy();
   });
 
-  it('should render the correct number of bit fields after parsing', async () => {
+  it('should show main view with 3 buttons by default', () => {
+    const fixture = TestBed.createComponent(SimuladorPageComponent);
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    const buttons = compiled.querySelectorAll('.top-actions button');
+    expect(buttons.length).toBe(3);
+    expect(buttons[0].textContent?.trim()).toContain('Disparar transação');
+    expect(buttons[1].textContent?.trim()).toContain('Incluir transação');
+    expect(buttons[2].textContent?.trim()).toContain('Excluir transação');
+  });
+
+  it('should switch to incluir view when clicking Incluir transação', () => {
     const fixture = TestBed.createComponent(SimuladorPageComponent);
     const component = fixture.componentInstance;
+    fixture.detectChanges();
 
-    component.formIso.controls.message.setValue('0200ABCDEF');
-    component.onParse();
+    component.onIncluirTransacao();
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('.incluir-panel')).toBeTruthy();
+    expect(compiled.querySelector('.top-actions')).toBeFalsy();
+  });
+
+  it('should render the correct number of bit fields after loading campos', async () => {
+    const fixture = TestBed.createComponent(SimuladorPageComponent);
+    const component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    // Switch to incluir view
+    component.onIncluirTransacao();
+    fixture.detectChanges();
+
+    // Set message and load campos
+    component.incluirForm.controls.message.setValue('0200ABCDEF');
+    component.onCarregarCampos();
 
     const mockMap: Record<string, string> = {
       '02': '5454545454',
@@ -52,5 +83,31 @@ describe('SimuladorPageComponent', () => {
       (el) => el.textContent?.trim(),
     );
     expect(labels).toEqual(['Bit 02', 'Bit 03', 'Bit 04']);
+  });
+
+  it('should add a field via onIncluirCampo', () => {
+    const fixture = TestBed.createComponent(SimuladorPageComponent);
+    const component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    component.onIncluirTransacao();
+    component.onIncluirCampo(2);
+    component.onIncluirCampo(4);
+
+    expect(component.sortedKeys()).toEqual(['02', '04']);
+  });
+
+  it('should remove a field via onRemoverCampo', () => {
+    const fixture = TestBed.createComponent(SimuladorPageComponent);
+    const component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    component.onIncluirTransacao();
+    component.onIncluirCampo(2);
+    component.onIncluirCampo(3);
+    component.onIncluirCampo(4);
+    component.onRemoverCampo('03');
+
+    expect(component.sortedKeys()).toEqual(['02', '04']);
   });
 });

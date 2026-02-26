@@ -36,4 +36,22 @@ describe('IsoParserService', () => {
     expect(req.request.body).toEqual({ message: '0200ABCDEF' });
     req.flush(mockResponse);
   });
+
+  it('should call POST /api/transacao/salvar with the correct URL and body', () => {
+    const mockResponse = { id: 'abc-123', message: 'Transação salva com sucesso' };
+    const payload = {
+      nomeProduto: 'Produto Teste',
+      descricao: 'Descrição',
+      mensagemIso: '0200AABBCC',
+    };
+
+    service.salvarTransacao(payload).subscribe((result) => {
+      expect(result).toEqual(mockResponse);
+    });
+
+    const req = httpMock.expectOne(`${environment.apiBaseUrl}/api/transacao/salvar`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual(payload);
+    req.flush(mockResponse);
+  });
 });
