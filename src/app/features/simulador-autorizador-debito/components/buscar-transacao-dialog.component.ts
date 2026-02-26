@@ -71,6 +71,7 @@ import { IsoParserService, TransacaoItem } from '../services/iso-parser.service'
       display: flex;
       gap: 12px;
       align-items: flex-start;
+      margin-top: 8px;
       margin-bottom: 8px;
 
       .filter-field {

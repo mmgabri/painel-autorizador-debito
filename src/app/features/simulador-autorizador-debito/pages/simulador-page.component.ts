@@ -51,6 +51,7 @@ export class SimuladorPageComponent {
 
   // Save state
   saving = signal(false);
+  editingTransacaoId = signal<string | null>(null);
 
   // Available bits for "Incluir campo" (2-128, excluding already added)
   availableBits = signal<number[]>([]);
@@ -77,6 +78,7 @@ export class SimuladorPageComponent {
     this.activeView.set('incluir');
     this.incluirForm.reset();
     this.resetBitsForm();
+    this.editingTransacaoId.set(null);
   }
 
   onDispararTransacao(): void {
@@ -183,17 +185,23 @@ export class SimuladorPageComponent {
         switchMap((buildResult) => {
           this.incluirForm.controls.message.setValue(buildResult.message);
 
-          return this.isoParserService.salvarTransacao({
+          const payload: import('../services/iso-parser.service').SalvarTransacaoRequest = {
             nomeProduto: nomeProduto.trim(),
             descricao: (this.incluirForm.controls.descricao.value ?? '').trim(),
             mensagemIso: buildResult.message,
-          });
+          };
+          const currentId = this.editingTransacaoId();
+          if (currentId) {
+            payload.id = currentId;
+          }
+          return this.isoParserService.salvarTransacao(payload);
         }),
       )
       .subscribe({
-        next: () => {
+        next: (result) => {
           this.saving.set(false);
-          this.snackBar.open('Transação incluída com sucesso!', 'Fechar', { duration: 5000 });
+          this.editingTransacaoId.set(result.id);
+          this.snackBar.open(result.message, 'Fechar', { duration: 5000 });
         },
         error: () => {
           this.saving.set(false);
@@ -234,6 +242,7 @@ export class SimuladorPageComponent {
     // Switch to incluir view and populate fields from the selected transaction
     this.activeView.set('incluir');
     this.showResponse.set(false);
+    this.editingTransacaoId.set(transacao.id);
 
     this.incluirForm.patchValue({
       nomeProduto: transacao.nomeProduto,
