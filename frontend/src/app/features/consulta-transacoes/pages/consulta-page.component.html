@@ -1,7 +1,137 @@
 <h1>Consulta transacoes</h1>
 
-<mat-card>
+<!-- Search Filters -->
+<mat-card class="outlined-card">
+  <span class="card-legend">Buscar transacao</span>
   <mat-card-content>
-    <p>Consulta transacoes</p>
+    <div class="filter-row">
+      <mat-form-field appearance="outline" class="filter-field filter-cartao">
+        <mat-label>Cartao</mat-label>
+        <input matInput [formControl]="cartaoControl" />
+        @if (cartaoControl.hasError('required') && cartaoControl.touched) {
+          <mat-error>Cartao e obrigatorio</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field filter-data">
+        <mat-label>Data</mat-label>
+        <input matInput [matDatepicker]="picker" [formControl]="dataControl" />
+        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+        @if (dataControl.hasError('required') && dataControl.touched) {
+          <mat-error>Data e obrigatoria</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field filter-time">
+        <mat-label>Hora</mat-label>
+        <input matInput [formControl]="horaControl" maxlength="2" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field filter-time">
+        <mat-label>Minuto</mat-label>
+        <input matInput [formControl]="minutoControl" maxlength="2" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field filter-time">
+        <mat-label>Segundo</mat-label>
+        <input matInput [formControl]="segundoControl" maxlength="2" />
+      </mat-form-field>
+
+      <button mat-raised-button color="primary" class="buscar-btn" (click)="onBuscar()" [disabled]="loading()">
+        Buscar Transacoes
+      </button>
+    </div>
   </mat-card-content>
 </mat-card>
+
+@if (loading()) {
+  <mat-progress-bar mode="indeterminate" class="loading-bar"></mat-progress-bar>
+}
+
+<!-- Search Results -->
+@if (searched() && !loading()) {
+  <mat-card class="outlined-card results-card">
+    <span class="card-legend">Resultado da busca</span>
+    <mat-card-content>
+      @if (resultados().length === 0) {
+        <p class="empty-text">Nenhuma transacao encontrada</p>
+      } @else {
+        <div class="results-table-container">
+          <table mat-table [dataSource]="resultados()" class="results-table">
+            <!-- Nome Produto Column -->
+            <ng-container matColumnDef="nomeProduto">
+              <th mat-header-cell *matHeaderCellDef>Nome Produto</th>
+              <td mat-cell *matCellDef="let row">{{ row.nomeProduto }}</td>
+            </ng-container>
+
+            <!-- Status Column -->
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>Status</th>
+              <td mat-cell *matCellDef="let row">
+                <span [class]="'status-badge status-' + row.status.toLowerCase()">{{ row.status }}</span>
+              </td>
+            </ng-container>
+
+            <!-- Hora Column -->
+            <ng-container matColumnDef="hora">
+              <th mat-header-cell *matHeaderCellDef>Hora</th>
+              <td mat-cell *matCellDef="let row">{{ row.hora }}</td>
+            </ng-container>
+
+            <!-- CorrelationId Column -->
+            <ng-container matColumnDef="correlationId">
+              <th mat-header-cell *matHeaderCellDef>CorrelationId</th>
+              <td mat-cell *matCellDef="let row" class="correlation-cell">{{ row.correlationId }}</td>
+            </ng-container>
+
+            <!-- Valor Column -->
+            <ng-container matColumnDef="valor">
+              <th mat-header-cell *matHeaderCellDef>Valor</th>
+              <td mat-cell *matCellDef="let row">{{ row.valor }}</td>
+            </ng-container>
+
+            <!-- Message Request Column -->
+            <ng-container matColumnDef="messageRequest">
+              <th mat-header-cell *matHeaderCellDef>Msg Request</th>
+              <td mat-cell *matCellDef="let row">
+                <div class="msg-cell">
+                  <span class="msg-text">{{ row.messageRequest | slice:0:20 }}...</span>
+                  <button mat-icon-button color="primary" (click)="onViewIso('Message ISO Request', row.messageRequest)" matTooltip="Visualizar ISO Request">
+                    <mat-icon>visibility</mat-icon>
+                  </button>
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- Message Response Column -->
+            <ng-container matColumnDef="messageResponse">
+              <th mat-header-cell *matHeaderCellDef>Msg Response</th>
+              <td mat-cell *matCellDef="let row">
+                <div class="msg-cell">
+                  <span class="msg-text">{{ row.messageResponse | slice:0:20 }}...</span>
+                  <button mat-icon-button color="primary" (click)="onViewIso('Message ISO Response', row.messageResponse)" matTooltip="Visualizar ISO Response">
+                    <mat-icon>visibility</mat-icon>
+                  </button>
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- Details Column -->
+            <ng-container matColumnDef="detalhes">
+              <th mat-header-cell *matHeaderCellDef></th>
+              <td mat-cell *matCellDef="let row">
+                <button mat-icon-button color="accent" (click)="onViewDetalhes(row.correlationId)" matTooltip="Ver detalhes">
+                  <mat-icon>info</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
+        </div>
+      }
+    </mat-card-content>
+  </mat-card>
+}
