@@ -20,6 +20,13 @@ export const routes: Routes = [
             (m) => m.CONSULTA_ROUTES,
           ),
       },
+      {
+        path: 'dashboard',
+        loadChildren: () =>
+          import('./features/dashboard-debito/routes').then(
+            (m) => m.DASHBOARD_ROUTES,
+          ),
+      },
       { path: '', redirectTo: 'simulador', pathMatch: 'full' },
     ],
   },
