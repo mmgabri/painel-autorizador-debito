@@ -1,0 +1,247 @@
+<div class="dashboard-container">
+  <header class="topbar">
+    <div class="welcome-title">Dashboards Autorizador Débito</div>
+  </header>
+
+  <!-- Top 3 cards grid -->
+  <section class="grid3">
+    <!-- Acumulado do Dia -->
+    <article class="card">
+      <div class="card-head">
+        <div>
+          <h2>Acumulado do Dia</h2>
+          <div class="muted">
+            @if (acumuladoDia(); as dia) {
+              Última atualização às {{ dia.ultima_atualizacao }}
+            } @else {
+              Última atualização: —
+            }
+          </div>
+        </div>
+        <div class="card-actions">
+          <mat-form-field class="date-field" appearance="outline">
+            <input matInput [matDatepicker]="pickerDia" [formControl]="dataDiaControl" />
+            <mat-datepicker-toggle matSuffix [for]="pickerDia"></mat-datepicker-toggle>
+            <mat-datepicker #pickerDia></mat-datepicker>
+          </mat-form-field>
+          <button class="load-btn" (click)="onLoadAcumuladoDia()" [disabled]="loadingDia()">Load</button>
+        </div>
+      </div>
+
+      @if (loadingDia()) {
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+      }
+
+      <div class="kpi-grid">
+        <div class="kpi">
+          <div class="kpi-label">Volume de Transações</div>
+          <div class="kpi-value">{{ formatVolume(acumuladoDia()?.volume) }}</div>
+          <div class="kpi-sub" [class]="trendClass(tendenciaVolumePct())">
+            {{ formatTrend(tendenciaVolumePct()) }}
+          </div>
+        </div>
+
+        <div class="kpi">
+          <div class="kpi-label">Faturamento das Transações</div>
+          <div class="kpi-value">{{ formatMoney(acumuladoDia()?.faturamento) }}</div>
+          <div class="kpi-sub" [class]="trendClass(tendenciaFaturamentoPct())">
+            {{ formatTrend(tendenciaFaturamentoPct()) }}
+          </div>
+        </div>
+
+        <div class="kpi">
+          <div class="kpi-label">Hora de maior movimento</div>
+          <div class="kpi-value">{{ formatVolume(acumuladoDia()?.pico_hora_volume) }}</div>
+          <div class="kpi-sub">{{ acumuladoDia()?.pico_hora_volume_faixa || '—' }}</div>
+        </div>
+
+        <div class="kpi">
+          <div class="kpi-label">&nbsp;</div>
+          <div class="kpi-value">{{ formatMoney(acumuladoDia()?.pico_hora_faturamento) }}</div>
+          <div class="kpi-sub">{{ acumuladoDia()?.pico_hora_faturamento_faixa || '—' }}</div>
+        </div>
+
+        <div class="kpi">
+          <div class="kpi-label">TPS Atual</div>
+          <div class="kpi-value">{{ acumuladoDia()?.tps_atual ?? '—' }}</div>
+          <div class="kpi-sub">
+            @if (acumuladoDia()?.tps_atual_hora; as hora) {
+              ({{ hora }})
+            } @else {
+              —
+            }
+          </div>
+        </div>
+
+        <div class="kpi">
+          <div class="kpi-label">Pico do dia</div>
+          <div class="kpi-value">{{ acumuladoDia()?.pico_dia ?? '—' }}</div>
+          <div class="kpi-sub">
+            @if (acumuladoDia()?.pico_dia_hora; as hora) {
+              ({{ hora }})
+            } @else {
+              —
+            }
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- Acumulado A-1 -->
+    <article class="card">
+      <div class="card-head">
+        <div>
+          <h2>Acumulado A-1</h2>
+          <div class="muted">{{ acumuladoA1()?.data || '—' }}</div>
+        </div>
+        <div class="card-actions">
+          <mat-form-field class="date-field" appearance="outline">
+            <input matInput [matDatepicker]="pickerA1" [formControl]="dataA1Control" />
+            <mat-datepicker-toggle matSuffix [for]="pickerA1"></mat-datepicker-toggle>
+            <mat-datepicker #pickerA1></mat-datepicker>
+          </mat-form-field>
+          <button class="load-btn" (click)="onLoadAcumuladoA1()" [disabled]="loadingA1()">Load</button>
+        </div>
+      </div>
+
+      @if (loadingA1()) {
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+      }
+
+      <div class="kpi-grid">
+        <div class="kpi">
+          <div class="kpi-label">Volume de Transações</div>
+          <div class="kpi-value">{{ formatVolume(acumuladoA1()?.volume) }}</div>
+        </div>
+
+        <div class="kpi">
+          <div class="kpi-label">Faturamento das Transações</div>
+          <div class="kpi-value">{{ formatMoney(acumuladoA1()?.faturamento) }}</div>
+        </div>
+
+        <div class="kpi">
+          <div class="kpi-label">Hora de maior movimento</div>
+          <div class="kpi-value">{{ formatVolume(acumuladoA1()?.pico_hora_volume) }}</div>
+          <div class="kpi-sub">{{ acumuladoA1()?.pico_hora_volume_faixa || '—' }}</div>
+        </div>
+
+        <div class="kpi">
+          <div class="kpi-label">&nbsp;</div>
+          <div class="kpi-value">{{ formatMoney(acumuladoA1()?.pico_hora_faturamento) }}</div>
+          <div class="kpi-sub">{{ acumuladoA1()?.pico_hora_faturamento_faixa || '—' }}</div>
+        </div>
+
+        <div class="kpi">
+          <div class="kpi-label">Pico do dia</div>
+          <div class="kpi-value">{{ acumuladoA1()?.pico_dia ?? '—' }}</div>
+          <div class="kpi-sub">
+            @if (acumuladoA1()?.pico_dia_hora; as hora) {
+              ({{ hora }})
+            } @else {
+              —
+            }
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- Recordes -->
+    <article class="card">
+      <div class="card-head">
+        <div>
+          <h2>Recordes</h2>
+        </div>
+        <div class="card-actions">
+          <button class="load-btn" (click)="onLoadRecorde()" [disabled]="loadingRecorde()">Load</button>
+        </div>
+      </div>
+
+      @if (loadingRecorde()) {
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+      }
+
+      <div class="kpi-grid">
+        <div class="kpi">
+          <div class="kpi-label">Volume de Transações</div>
+          <div class="kpi-value">{{ formatVolume(recorde()?.record_volume) }}</div>
+          <div class="kpi-sub">{{ recorde()?.record_volume_data ? '(' + recorde()!.record_volume_data + ')' : '—' }}</div>
+        </div>
+
+        <div class="kpi">
+          <div class="kpi-label">Faturamento das Transações</div>
+          <div class="kpi-value">{{ formatMoney(recorde()?.record_faturamento) }}</div>
+          <div class="kpi-sub">{{ recorde()?.record_faturamento_data ? '(' + recorde()!.record_faturamento_data + ')' : '—' }}</div>
+        </div>
+
+        <div class="kpi">
+          <div class="kpi-label">Hora de maior movimento</div>
+          <div class="kpi-value">{{ formatVolume(recorde()?.record_pico_hora_volume) }}</div>
+          <div class="kpi-sub">
+            @if (recorde()?.record_pico_hora_volume_data; as data) {
+              ({{ data }} {{ recorde()?.record_pico_hora_volume_faixa }})
+            } @else {
+              —
+            }
+          </div>
+        </div>
+
+        <div class="kpi">
+          <div class="kpi-label">&nbsp;</div>
+          <div class="kpi-value">{{ formatMoney(recorde()?.record_pico_hora_faturamento) }}</div>
+          <div class="kpi-sub">
+            @if (recorde()?.record_pico_hora_faturamento_data; as data) {
+              ({{ data }} {{ recorde()?.record_pico_hora_faturamento_faixa }})
+            } @else {
+              —
+            }
+          </div>
+        </div>
+
+        <div class="kpi">
+          <div class="kpi-label">Transação por segundo</div>
+          <div class="kpi-value">{{ recorde()?.record_tps ?? '—' }}</div>
+          <div class="kpi-sub">
+            @if (recorde()?.record_tps_data; as data) {
+              ({{ data }} {{ recorde()?.record_tps_hora }})
+            } @else {
+              —
+            }
+          </div>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <!-- Acumulado da Semana -->
+  <section class="card week-card">
+    <div class="card-head">
+      <div>
+        <h2>Acumulado da Semana</h2>
+        <div class="muted">Volume e Faturamento dos últimos 7 dias</div>
+      </div>
+      <div class="card-actions">
+        <button class="load-btn" (click)="onLoadAcumuladoSemana()" [disabled]="loadingSemana()">Load</button>
+      </div>
+    </div>
+
+    @if (loadingSemana()) {
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    }
+
+    <div class="week-tiles">
+      @for (item of acumuladoSemana(); track item.data) {
+        <div class="tile">
+          <div class="date">{{ item.data }} &bull; {{ item.dia_semana }}</div>
+          <div class="row">
+            <div class="k">volume</div>
+            <div class="v">{{ formatVolume(item.volume) }}</div>
+          </div>
+          <div class="row">
+            <div class="k">faturamento</div>
+            <div class="v">{{ formatMoney(item.faturamento) }}</div>
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+</div>
