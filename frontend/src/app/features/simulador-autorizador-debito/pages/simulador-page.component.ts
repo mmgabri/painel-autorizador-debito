@@ -82,6 +82,13 @@ export class SimuladorPageComponent {
   }
 
   onDispararTransacao(): void {
+    // Clear current view before opening modal so it doesn't overlay content
+    this.activeView.set('main');
+    this.resetBitsForm();
+    this.showResponse.set(false);
+    this.selectedTransacao.set(null);
+    this.incluirForm.reset();
+
     const dialogRef = this.dialog.open(BuscarTransacaoDialogComponent, {
       width: '600px',
       maxHeight: '80vh',
