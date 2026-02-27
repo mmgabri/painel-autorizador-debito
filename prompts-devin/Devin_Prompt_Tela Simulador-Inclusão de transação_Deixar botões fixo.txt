@@ -1,5 +1,4 @@
-Na funcionalidade 
-Simulador Autorizador Debito
+Funcionalidade: Simulador Autorizador Debito
 
 Titulo: Deixar botões fixos na tela "Simulador Autorizador Debito"
 
