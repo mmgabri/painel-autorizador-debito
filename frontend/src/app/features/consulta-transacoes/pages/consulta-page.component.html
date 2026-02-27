@@ -1,4 +1,5 @@
 <h1>Consulta transacoes</h1>
+<br/>
 
 <!-- Search Filters -->
 <mat-card class="outlined-card">
@@ -72,6 +73,15 @@
                 <span [class]="'status-badge status-' + row.status.toLowerCase()">{{ row.status }}</span>
               </td>
             </ng-container>
+
+            <!-- Codigo de Retorno Column -->
+            <ng-container matColumnDef="codigoRetorno">
+              <th mat-header-cell *matHeaderCellDef>Cod. Retorno</th>
+              <td mat-cell *matCellDef="let row">
+                <span [class]="'status-badge status-' + row.codigoRetorno.toLowerCase()">{{ row.codigoRetorno }}</span>
+              </td>
+            </ng-container>
+
 
             <!-- Hora Column -->
             <ng-container matColumnDef="hora">
