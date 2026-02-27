@@ -1,0 +1,18 @@
+Na funcionalidade 
+Simulador Autorizador Debito
+
+Titulo: Deixar botões fixos na tela "Simulador Autorizador Debito"
+
+Resumo das alterações/implementações:
+
+1) Na tela "Simulador Autorizador Debito" , deixar os botões "Disparar transação" , "incluir transação" e "Excluir transação" fixo na parte superior, como é hoje. Durante a navegação das telas, manter estes tres botões fixo na parte superior
+
+2) Como eles vão ficar fixo na parte superior, deixar o estilo deles diferente dos demais botões. Deixa a sua melhor escolha
+
+3) Como esses botões ficarão fixos, pode tirar o botão "Voltar" nas demais telas.
+
+
+---------
+
+comentario no git:
+Quando eu clicar no botão "Disparar transação" limpar a tela antes de abrir o modal, para que o Modal não fique sobreposto a tela atual.
