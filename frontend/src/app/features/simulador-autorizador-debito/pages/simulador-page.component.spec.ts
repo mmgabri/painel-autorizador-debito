@@ -30,7 +30,7 @@ describe('SimuladorPageComponent', () => {
     fixture.detectChanges();
 
     const compiled = fixture.nativeElement as HTMLElement;
-    const buttons = compiled.querySelectorAll('.top-actions button');
+    const buttons = compiled.querySelectorAll('.fixed-top-actions button');
     expect(buttons.length).toBe(3);
     expect(buttons[0].textContent?.trim()).toContain('Disparar transação');
     expect(buttons[1].textContent?.trim()).toContain('Incluir transação');
@@ -47,7 +47,7 @@ describe('SimuladorPageComponent', () => {
 
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('.incluir-panel')).toBeTruthy();
-    expect(compiled.querySelector('.top-actions')).toBeFalsy();
+    expect(compiled.querySelector('.fixed-top-actions')).toBeTruthy();
   });
 
   it('should render the correct number of bit fields after loading campos', async () => {
@@ -131,7 +131,7 @@ describe('SimuladorPageComponent', () => {
 
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('.disparar-panel')).toBeTruthy();
-    expect(compiled.querySelector('.top-actions')).toBeFalsy();
+    expect(compiled.querySelector('.fixed-top-actions')).toBeTruthy();
   });
 
   it('should show response fields after executing transaction', () => {
