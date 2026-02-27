@@ -55,7 +55,7 @@ export class ConsultaPageComponent {
   resultados = signal<ConsultaResultItem[]>([]);
 
   // Table columns
-  displayedColumns = ['nomeProduto', 'status', 'hora', 'correlationId', 'valor', 'messageRequest', 'messageResponse', 'detalhes'];
+  displayedColumns = ['nomeProduto', 'status' , 'codigoRetorno', 'hora', 'correlationId', 'valor', 'messageRequest', 'messageResponse', 'detalhes'];
 
   onBuscar(): void {
     this.cartaoControl.markAsTouched();

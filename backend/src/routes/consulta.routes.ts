@@ -5,6 +5,7 @@ export interface ConsultaTransacao {
   correlationId: string;
   nomeProduto: string;
   status: string;
+  codigoRetorno: string;
   data: string; // YYYY-MM-DD
   hora: string; // HH
   minuto: string; // MM
@@ -26,13 +27,16 @@ function seedTransactions(): void {
   const dateStr = today.toISOString().split('T')[0]; // YYYY-MM-DD
 
   const produtos = [
-    'Débito Visa', 'Débito Mastercard', 'Débito Elo',
-    'Crédito Visa', 'Crédito Mastercard', 'Débito Hipercard',
-    'Débito Amex', 'Crédito Elo', 'Débito Visa', 'Crédito Amex',
+    'COMPRA_NACIONAL_COM_CHIP_SENHA_MASTER', 'COMPRA_NACIONAL_CONTACTLESS_COM_SENHA_MASTER', 'COMPRA_NACIONAL_CONTACTLESS_SEM_SENHA_MASTER',
+    'COMPRA_NACIONAL_TOKEN_COM_SENHA_MASTER', 'COMPRA_NACIONAL_TOKEN_SEM_SENHA_MASTER', 'DEBITO_SEM_SENHA_NACIONAL_MASTER',
+    'DEBITO_SEM_SENHA_NACIONAL_MASTER', 'COMPRA_NACIONAL_COM_CHIP_SENHA_MASTER', 'DEBITO_SEM_SENHA_NACIONAL_MASTER', 'COMPRA_NACIONAL_TOKEN_COM_SENHA_MASTER',
   ];
 
   const statuses = ['APROVADA', 'NEGADA', 'APROVADA', 'APROVADA', 'NEGADA',
     'APROVADA', 'APROVADA', 'APROVADA', 'NEGADA', 'APROVADA'];
+
+    const codigoRetornos = ['00', '14', '00', '00', '55',
+    '00', '00', '00', '96', '00'];
 
   const situacoes: Array<'AUTORIZADA' | 'CONCILIADA'> = [
     'AUTORIZADA', 'CONCILIADA', 'AUTORIZADA', 'CONCILIADA', 'AUTORIZADA',
@@ -55,6 +59,7 @@ function seedTransactions(): void {
       correlationId,
       nomeProduto: produtos[i],
       status: statuses[i],
+      codigoRetorno: codigoRetornos[i],
       data: dateStr,
       hora,
       minuto,
@@ -109,6 +114,7 @@ router.get('/transacao', (req: Request, res: Response) => {
     correlationId: t.correlationId,
     nomeProduto: t.nomeProduto,
     status: t.status,
+    codigoRetorno: t.codigoRetorno,
     hora: `${t.hora}:${t.minuto}:${t.segundo}`,
     valor: t.valor,
     messageRequest: t.messageRequest,
