@@ -28,7 +28,7 @@ import { IsoParserService, TransacaoItem } from '../services/iso-parser.service'
       <div class="filter-row">
         <mat-form-field appearance="outline" class="filter-field filter-nome">
           <mat-label>Filtrar por Nome Produto</mat-label>
-          <input matInput [(ngModel)]="filtro" (keyup.enter)="onFiltrar()" />
+          <input matInput [(ngModel)]="filtro" maxlength="21" (keyup.enter)="onFiltrar()" />
         </mat-form-field>
         <mat-form-field appearance="outline" class="filter-field filter-tag">
           <mat-label>Filtrar por Tag</mat-label>
@@ -86,12 +86,12 @@ import { IsoParserService, TransacaoItem } from '../services/iso-parser.service'
 
       .filter-nome {
         flex: 2;
-        min-width: 200px;
+        min-width: 180px;
       }
 
       .filter-tag {
         flex: 1;
-        min-width: 140px;
+        min-width: 120px;
       }
 
       .filtrar-btn {
