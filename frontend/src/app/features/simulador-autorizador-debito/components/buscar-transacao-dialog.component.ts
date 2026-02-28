@@ -30,6 +30,10 @@ import { IsoParserService, TransacaoItem } from '../services/iso-parser.service'
           <mat-label>Filtrar por Nome Produto</mat-label>
           <input matInput [(ngModel)]="filtro" (keyup.enter)="onFiltrar()" />
         </mat-form-field>
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Filtrar por Tag</mat-label>
+          <input matInput [(ngModel)]="filtroTag" (keyup.enter)="onFiltrar()" />
+        </mat-form-field>
         <button mat-raised-button color="primary" (click)="onFiltrar()">
           Filtrar transação
         </button>
@@ -44,6 +48,7 @@ import { IsoParserService, TransacaoItem } from '../services/iso-parser.service'
           <div class="transacao-row">
             <div class="transacao-info">
               <span class="nome">{{ item.nomeProduto }}</span>
+              <span class="tag">{{ item.tag }}</span>
               <span class="descricao">{{ item.descricao }}</span>
             </div>
             <button
@@ -116,6 +121,12 @@ import { IsoParserService, TransacaoItem } from '../services/iso-parser.service'
         font-weight: 500;
       }
 
+      .tag {
+        font-size: 12px;
+        color: rgba(63, 81, 181, 0.87);
+        font-weight: 500;
+      }
+
       .descricao {
         font-size: 12px;
         color: rgba(0, 0, 0, 0.54);
@@ -134,6 +145,7 @@ export class BuscarTransacaoDialogComponent implements OnInit {
   private readonly isoParserService = inject(IsoParserService);
 
   filtro = '';
+  filtroTag = '';
   loading = signal(false);
   transacoes = signal<TransacaoItem[]>([]);
 
@@ -142,16 +154,16 @@ export class BuscarTransacaoDialogComponent implements OnInit {
   }
 
   onFiltrar(): void {
-    this.carregarTransacoes(this.filtro);
+    this.carregarTransacoes(this.filtro, this.filtroTag);
   }
 
   onSelecionar(item: TransacaoItem): void {
     this.dialogRef.close(item);
   }
 
-  private carregarTransacoes(nomeProduto?: string): void {
+  private carregarTransacoes(nomeProduto?: string, tag?: string): void {
     this.loading.set(true);
-    this.isoParserService.consultarTransacoes(nomeProduto).subscribe({
+    this.isoParserService.consultarTransacoes(nomeProduto, tag).subscribe({
       next: (list) => {
         this.loading.set(false);
         this.transacoes.set(list);

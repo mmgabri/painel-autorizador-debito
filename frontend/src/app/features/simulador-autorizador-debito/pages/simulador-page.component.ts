@@ -10,7 +10,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { switchMap } from 'rxjs';
+import { switchMap, EMPTY } from 'rxjs';
 import { IsoParserService, TransacaoItem } from '../services/iso-parser.service';
 import { BuscarTransacaoDialogComponent } from '../components/buscar-transacao-dialog.component';
 
@@ -40,6 +40,7 @@ export class SimuladorPageComponent {
   // ─── Incluir transacao ───
   incluirForm = new FormGroup({
     nomeProduto: new FormControl('', [Validators.required]),
+    tag: new FormControl('', [Validators.required]),
     descricao: new FormControl(''),
     message: new FormControl('', [Validators.required, Validators.minLength(4)]),
   });
@@ -192,8 +193,16 @@ export class SimuladorPageComponent {
         switchMap((buildResult) => {
           this.incluirForm.controls.message.setValue(buildResult.message);
 
+          const tag = this.incluirForm.controls.tag.value ?? '';
+          if (!tag.trim()) {
+            this.saving.set(false);
+            this.snackBar.open('Informe a Tag', 'Fechar', { duration: 3000 });
+            return EMPTY;
+          }
+
           const payload: import('../services/iso-parser.service').SalvarTransacaoRequest = {
             nomeProduto: nomeProduto.trim(),
+            tag: tag.trim(),
             descricao: (this.incluirForm.controls.descricao.value ?? '').trim(),
             mensagemIso: buildResult.message,
           };
@@ -253,6 +262,7 @@ export class SimuladorPageComponent {
 
     this.incluirForm.patchValue({
       nomeProduto: transacao.nomeProduto,
+      tag: transacao.tag ?? '',
       descricao: transacao.descricao,
       message: transacao.mensagemIso,
     });
