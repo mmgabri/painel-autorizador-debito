@@ -81,6 +81,7 @@ import { IsoParserService, TransacaoItem } from '../services/iso-parser.service'
 
       .filter-field {
         flex: 1;
+        min-width: 280px;
       }
 
       button {
