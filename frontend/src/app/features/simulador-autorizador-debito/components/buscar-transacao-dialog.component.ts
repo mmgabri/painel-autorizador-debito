@@ -26,12 +26,16 @@ import { IsoParserService, TransacaoItem } from '../services/iso-parser.service'
     <h2 mat-dialog-title>Buscar transação</h2>
     <mat-dialog-content>
       <div class="filter-row">
-        <mat-form-field appearance="outline" class="filter-field">
+        <mat-form-field appearance="outline" class="filter-field filter-nome">
           <mat-label>Filtrar por Nome Produto</mat-label>
-          <input matInput [(ngModel)]="filtro" (keyup.enter)="onFiltrar()" />
+          <input matInput [(ngModel)]="filtro" maxlength="15" (keyup.enter)="onFiltrar()" />
         </mat-form-field>
-        <button mat-raised-button color="primary" (click)="onFiltrar()">
-          Filtrar transação
+        <mat-form-field appearance="outline" class="filter-field filter-tag">
+          <mat-label>Filtrar por Tag</mat-label>
+          <input matInput [(ngModel)]="filtroTag" maxlength="15" (keyup.enter)="onFiltrar()" />
+        </mat-form-field>
+        <button mat-raised-button color="primary" class="filtrar-btn" (click)="onFiltrar()">
+          Filtrar
         </button>
       </div>
 
@@ -44,6 +48,7 @@ import { IsoParserService, TransacaoItem } from '../services/iso-parser.service'
           <div class="transacao-row">
             <div class="transacao-info">
               <span class="nome">{{ item.nomeProduto }}</span>
+              <span class="tag">{{ item.tag }}</span>
               <span class="descricao">{{ item.descricao }}</span>
             </div>
             <button
@@ -67,18 +72,29 @@ import { IsoParserService, TransacaoItem } from '../services/iso-parser.service'
     </mat-dialog-actions>
   `,
   styles: [`
+    :host {
+      display: block;
+    }
+
     .filter-row {
       display: flex;
       gap: 12px;
       align-items: flex-start;
       margin-top: 8px;
       margin-bottom: 8px;
+      flex-wrap: wrap;
 
-      .filter-field {
-        flex: 1;
+      .filter-nome {
+        flex: 2;
+        min-width: 180px;
       }
 
-      button {
+      .filter-tag {
+        flex: 1;
+        min-width: 120px;
+      }
+
+      .filtrar-btn {
         margin-top: 8px;
         white-space: nowrap;
       }
@@ -116,9 +132,15 @@ import { IsoParserService, TransacaoItem } from '../services/iso-parser.service'
         font-weight: 500;
       }
 
+      .tag {
+        font-size: 12px;
+        color: rgba(0, 0, 0, 0.54);
+      }
+
       .descricao {
         font-size: 12px;
         color: rgba(0, 0, 0, 0.54);
+        font-style: italic;
       }
     }
 
@@ -134,6 +156,7 @@ export class BuscarTransacaoDialogComponent implements OnInit {
   private readonly isoParserService = inject(IsoParserService);
 
   filtro = '';
+  filtroTag = '';
   loading = signal(false);
   transacoes = signal<TransacaoItem[]>([]);
 
@@ -142,16 +165,16 @@ export class BuscarTransacaoDialogComponent implements OnInit {
   }
 
   onFiltrar(): void {
-    this.carregarTransacoes(this.filtro);
+    this.carregarTransacoes(this.filtro, this.filtroTag);
   }
 
   onSelecionar(item: TransacaoItem): void {
     this.dialogRef.close(item);
   }
 
-  private carregarTransacoes(nomeProduto?: string): void {
+  private carregarTransacoes(nomeProduto?: string, tag?: string): void {
     this.loading.set(true);
-    this.isoParserService.consultarTransacoes(nomeProduto).subscribe({
+    this.isoParserService.consultarTransacoes(nomeProduto, tag).subscribe({
       next: (list) => {
         this.loading.set(false);
         this.transacoes.set(list);

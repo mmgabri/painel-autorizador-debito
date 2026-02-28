@@ -41,6 +41,7 @@ describe('IsoParserService', () => {
     const mockResponse = { id: 'abc-123', message: 'Transação salva com sucesso' };
     const payload = {
       nomeProduto: 'Produto Teste',
+      tag: 'TAG1',
       descricao: 'Descrição',
       mensagemIso: '0200AABBCC',
     };
@@ -73,7 +74,7 @@ describe('IsoParserService', () => {
 
   it('should call GET /api/transacao/consultar without filter', () => {
     const mockList = [
-      { id: '1', nomeProduto: 'Prod1', descricao: 'Desc1', mensagemIso: '0200AA', criadoEm: '' },
+      { id: '1', nomeProduto: 'Prod1', tag: 'TAG1', descricao: 'Desc1', mensagemIso: '0200AA', criadoEm: '' },
     ];
 
     service.consultarTransacoes().subscribe((result) => {
