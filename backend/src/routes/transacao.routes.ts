@@ -4,6 +4,7 @@ import { randomUUID } from 'crypto';
 export interface Transacao {
   id: string;
   nomeProduto: string;
+  tag: string;
   descricao: string;
   mensagemIso: string;
   criadoEm: string;
@@ -15,15 +16,21 @@ export const transacoes = new Map<string, Transacao>();
 const router = Router();
 
 router.post('/salvar', (req: Request, res: Response) => {
-  const { id: existingId, nomeProduto, descricao, mensagemIso } = req.body as {
+  const { id: existingId, nomeProduto, tag, descricao, mensagemIso } = req.body as {
     id?: string;
     nomeProduto?: string;
+    tag?: string;
     descricao?: string;
     mensagemIso?: string;
   };
 
   if (!nomeProduto || nomeProduto.trim() === '') {
     res.status(400).json({ error: 'nomeProduto is required' });
+    return;
+  }
+
+  if (!tag || tag.trim() === '') {
+    res.status(400).json({ error: 'tag is required' });
     return;
   }
 
@@ -36,6 +43,7 @@ router.post('/salvar', (req: Request, res: Response) => {
   if (existingId && transacoes.has(existingId)) {
     const existing = transacoes.get(existingId)!;
     existing.nomeProduto = nomeProduto.trim();
+    existing.tag = tag.trim();
     existing.descricao = (descricao ?? '').trim();
     existing.mensagemIso = mensagemIso.trim();
     transacoes.set(existingId, existing);
@@ -49,6 +57,7 @@ router.post('/salvar', (req: Request, res: Response) => {
   const transacao: Transacao = {
     id,
     nomeProduto: nomeProduto.trim(),
+    tag: tag.trim(),
     descricao: (descricao ?? '').trim(),
     mensagemIso: mensagemIso.trim(),
     criadoEm: new Date().toISOString(),
@@ -62,15 +71,21 @@ router.post('/salvar', (req: Request, res: Response) => {
 
 // GET /api/transacao/consultar - list all or filter by nomeProduto
 router.get('/consultar', (req: Request, res: Response) => {
-  const filtro = (req.query['nomeProduto'] as string | undefined) ?? '';
+  const filtroNome = (req.query['nomeProduto'] as string | undefined) ?? '';
+  const filtroTag = (req.query['tag'] as string | undefined) ?? '';
   let list = Array.from(transacoes.values());
 
-  if (filtro.trim() !== '') {
-    const lower = filtro.trim().toLowerCase();
+  if (filtroNome.trim() !== '') {
+    const lower = filtroNome.trim().toLowerCase();
     list = list.filter((t) => t.nomeProduto.toLowerCase().includes(lower));
   }
 
-  console.log('/transacao/consultar - Found', list.length, 'transactions', filtro ? `(filter: ${filtro})` : '');
+  if (filtroTag.trim() !== '') {
+    const lower = filtroTag.trim().toLowerCase();
+    list = list.filter((t) => t.tag.toLowerCase().includes(lower));
+  }
+
+  console.log('/transacao/consultar - Found', list.length, 'transactions', filtroNome ? `(nome: ${filtroNome})` : '', filtroTag ? `(tag: ${filtroTag})` : '');
   res.json(list);
 });
 
