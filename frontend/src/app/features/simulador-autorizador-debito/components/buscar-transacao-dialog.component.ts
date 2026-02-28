@@ -26,16 +26,16 @@ import { IsoParserService, TransacaoItem } from '../services/iso-parser.service'
     <h2 mat-dialog-title>Buscar transação</h2>
     <mat-dialog-content>
       <div class="filter-row">
-        <mat-form-field appearance="outline" class="filter-field">
+        <mat-form-field appearance="outline" class="filter-field filter-nome">
           <mat-label>Filtrar por Nome Produto</mat-label>
           <input matInput [(ngModel)]="filtro" (keyup.enter)="onFiltrar()" />
         </mat-form-field>
-        <mat-form-field appearance="outline" class="filter-field">
+        <mat-form-field appearance="outline" class="filter-field filter-tag">
           <mat-label>Filtrar por Tag</mat-label>
-          <input matInput [(ngModel)]="filtroTag" (keyup.enter)="onFiltrar()" />
+          <input matInput [(ngModel)]="filtroTag" maxlength="15" (keyup.enter)="onFiltrar()" />
         </mat-form-field>
-        <button mat-raised-button color="primary" (click)="onFiltrar()">
-          Filtrar transação
+        <button mat-raised-button color="primary" class="filtrar-btn" (click)="onFiltrar()">
+          Filtrar
         </button>
       </div>
 
@@ -72,19 +72,29 @@ import { IsoParserService, TransacaoItem } from '../services/iso-parser.service'
     </mat-dialog-actions>
   `,
   styles: [`
+    :host {
+      display: block;
+    }
+
     .filter-row {
       display: flex;
       gap: 12px;
       align-items: flex-start;
       margin-top: 8px;
       margin-bottom: 8px;
+      flex-wrap: wrap;
 
-      .filter-field {
-        flex: 1;
-        min-width: 280px;
+      .filter-nome {
+        flex: 2;
+        min-width: 200px;
       }
 
-      button {
+      .filter-tag {
+        flex: 1;
+        min-width: 140px;
+      }
+
+      .filtrar-btn {
         margin-top: 8px;
         white-space: nowrap;
       }
@@ -124,13 +134,13 @@ import { IsoParserService, TransacaoItem } from '../services/iso-parser.service'
 
       .tag {
         font-size: 12px;
-        color: rgba(63, 81, 181, 0.87);
-        font-weight: 500;
+        color: rgba(0, 0, 0, 0.54);
       }
 
       .descricao {
         font-size: 12px;
         color: rgba(0, 0, 0, 0.54);
+        font-style: italic;
       }
     }
 
