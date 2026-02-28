@@ -91,7 +91,7 @@ export class SimuladorPageComponent {
     this.incluirForm.reset();
 
     const dialogRef = this.dialog.open(BuscarTransacaoDialogComponent, {
-      width: '650px',
+      width: '560px',
       maxWidth: '95vw',
       maxHeight: '80vh',
     });
