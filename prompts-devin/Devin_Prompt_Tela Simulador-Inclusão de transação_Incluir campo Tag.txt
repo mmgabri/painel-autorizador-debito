@@ -1,0 +1,16 @@
+Titulo: Incluir campo "Tag" na funcionalidade "Simulador Autorizador Debito"
+
+Resumo das alterações/implementações:
+
+1) Na tela "Incluir transação" incluir o campo "Tag *" no formulário, abaixo do campo "Nome Produto". Esse campo é obrigatório, e deverá ser consistido isso.
+2) Incluir este campo na api de salvar transação: /api/transacao/salvar
+3) Alterar backend, ajustando a rota /api/transacao/salvar para recepcionar e incluir uma coluna na tabela em memória para salvar o campo "Tag" enviada pela api.
+4) No Modal "Buscar transação" , incluir o campo "Tag" abaixo do campo Nome do produto. Opcionalmente o usuário poderá usar como filtro o campo "Nome do produto" ou "Tag" para fazer a busca. 
+5) Ao clicar no botão "Filtrar transação" , enviar o campo Tag como parâmetro,  junto com o "Nome do produto" na api /api/transacao/consultar
+5) Alterar backend, ajustar a rota /api/transacao/consultar para recepcionar o campo Tag e ajustar a busca para  usar os campos "Nome do produto" e "Tag" . Os 2 campos são opcionais, então fazer as combinações.
+
+
+------
+comentário git
+Incluir o campo "Tag" na tela "Disparar transação". Necessário ajustar a api para trazer este campo.
+No Modal de Buscar transação, deixar maior o campo "Nome Produto"., pois o nome do produto pode chegar até 40 caracteres. Pode deixar com 30 caracteres, pelo menos.
