@@ -11,6 +11,7 @@ export interface SimuladorResponse {
 export interface SalvarTransacaoRequest {
   id?: string;
   nomeProduto: string;
+  tag: string;
   descricao: string;
   mensagemIso: string;
 }
@@ -23,6 +24,7 @@ export interface SalvarTransacaoResponse {
 export interface TransacaoItem {
   id: string;
   nomeProduto: string;
+  tag: string;
   descricao: string;
   mensagemIso: string;
   criadoEm: string;
@@ -54,10 +56,13 @@ export class IsoParserService {
     return this.http.post<SalvarTransacaoResponse>(`${this.baseUrl}/api/transacao/salvar`, data);
   }
 
-  consultarTransacoes(nomeProduto?: string): Observable<TransacaoItem[]> {
+  consultarTransacoes(nomeProduto?: string, tag?: string): Observable<TransacaoItem[]> {
     let params = new HttpParams();
     if (nomeProduto && nomeProduto.trim() !== '') {
       params = params.set('nomeProduto', nomeProduto.trim());
+    }
+    if (tag && tag.trim() !== '') {
+      params = params.set('tag', tag.trim());
     }
     return this.http.get<TransacaoItem[]>(`${this.baseUrl}/api/transacao/consultar`, { params });
   }

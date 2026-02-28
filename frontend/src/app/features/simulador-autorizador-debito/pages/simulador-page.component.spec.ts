@@ -120,6 +120,7 @@ describe('SimuladorPageComponent', () => {
     const mockTransacao = {
       id: 'test-uuid',
       nomeProduto: 'Produto Teste',
+      tag: 'TAG1',
       descricao: 'Desc',
       mensagemIso: '0200AABBCC',
       criadoEm: '2026-01-01T00:00:00Z',
@@ -143,6 +144,7 @@ describe('SimuladorPageComponent', () => {
     component.selectedTransacao.set({
       id: 'test-uuid',
       nomeProduto: 'Produto Teste',
+      tag: 'TAG1',
       descricao: 'Desc',
       mensagemIso: '0200AABBCC',
       criadoEm: '2026-01-01T00:00:00Z',
