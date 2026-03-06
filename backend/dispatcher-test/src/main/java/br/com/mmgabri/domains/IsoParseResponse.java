@@ -1,7 +1,10 @@
 package br.com.mmgabri.domains;
 
+import lombok.Data;
+
 import java.util.Map;
 
+@Data
 public class IsoParseResponse {
 
     private String mti;
@@ -12,22 +15,6 @@ public class IsoParseResponse {
 
     public IsoParseResponse(String mti, Map<String, String> fields) {
         this.mti = mti;
-        this.fields = fields;
-    }
-
-    public String getMti() {
-        return mti;
-    }
-
-    public void setMti(String mti) {
-        this.mti = mti;
-    }
-
-    public Map<String, String> getFields() {
-        return fields;
-    }
-
-    public void setFields(Map<String, String> fields) {
         this.fields = fields;
     }
 }
