@@ -5,6 +5,8 @@ import br.com.mmgabri.domains.IsoParseResponse;
 import org.jpos.iso.ISOMsg;
 import org.jpos.iso.ISOPackager;
 import org.jpos.iso.packager.GenericPackager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
@@ -16,16 +18,17 @@ import java.util.Map;
 public class IsoMessageService {
 
     private final ISOPackager packager;
+    private static final Logger logger = LoggerFactory.getLogger(IsoMessageService.class);
 
     public IsoMessageService() {
         try {
-            this.packager = loadPackager("basic-packager-ebcdic.xml");
+            this.packager = loadPackager("iso-mastercard.xml");
         } catch (Exception e) {
             throw new IllegalStateException("Erro ao carregar o packager ISO EBCDIC.", e);
         }
     }
 
-    public IsoParseResponse parse(String isoMessage, String encoding) throws Exception {
+    public IsoParseResponse parse(String isoMessage) throws Exception {
         byte[] messageBytes = hexToBytes(isoMessage);
 
         ISOMsg isoMsg = new ISOMsg();
