@@ -39,7 +39,7 @@ public class ControllerPainelAutorizadorDebito {
     }
 
     @PostMapping("/cenarios/salvar")
-    public ResponseEntity<CenarioTesteCsv> create(@Valid @RequestBody CenarioTesteCsvRequest request) {
+    public ResponseEntity<CenarioTesteCsv> save(@Valid @RequestBody CenarioTesteCsvRequest request) {
         logger.info("Requisição recebida para salvar cenário de teste.");
         var saved = csvService.save(request);
         logger.info("Cenário de teste salvo com sucesso.");

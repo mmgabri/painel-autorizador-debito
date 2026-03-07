@@ -6,6 +6,7 @@ import lombok.Data;
 @Data
 public class CenarioTesteCsvRequest {
 
+    private String id;
    // @NotBlank
     private String nomeProduto;
 

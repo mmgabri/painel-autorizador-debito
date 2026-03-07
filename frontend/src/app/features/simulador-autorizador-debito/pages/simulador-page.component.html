@@ -172,7 +172,7 @@
         [disabled]="saving() || sortedKeys().length === 0"
         (click)="onSalvarTransacao()"
       >
-        Salvar transação
+        Salvar
       </button>
       <button
         mat-raised-button
@@ -181,7 +181,7 @@
         [disabled]="!savedSuccessfully()"
         (click)="onDispararFromIncluir()"
       >
-        Disparar transação
+        Disparar
       </button>
     </div>
 
@@ -298,7 +298,7 @@
         [disabled]="executing() || sortedKeys().length === 0"
         (click)="onExecutarTransacao()"
       >
-        Disparar transação
+        Disparar
       </button>
       <button
         mat-raised-button
@@ -306,7 +306,7 @@
         class="itau-btn"
         (click)="onEditarTransacao()"
       >
-        Editar transação
+        Editar
       </button>
       <button
         mat-raised-button
@@ -314,7 +314,7 @@
         class="itau-btn"
         (click)="onExcluirTransacao()"
       >
-        Excluir transação
+        Excluir
       </button>
     </div>
   </div>
