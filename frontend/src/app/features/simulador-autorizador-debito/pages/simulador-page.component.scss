@@ -3,57 +3,68 @@
 }
 
 h1 {
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
-// Fixed top action buttons (always visible)
+// Fixed top action buttons — card-style like Itaú "pagamentos / transferências / Pix"
 .fixed-top-actions {
   display: flex;
-  gap: 12px;
-  margin-bottom: 24px;
-  padding: 12px 16px;
-  background: #f5f5f5;
-  border-radius: 8px;
-  border: 1px solid #e0e0e0;
+  gap: 10px;
+  margin-bottom: 20px;
   position: sticky;
   top: 0;
   z-index: 10;
+  background: #fafafa;
+  padding: 8px 0;
 }
 
 .top-action-btn {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   font-weight: 500;
-  letter-spacing: 0.3px;
-  border-radius: 20px !important;
+  font-size: 14px;
+  letter-spacing: 0.2px;
+  border-radius: 8px !important;
   padding: 0 20px !important;
-  height: 40px;
+  height: 48px;
+  background-color: #fff !important;
+  color: #1a1a1a !important;
+  border: 1px solid #e0e0e0 !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: border-color 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    border-color: #ec7000 !important;
+    box-shadow: 0 2px 4px rgba(236, 112, 0, 0.12);
+  }
 
   mat-icon {
     font-size: 20px;
     width: 20px;
     height: 20px;
+    color: #ec7000;
   }
 }
 
-.disparar-btn {
-  background-color: #1565c0 !important;
-  color: white !important;
-}
-
+.disparar-btn,
 .incluir-btn {
-  background-color: #2e7d32 !important;
-  color: white !important;
+  background-color: #fff !important;
+  color: #1a1a1a !important;
 }
 
 .excluir-btn {
-  background-color: #c62828 !important;
-  color: white !important;
+  background-color: #fff !important;
+  color: #1a1a1a !important;
 
   &:disabled {
-    background-color: #ef9a9a !important;
-    color: rgba(255, 255, 255, 0.7) !important;
+    background-color: #f5f5f5 !important;
+    color: rgba(0, 0, 0, 0.3) !important;
+    border-color: #eee !important;
+
+    mat-icon {
+      color: rgba(0, 0, 0, 0.3);
+    }
   }
 }
 
@@ -233,19 +244,19 @@ h1 {
 .bits-vertical {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 0;
 }
 
 .loading-bar {
-  margin-top: 16px;
+  margin-top: 8px;
 }
 
 .save-actions {
   display: flex;
   gap: 12px;
-  margin-top: 16px;
-  margin-bottom: 32px;
-  padding-bottom: 16px;
+  margin-top: 12px;
+  margin-bottom: 24px;
+  padding-bottom: 12px;
 }
 
 // Disparar transacao panel
@@ -265,8 +276,8 @@ h1 {
 // Side-by-side cards
 .cards-row {
   display: flex;
-  gap: 16px;
-  margin-top: 16px;
+  gap: 12px;
+  margin-top: 12px;
 }
 
 .flex-card {
@@ -288,7 +299,7 @@ h1 {
 .disparar-actions {
   display: flex;
   gap: 12px;
-  margin-top: 16px;
-  margin-bottom: 32px;
-  padding-bottom: 16px;
+  margin-top: 12px;
+  margin-bottom: 24px;
+  padding-bottom: 12px;
 }
