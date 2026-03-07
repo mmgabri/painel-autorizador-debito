@@ -32,28 +32,28 @@ export interface TransacaoItem {
 
 @Injectable({ providedIn: 'root' })
 export class IsoParserService {
-  private readonly baseUrl = environment.apiBaseUrl;
+  private readonly baseUrl = environment.apiBaseUrlJava;
 
   constructor(private readonly http: HttpClient) {}
 
   parseIso(hexIso: string): Observable<Record<string, string>> {
-    return this.http.post<Record<string, string>>(`${this.baseUrl}/api/iso8583/parse`, {
+    return this.http.post<Record<string, string>>(`${this.baseUrl}/api/simulador/iso/parse`, {
       message: hexIso,
     });
   }
 
   buildIso(fields: Record<string, string>): Observable<{ message: string }> {
-    return this.http.post<{ message: string }>(`${this.baseUrl}/api/iso8583/build`, fields);
+    return this.http.post<{ message: string }>(`${this.baseUrl}/api/simulador/iso/build`, fields);
   }
 
   executarTransacao(hexIso: string): Observable<SimuladorResponse> {
-    return this.http.post<SimuladorResponse>(`${this.baseUrl}/api/transacao/executar`, {
+    return this.http.post<SimuladorResponse>(`${this.baseUrl}/api/simulador/cenarios/execucao`, {
       message: hexIso,
     });
   }
 
   salvarTransacao(data: SalvarTransacaoRequest): Observable<SalvarTransacaoResponse> {
-    return this.http.post<SalvarTransacaoResponse>(`${this.baseUrl}/api/transacao/salvar`, data);
+    return this.http.post<SalvarTransacaoResponse>(`${this.baseUrl}/api/simulador/cenarios/salvar`, data);
   }
 
   consultarTransacoes(nomeProduto?: string, tag?: string): Observable<TransacaoItem[]> {
@@ -64,10 +64,10 @@ export class IsoParserService {
     if (tag && tag.trim() !== '') {
       params = params.set('tag', tag.trim());
     }
-    return this.http.get<TransacaoItem[]>(`${this.baseUrl}/api/transacao/consultar`, { params });
+    return this.http.get<TransacaoItem[]>(`${this.baseUrl}/api/simulador/cenarios`, { params });
   }
 
   excluirTransacao(id: string): Observable<{ message: string }> {
-    return this.http.delete<{ message: string }>(`${this.baseUrl}/api/transacao/excluir/${id}`);
+    return this.http.delete<{ message: string }>(`${this.baseUrl}/api/simulador/cenarios/excluir/${id}`);
   }
 }
