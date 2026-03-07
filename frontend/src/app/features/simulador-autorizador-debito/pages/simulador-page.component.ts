@@ -391,7 +391,6 @@ export class SimuladorPageComponent {
 
     // Load ISO request fields from the stored message
     this.loading.set(true);
-    console.log('Parsing ISO message for execution:', transacao);
     this.isoParserService.parseIso(transacao.isoMessage).subscribe({
       next: (result) => {
         this.loading.set(false);
