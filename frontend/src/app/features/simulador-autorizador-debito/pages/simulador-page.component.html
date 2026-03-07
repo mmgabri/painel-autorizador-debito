@@ -100,7 +100,7 @@
 
       <!-- Mensagem ISO + Carregar campos button inline -->
       <div class="iso-input-row">
-        <mat-form-field appearance="outline" class="iso-input-field">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="iso-input-field">
           <mat-label>Mensagem ISO 8583 (hex)</mat-label>
           <input matInput formControlName="message" placeholder="Ex: 30313030..." />
         </mat-form-field>
@@ -298,6 +298,7 @@
       </button>
       <button
         mat-raised-button
+        color="primary"
         class="itau-btn"
         (click)="onEditarTransacao()"
       >
