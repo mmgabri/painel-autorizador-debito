@@ -29,23 +29,33 @@ body {
 
 // Global Itaú overrides
 
-// Buttons — primary uses Itaú navy
+// Buttons — primary uses Itaú orange (like "Enviar avaliação")
 .mat-mdc-raised-button.mat-primary,
 .mat-mdc-flat-button.mat-primary,
 .mat-mdc-unelevated-button.mat-primary {
-  --mdc-filled-button-container-color: #{$itau-navy};
+  --mdc-filled-button-container-color: #{$itau-orange};
   --mdc-filled-button-label-text-color: #fff;
+  border-radius: 8px !important;
+  font-weight: 600;
+  letter-spacing: 0.3px;
 }
 
-// Form fields — outline uses Itaú navy for focus
+// Form fields — outline uses Itaú orange for focus + compact sizing
 .mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
 .mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
 .mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
-  border-color: $itau-navy !important;
+  border-color: $itau-orange !important;
 }
 
 .mat-mdc-form-field.mat-focused .mat-mdc-floating-label {
-  color: $itau-navy !important;
+  color: $itau-orange !important;
+}
+
+// Compact form fields — less vertical spacing
+.mat-mdc-form-field {
+  --mat-form-field-container-height: 40px;
+  --mat-form-field-container-vertical-padding: 8px;
+  font-size: 13px;
 }
 
 // Accent / warn color overrides
@@ -53,6 +63,7 @@ body {
 .mat-mdc-flat-button.mat-accent {
   --mdc-filled-button-container-color: #{$itau-orange};
   --mdc-filled-button-label-text-color: #fff;
+  border-radius: 8px !important;
 }
 
 // Cards
@@ -65,14 +76,14 @@ body {
 h1 {
   color: $itau-navy;
   font-weight: 600;
-  font-size: 22px;
+  font-size: 20px;
   letter-spacing: -0.3px;
 }
 
 h2 {
   color: $itau-navy;
   font-weight: 600;
-  font-size: 18px;
+  font-size: 16px;
 }
 
 // Sidenav link styling
@@ -83,5 +94,5 @@ h2 {
 
 // Snackbar
 .mat-mdc-snack-bar-container {
-  --mdc-snackbar-container-color: #{$itau-navy};
+  --mdc-snackbar-container-color: #{$itau-orange};
 }
