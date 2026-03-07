@@ -33,7 +33,6 @@ public class FileCenarioTesteCsvAdapter implements CenarioTesteCsvAdapter {
                 escape(cenario.getTag()),
                 escape(cenario.getDescricao()),
                 escape(cenario.getMessageIso()),
-                escape(cenario.getCriador()),
                 escape(cenario.getDataUpdate())
         );
 
@@ -59,7 +58,7 @@ public class FileCenarioTesteCsvAdapter implements CenarioTesteCsvAdapter {
                 }
 
                 List<String> values = parseCsvLine(line);
-                if (values.size() < 7) {
+                if (values.size() < 6) {
                     continue;
                 }
 
@@ -69,8 +68,7 @@ public class FileCenarioTesteCsvAdapter implements CenarioTesteCsvAdapter {
                 row.setTag(values.get(2));
                 row.setDescricao(values.get(3));
                 row.setMessageIso(values.get(4));
-                row.setCriador(values.get(5));
-                row.setDataUpdate(values.get(6));
+                row.setDataUpdate(values.get(5));
                 result.add(row);
             }
             return result;
