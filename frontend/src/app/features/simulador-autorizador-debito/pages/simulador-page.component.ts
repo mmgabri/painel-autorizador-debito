@@ -52,6 +52,7 @@ export class SimuladorPageComponent {
   // Save state
   saving = signal(false);
   editingTransacaoId = signal<string | null>(null);
+  savedSuccessfully = signal(false);
 
   // Available bits for "Incluir campo" (2-128, excluding already added)
   availableBits = signal<number[]>([]);
@@ -86,6 +87,7 @@ export class SimuladorPageComponent {
     this.incluirForm.reset();
     this.resetBitsForm();
     this.editingTransacaoId.set(null);
+    this.savedSuccessfully.set(false);
   }
 
   onDispararTransacao(): void {
@@ -133,7 +135,11 @@ export class SimuladorPageComponent {
       next: (result) => {
         this.loading.set(false);
         this.mti.set(result.mti ?? '');
-        this.buildBitsForm(result.fields);
+        const fieldsWithMti = { ...result.fields };
+        if (result.mti) {
+          fieldsWithMti['00'] = result.mti;
+        }
+        this.buildBitsForm(fieldsWithMti);
       },
       error: () => {
         this.loading.set(false);
@@ -196,8 +202,12 @@ export class SimuladorPageComponent {
 
     this.saving.set(true);
 
+    const mtiValue = fieldsMap['00'] ?? '';
+    const fieldsWithoutMti = { ...fieldsMap };
+    delete fieldsWithoutMti['00'];
+
     this.isoParserService
-      .buildIso(this.mti(), fieldsMap)
+      .buildIso(mtiValue, fieldsWithoutMti)
       .pipe(
         switchMap((buildResult) => {
           this.incluirForm.controls.isoMessage.setValue(buildResult.isoMessage);
@@ -210,15 +220,12 @@ export class SimuladorPageComponent {
           }
 
           const payload: import('../services/iso-parser.service').SalvarTransacaoRequest = {
+            id: this.editingTransacaoId() ?? '',
             nomeProduto: nomeProduto.trim(),
             tag: tag.trim(),
             descricao: (this.incluirForm.controls.descricao.value ?? '').trim(),
             isoMessage: buildResult.isoMessage,
           };
-          const currentId = this.editingTransacaoId();
-          if (currentId) {
-            payload.id = currentId;
-          }
           return this.isoParserService.salvarTransacao(payload);
         }),
       )
@@ -226,6 +233,7 @@ export class SimuladorPageComponent {
         next: (result) => {
           this.saving.set(false);
           this.editingTransacaoId.set(result.id);
+          this.savedSuccessfully.set(true);
           this.snackBar.open('Transação salva com sucesso', 'Fechar', { duration: 5000 });
         },
         error: () => {
@@ -233,6 +241,22 @@ export class SimuladorPageComponent {
           this.snackBar.open('Erro ao salvar transação', 'Fechar', { duration: 5000 });
         },
       });
+  }
+
+  onDispararFromIncluir(): void {
+    const id = this.editingTransacaoId();
+    if (!id) return;
+
+    const transacao: TransacaoItem = {
+      id,
+      nomeProduto: (this.incluirForm.controls.nomeProduto.value ?? '').trim(),
+      tag: (this.incluirForm.controls.tag.value ?? '').trim(),
+      descricao: (this.incluirForm.controls.descricao.value ?? '').trim(),
+      isoMessage: (this.incluirForm.controls.isoMessage.value ?? '').trim(),
+      criadoEm: new Date().toISOString(),
+    };
+
+    this.openDispararView(transacao);
   }
 
   // ─── Disparar view actions ───
@@ -283,7 +307,11 @@ export class SimuladorPageComponent {
         next: (result) => {
           this.loading.set(false);
           this.mti.set(result.mti ?? '');
-          this.buildBitsForm(result.fields);
+          const fieldsWithMti = { ...result.fields };
+          if (result.mti) {
+            fieldsWithMti['00'] = result.mti;
+          }
+          this.buildBitsForm(fieldsWithMti);
         },
         error: () => {
           this.loading.set(false);
@@ -365,7 +393,8 @@ export class SimuladorPageComponent {
   private updateAvailableBits(): void {
     const usedKeys = new Set(this.sortedKeys().map((k) => Number(k)));
     const available: number[] = [];
-    for (let i = 2; i <= 128; i++) {
+    for (let i = 0; i <= 128; i++) {
+      if (i === 1) continue; // skip bit 1
       if (!usedKeys.has(i)) {
         available.push(i);
       }
