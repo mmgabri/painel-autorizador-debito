@@ -182,6 +182,15 @@
       >
         Salvar transação
       </button>
+      <button
+        mat-raised-button
+        color="primary"
+        class="itau-btn"
+        [disabled]="!savedSuccessfully()"
+        (click)="onDispararFromIncluir()"
+      >
+        Disparar transação
+      </button>
     </div>
 
     @if (saving()) {
