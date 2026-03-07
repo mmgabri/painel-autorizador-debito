@@ -194,7 +194,7 @@ export class SimuladorPageComponent {
       .buildIso(this.mti(), fieldsMap)
       .pipe(
         switchMap((buildResult) => {
-          this.incluirForm.controls.message.setValue(buildResult.message);
+          this.incluirForm.controls.message.setValue(buildResult.isoMessage);
 
           const tag = this.incluirForm.controls.tag.value ?? '';
           if (!tag.trim()) {
@@ -207,7 +207,7 @@ export class SimuladorPageComponent {
             nomeProduto: nomeProduto.trim(),
             tag: tag.trim(),
             descricao: (this.incluirForm.controls.descricao.value ?? '').trim(),
-            mensagemIso: buildResult.message,
+            mensagemIso: buildResult.isoMessage,
           };
           const currentId = this.editingTransacaoId();
           if (currentId) {
