@@ -324,6 +324,150 @@ h1 {
   margin-top: 8px;
 }
 
+// Success overlay (Mercado Livre style)
+.success-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+@keyframes checkDraw {
+  from {
+    stroke-dashoffset: 48;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.success-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background: #fff;
+  border-radius: 16px;
+  padding: 48px 40px 36px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  max-width: 420px;
+  width: 100%;
+}
+
+.success-icon-circle {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #00a650 0%, #00c853 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  animation: scaleIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.1s both;
+  box-shadow: 0 4px 16px rgba(0, 166, 80, 0.3);
+}
+
+.success-check-icon {
+  color: #fff;
+  font-size: 36px;
+  width: 36px;
+  height: 36px;
+}
+
+.success-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #333;
+  margin: 0 0 8px;
+  letter-spacing: -0.3px;
+}
+
+.success-message {
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 28px;
+  line-height: 1.5;
+}
+
+// Countdown timer ring
+.countdown-container {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 20px;
+}
+
+.countdown-ring {
+  width: 48px;
+  height: 48px;
+  transform: rotate(-90deg);
+}
+
+.countdown-ring-bg {
+  fill: none;
+  stroke: #e0e0e0;
+  stroke-width: 3;
+}
+
+.countdown-ring-progress {
+  fill: none;
+  stroke: #00a650;
+  stroke-width: 3;
+  stroke-dasharray: 125.6;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.3s ease;
+}
+
+.countdown-number {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 16px;
+  font-weight: 700;
+  color: #00a650;
+}
+
+.success-close-x {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  color: #999 !important;
+  transition: color 0.2s;
+
+  &:hover {
+    color: #333 !important;
+  }
+}
+
 // Disparar view action buttons
 .disparar-actions {
   display: flex;

@@ -72,6 +72,12 @@ export class SimuladorPageComponent {
   responseMessage = signal('');
   showResponse = signal(false);
 
+  // Success overlay (Mercado Livre style)
+  showSuccessOverlay = signal(false);
+  countdownSeconds = signal(5);
+  private successTimer: ReturnType<typeof setTimeout> | null = null;
+  private countdownInterval: ReturnType<typeof setInterval> | null = null;
+
   constructor(
     private readonly isoParserService: IsoParserService,
     private readonly snackBar: MatSnackBar,
@@ -146,8 +152,8 @@ export class SimuladorPageComponent {
   onExcluirFromBusca(item: TransacaoItem): void {
     this.isoParserService.excluirTransacao(item.id).subscribe({
       next: (result) => {
-        this.snackBar.open(result.message ?? 'Cenário excluído com sucesso', 'Fechar', { duration: 5000 });
-        this.carregarTransacoesBusca(this.buscarFiltro, this.buscarFiltroTag);
+        this.snackBar.open(result?.message ?? 'Cenário excluído com sucesso', 'Fechar', { duration: 5000 });
+        this.buscarTransacoes.set(this.buscarTransacoes().filter(t => t.id !== item.id));
       },
       error: () => {
         this.snackBar.open('Erro ao excluir cenário', 'Fechar', { duration: 5000 });
@@ -306,26 +312,50 @@ export class SimuladorPageComponent {
   // ─── Disparar view actions ───
 
   onExecutarTransacao(): void {
-  const transacao = this.selectedTransacao();
-  if (!transacao) return;
+    const transacao = this.selectedTransacao();
+    if (!transacao) return;
 
-  this.executing.set(true);
-  this.showResponse.set(false);
+    this.executing.set(true);
+    this.showResponse.set(false);
+    this.showSuccessOverlay.set(false);
 
-  this.isoParserService.executarTransacao(transacao.id).subscribe({
-    next: (result) => {
-      this.executing.set(false);
-      this.responseFields.set({});
-      this.responseSortedKeys.set([]);
-      this.responseMessage.set(result.message);
-      this.showResponse.set(true);
-    },
-    error: () => {
-      this.executing.set(false);
-      this.snackBar.open('Erro ao executar transação', 'Fechar', { duration: 5000 });
-    },
-  });
-}
+    this.isoParserService.executarTransacao(transacao.id).subscribe({
+      next: () => {
+        this.executing.set(false);
+        this.countdownSeconds.set(5);
+        this.showSuccessOverlay.set(true);
+
+        // Countdown interval (tick every second)
+        if (this.countdownInterval) {
+          clearInterval(this.countdownInterval);
+        }
+        this.countdownInterval = setInterval(() => {
+          const current = this.countdownSeconds();
+          if (current <= 1) {
+            this.onFecharSuccessOverlay();
+          } else {
+            this.countdownSeconds.set(current - 1);
+          }
+        }, 1000);
+      },
+      error: () => {
+        this.executing.set(false);
+        this.snackBar.open('Erro ao executar transação', 'Fechar', { duration: 5000 });
+      },
+    });
+  }
+
+  onFecharSuccessOverlay(): void {
+    if (this.successTimer) {
+      clearTimeout(this.successTimer);
+      this.successTimer = null;
+    }
+    if (this.countdownInterval) {
+      clearInterval(this.countdownInterval);
+      this.countdownInterval = null;
+    }
+    this.showSuccessOverlay.set(false);
+  }
 
   onEditarTransacao(): void {
     const transacao = this.selectedTransacao();
@@ -369,7 +399,7 @@ export class SimuladorPageComponent {
 
     this.isoParserService.excluirTransacao(transacao.id).subscribe({
       next: (result) => {
-        this.snackBar.open(result.message, 'Fechar', { duration: 5000 });
+        this.snackBar.open(result?.message ?? 'Cenário excluído com sucesso', 'Fechar', { duration: 5000 });
         this.activeView.set('buscar');
         this.showResponse.set(false);
         this.selectedTransacao.set(null);
