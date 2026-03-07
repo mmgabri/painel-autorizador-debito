@@ -81,6 +81,14 @@
           </mat-form-field>
         </div>
 
+        <!-- MTI (readonly) -->
+        @if (mti()) {
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>MTI</mat-label>
+            <input matInput [value]="mti()" readonly />
+          </mat-form-field>
+        }
+
         <!-- Dynamic bit fields -->
         @if (sortedKeys().length > 0) {
           <form [formGroup]="bitsForm()" class="bits-vertical">
@@ -168,6 +176,14 @@
       <mat-card class="bits-card outlined-card flex-card">
         <span class="card-legend">Campos ISO Request</span>
         <mat-card-content>
+          <!-- MTI (readonly) -->
+          @if (mti()) {
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>MTI</mat-label>
+              <input matInput [value]="mti()" readonly />
+            </mat-form-field>
+          }
+
           @if (sortedKeys().length > 0) {
             <form [formGroup]="bitsForm()" class="bits-vertical">
               @for (key of sortedKeys(); track key) {

@@ -20,21 +20,24 @@ describe('IsoParserService', () => {
     httpMock.verify();
   });
 
-  it('should call POST /api/iso8583/parse with the correct URL and body', () => {
-    const mockResponse: Record<string, string> = {
-      '02': '5454545454',
-      '03': '0000',
-      '04': '000005212',
+  it('should call POST /api/simulador/iso/parse with the correct URL and body', () => {
+    const mockApiResponse = {
+      mti: '0100',
+      fields: {
+        '2': '1234567890123456',
+        '3': '000000',
+        '4': '000000001000',
+      },
     };
 
     service.parseIso('0200ABCDEF').subscribe((result) => {
-      expect(result).toEqual(mockResponse);
+      expect(result).toEqual(mockApiResponse);
     });
 
-    const req = httpMock.expectOne(`${environment.apiBaseUrl}/api/iso8583/parse`);
+    const req = httpMock.expectOne(`${environment.apiBaseUrlJava}/api/simulador/iso/parse`);
     expect(req.request.method).toBe('POST');
-    expect(req.request.body).toEqual({ message: '0200ABCDEF' });
-    req.flush(mockResponse);
+    expect(req.request.body).toEqual({ isoMessage: '0200ABCDEF' });
+    req.flush(mockApiResponse);
   });
 
   it('should call POST /api/transacao/salvar with the correct URL and body', () => {
@@ -50,13 +53,13 @@ describe('IsoParserService', () => {
       expect(result).toEqual(mockResponse);
     });
 
-    const req = httpMock.expectOne(`${environment.apiBaseUrl}/api/transacao/salvar`);
+    const req = httpMock.expectOne(`${environment.apiBaseUrlJava}/api/simulador/cenarios/salvar`);
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual(payload);
     req.flush(mockResponse);
   });
 
-  it('should call POST /api/transacao/executar with the correct URL and body', () => {
+  it('should call POST /api/simulador/cenarios/execucao with the correct URL and body', () => {
     const mockResponse = {
       fields: { '02': '5454545454', '39': '00' },
       message: 'Transação autorizada com sucesso',
@@ -66,13 +69,13 @@ describe('IsoParserService', () => {
       expect(result).toEqual(mockResponse);
     });
 
-    const req = httpMock.expectOne(`${environment.apiBaseUrl}/api/transacao/executar`);
+    const req = httpMock.expectOne(`${environment.apiBaseUrlJava}/api/simulador/cenarios/execucao`);
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual({ message: '0200AABBCC' });
     req.flush(mockResponse);
   });
 
-  it('should call GET /api/transacao/consultar without filter', () => {
+  it('should call GET /api/simulador/cenarios without filter', () => {
     const mockList = [
       { id: '1', nomeProduto: 'Prod1', tag: 'TAG1', descricao: 'Desc1', mensagemIso: '0200AA', criadoEm: '' },
     ];
@@ -81,19 +84,19 @@ describe('IsoParserService', () => {
       expect(result).toEqual(mockList);
     });
 
-    const req = httpMock.expectOne(`${environment.apiBaseUrl}/api/transacao/consultar`);
+    const req = httpMock.expectOne(`${environment.apiBaseUrlJava}/api/simulador/cenarios`);
     expect(req.request.method).toBe('GET');
     req.flush(mockList);
   });
 
-  it('should call DELETE /api/transacao/excluir/:id', () => {
+  it('should call DELETE /api/simulador/cenarios/excluir/:id', () => {
     const mockResponse = { message: 'Transação excluída com sucesso' };
 
     service.excluirTransacao('test-uuid').subscribe((result) => {
       expect(result).toEqual(mockResponse);
     });
 
-    const req = httpMock.expectOne(`${environment.apiBaseUrl}/api/transacao/excluir/test-uuid`);
+    const req = httpMock.expectOne(`${environment.apiBaseUrlJava}/api/simulador/cenarios/excluir/test-uuid`);
     expect(req.request.method).toBe('DELETE');
     req.flush(mockResponse);
   });
