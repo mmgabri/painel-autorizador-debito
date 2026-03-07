@@ -40,7 +40,7 @@ export class SimuladorPageComponent {
     nomeProduto: new FormControl('', [Validators.required]),
     tag: new FormControl('', [Validators.required]),
     descricao: new FormControl(''),
-    message: new FormControl('', [Validators.required, Validators.minLength(4)]),
+    isoMessage: new FormControl('', [Validators.required, Validators.minLength(4)]),
   });
 
   // Request fields (shared between incluir and disparar views)
@@ -119,7 +119,7 @@ export class SimuladorPageComponent {
   // ─── Incluir view actions ───
 
   onCarregarCampos(): void {
-    const isoMessage = this.incluirForm.controls.message.value ?? '';
+    const isoMessage = this.incluirForm.controls.isoMessage.value ?? '';
     if (!isoMessage || isoMessage.trim().length < 4) {
       this.snackBar.open('Informe a mensagem ISO com no mínimo 4 caracteres', 'Fechar', {
         duration: 3000,
@@ -200,7 +200,7 @@ export class SimuladorPageComponent {
       .buildIso(this.mti(), fieldsMap)
       .pipe(
         switchMap((buildResult) => {
-          this.incluirForm.controls.message.setValue(buildResult.isoMessage);
+          this.incluirForm.controls.isoMessage.setValue(buildResult.isoMessage);
 
           const tag = this.incluirForm.controls.tag.value ?? '';
           if (!tag.trim()) {
@@ -213,7 +213,7 @@ export class SimuladorPageComponent {
             nomeProduto: nomeProduto.trim(),
             tag: tag.trim(),
             descricao: (this.incluirForm.controls.descricao.value ?? '').trim(),
-            mensagemIso: buildResult.isoMessage,
+            isoMessage: buildResult.isoMessage,
           };
           const currentId = this.editingTransacaoId();
           if (currentId) {
@@ -226,7 +226,7 @@ export class SimuladorPageComponent {
         next: (result) => {
           this.saving.set(false);
           this.editingTransacaoId.set(result.id);
-          const msg = result.message ?? 'Transação salva com sucesso';
+          const msg = result.isoMessage ?? 'Transação salva com sucesso';
           this.snackBar.open(msg, 'Fechar', { duration: 5000 });
         },
         error: () => {
@@ -245,7 +245,7 @@ export class SimuladorPageComponent {
     this.executing.set(true);
     this.showResponse.set(false);
 
-    this.isoParserService.executarTransacao(transacao.mensagemIso).subscribe({
+    this.isoParserService.executarTransacao(transacao.isoMessage).subscribe({
       next: (result) => {
         this.executing.set(false);
         this.responseFields.set(result.fields);
@@ -274,13 +274,13 @@ export class SimuladorPageComponent {
       nomeProduto: transacao.nomeProduto,
       tag: transacao.tag ?? '',
       descricao: transacao.descricao,
-      message: transacao.mensagemIso,
+      isoMessage: transacao.isoMessage,
     });
 
     // Load ISO fields from the message
-    if (transacao.mensagemIso && transacao.mensagemIso.trim().length >= 4) {
+    if (transacao.isoMessage && transacao.isoMessage.trim().length >= 4) {
       this.loading.set(true);
-      this.isoParserService.parseIso(transacao.mensagemIso).subscribe({
+      this.isoParserService.parseIso(transacao.isoMessage).subscribe({
         next: (result) => {
           this.loading.set(false);
           this.mti.set(result.mti ?? '');
@@ -320,7 +320,8 @@ export class SimuladorPageComponent {
 
     // Load ISO request fields from the stored message
     this.loading.set(true);
-    this.isoParserService.parseIso(transacao.mensagemIso).subscribe({
+    console.log('Parsing ISO message for execution:', transacao);
+    this.isoParserService.parseIso(transacao.isoMessage).subscribe({
       next: (result) => {
         this.loading.set(false);
         this.mti.set(result.mti ?? '');

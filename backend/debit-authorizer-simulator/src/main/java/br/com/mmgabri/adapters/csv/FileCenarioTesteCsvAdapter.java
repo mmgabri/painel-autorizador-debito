@@ -32,7 +32,7 @@ public class FileCenarioTesteCsvAdapter implements CenarioTesteCsvAdapter {
                 escape(cenario.getNomeProduto()),
                 escape(cenario.getTag()),
                 escape(cenario.getDescricao()),
-                escape(cenario.getMessageIso()),
+                escape(cenario.getIsoMessage()),
                 escape(cenario.getDataUpdate())
         );
 
@@ -67,7 +67,7 @@ public class FileCenarioTesteCsvAdapter implements CenarioTesteCsvAdapter {
                 row.setNomeProduto(values.get(1));
                 row.setTag(values.get(2));
                 row.setDescricao(values.get(3));
-                row.setMessageIso(values.get(4));
+                row.setIsoMessage(values.get(4));
                 row.setDataUpdate(values.get(5));
                 result.add(row);
             }
