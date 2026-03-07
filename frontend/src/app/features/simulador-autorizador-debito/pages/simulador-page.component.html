@@ -52,14 +52,32 @@
             <span class="tag">{{ item.tag }}</span>
             <span class="descricao">{{ item.descricao }}</span>
           </div>
-          <button
-            mat-icon-button
-            color="primary"
-            (click)="onSelecionarTransacao(item)"
-            aria-label="Executar transação"
-          >
-            <mat-icon>play_circle</mat-icon>
-          </button>
+          <div class="transacao-actions">
+            <button
+              mat-icon-button
+              color="primary"
+              (click)="onSelecionarTransacao(item)"
+              aria-label="Executar transação"
+            >
+              <mat-icon>play_circle</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              color="primary"
+              (click)="onEditarFromBusca(item)"
+              aria-label="Editar cenário"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              color="warn"
+              (click)="onExcluirFromBusca(item)"
+              aria-label="Excluir cenário"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
         </div>
       } @empty {
         @if (!buscarLoading()) {
