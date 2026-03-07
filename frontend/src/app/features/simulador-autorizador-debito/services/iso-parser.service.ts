@@ -47,8 +47,8 @@ export class IsoParserService {
     });
   }
 
-  buildIso(fields: Record<string, string>): Observable<{ message: string }> {
-    return this.http.post<{ message: string }>(`${this.baseUrl}/api/simulador/iso/build`, fields);
+  buildIso(mti: string, fields: Record<string, string>): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.baseUrl}/api/simulador/iso/build`, { mti, fields });
   }
 
   executarTransacao(hexIso: string): Observable<SimuladorResponse> {
