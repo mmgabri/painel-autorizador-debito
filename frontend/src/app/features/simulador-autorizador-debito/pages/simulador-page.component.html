@@ -76,7 +76,7 @@
   @if (activeView() === 'incluir') {
   <div class="incluir-panel">
     <div class="panel-header">
-      <h2>Incluir transação</h2>
+      <h2>{{ editingTransacaoId() ? 'Editar transação' : 'Incluir transação' }}</h2>
     </div>
 
     <form [formGroup]="incluirForm">
@@ -131,27 +131,19 @@
             <mat-label>Incluir campo</mat-label>
             <mat-select (selectionChange)="onIncluirCampo($event.value)">
               @for (bit of availableBits(); track bit) {
-                <mat-option [value]="bit">Bit {{ bit < 10 ? '0' + bit : bit }}</mat-option>
+                <mat-option [value]="bit">{{ bit === 0 ? 'MTI' : 'Bit ' + (bit < 10 ? '0' + bit : bit) }}</mat-option>
               }
             </mat-select>
           </mat-form-field>
         </div>
 
-        <!-- MTI (readonly) -->
-        @if (mti()) {
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>MTI</mat-label>
-            <input matInput [value]="mti()" readonly />
-          </mat-form-field>
-        }
-
-        <!-- Dynamic bit fields -->
+        <!-- Dynamic bit fields (including MTI as key 00) -->
         @if (sortedKeys().length > 0) {
           <form [formGroup]="bitsForm()" class="bits-vertical">
             @for (key of sortedKeys(); track key) {
               <div class="bit-field-row">
                 <mat-form-field appearance="outline" class="bit-field-input">
-                  <mat-label>Bit {{ key }}</mat-label>
+                  <mat-label>{{ key === '00' ? 'MTI' : 'Bit ' + key }}</mat-label>
                   <input matInput [formControlName]="key" />
                 </mat-form-field>
                 <button
@@ -181,6 +173,15 @@
         (click)="onSalvarTransacao()"
       >
         Salvar transação
+      </button>
+      <button
+        mat-raised-button
+        color="primary"
+        class="itau-btn"
+        [disabled]="!savedSuccessfully()"
+        (click)="onDispararFromIncluir()"
+      >
+        Disparar transação
       </button>
     </div>
 
