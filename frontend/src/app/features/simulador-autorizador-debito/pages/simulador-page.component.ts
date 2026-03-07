@@ -9,8 +9,11 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
-import { switchMap, EMPTY } from 'rxjs';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDialog } from '@angular/material/dialog';
+import { switchMap, EMPTY, delay, of } from 'rxjs';
 import { IsoParserService, TransacaoItem } from '../services/iso-parser.service';
+import { BuscarEstornoDialogComponent } from '../components/buscar-estorno-dialog.component';
 
 @Component({
   selector: 'app-simulador-page',
@@ -27,6 +30,7 @@ import { IsoParserService, TransacaoItem } from '../services/iso-parser.service'
     MatSnackBarModule,
     MatIconModule,
     MatSelectModule,
+    MatCheckboxModule,
   ],
   templateUrl: './simulador-page.component.html',
   styleUrl: './simulador-page.component.scss',
@@ -78,9 +82,16 @@ export class SimuladorPageComponent {
   private successTimer: ReturnType<typeof setTimeout> | null = null;
   private countdownInterval: ReturnType<typeof setInterval> | null = null;
 
+  // Estorno
+  estornarChecked = signal(false);
+  estornoTransacao = signal<TransacaoItem | null>(null);
+  estornoDelay = signal(0);
+  successMessageText = signal('A transação foi disparada com sucesso. Verificar logs');
+
   constructor(
     private readonly isoParserService: IsoParserService,
     private readonly snackBar: MatSnackBar,
+    private readonly dialog: MatDialog,
   ) {
     // Load transactions on init since default view is 'buscar'
     this.carregarTransacoesBusca();
@@ -311,17 +322,63 @@ export class SimuladorPageComponent {
 
   // ─── Disparar view actions ───
 
+  onToggleEstornar(checked: boolean): void {
+    this.estornarChecked.set(checked);
+    if (checked) {
+      const dialogRef = this.dialog.open(BuscarEstornoDialogComponent, {
+        width: '560px',
+      });
+      dialogRef.afterClosed().subscribe((result: TransacaoItem | undefined) => {
+        if (result) {
+          this.estornoTransacao.set(result);
+        } else {
+          // User closed without selecting — uncheck
+          this.estornarChecked.set(false);
+          this.estornoTransacao.set(null);
+        }
+      });
+    } else {
+      this.estornoTransacao.set(null);
+    }
+  }
+
   onExecutarTransacao(): void {
     const transacao = this.selectedTransacao();
     if (!transacao) return;
+
+    // Validate estorno delay if estornar is checked
+    if (this.estornarChecked() && this.estornoTransacao()) {
+      if (this.estornoDelay() < 0) {
+        this.snackBar.open('Informe um tempo de espera válido', 'Fechar', { duration: 3000 });
+        return;
+      }
+    }
 
     this.executing.set(true);
     this.showResponse.set(false);
     this.showSuccessOverlay.set(false);
 
-    this.isoParserService.executarTransacao(transacao.id).subscribe({
+    this.isoParserService.executarTransacao(transacao.id).pipe(
+      switchMap(() => {
+        const estorno = this.estornoTransacao();
+        if (this.estornarChecked() && estorno) {
+          const delayMs = (this.estornoDelay() || 0) * 1000;
+          return of(null).pipe(
+            delay(delayMs),
+            switchMap(() => this.isoParserService.executarTransacao(estorno.id)),
+          );
+        }
+        return of(null);
+      }),
+    ).subscribe({
       next: () => {
         this.executing.set(false);
+        const estorno = this.estornoTransacao();
+        if (this.estornarChecked() && estorno) {
+          this.successMessageText.set('Transação e estorno disparados com sucesso. Verificar logs');
+        } else {
+          this.successMessageText.set('A transação foi disparada com sucesso. Verificar logs');
+        }
         this.countdownSeconds.set(5);
         this.showSuccessOverlay.set(true);
 
@@ -417,6 +474,9 @@ export class SimuladorPageComponent {
     this.selectedTransacao.set(transacao);
     this.activeView.set('disparar');
     this.showResponse.set(false);
+    this.estornarChecked.set(false);
+    this.estornoTransacao.set(null);
+    this.estornoDelay.set(0);
 
     // Load ISO request fields from the stored message
     this.loading.set(true);

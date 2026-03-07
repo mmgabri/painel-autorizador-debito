@@ -239,6 +239,36 @@
         <mat-label>Mensagem ISO 8583 (hex)</mat-label>
         <input matInput [value]="transacao.isoMessage" readonly />
       </mat-form-field>
+
+      <!-- Estornar checkbox -->
+      <div class="estorno-section">
+        <mat-checkbox
+          [checked]="estornarChecked()"
+          (change)="onToggleEstornar($event.checked)"
+          color="primary"
+        >
+          Estornar
+        </mat-checkbox>
+      </div>
+
+      <!-- Estorno selected model -->
+      @if (estornarChecked() && estornoTransacao(); as estorno) {
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Mensagem ISO Estorno (hex)</mat-label>
+          <input matInput [value]="estorno.isoMessage" readonly />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="estorno-delay-field">
+          <mat-label>Tempo de espera (segundos)</mat-label>
+          <input
+            matInput
+            type="number"
+            min="0"
+            [value]="estornoDelay()"
+            (input)="estornoDelay.set(+$any($event.target).value)"
+          />
+        </mat-form-field>
+      }
     }
 
     @if (loading()) {
@@ -294,7 +324,7 @@
             <mat-icon class="success-check-icon">check</mat-icon>
           </div>
           <h3 class="success-title">Tudo certo!</h3>
-          <p class="success-message">A transação foi disparada com sucesso. Verificar logs</p>
+          <p class="success-message">{{ successMessageText() }}</p>
           <div class="countdown-container">
             <svg class="countdown-ring" viewBox="0 0 48 48">
               <circle class="countdown-ring-bg" cx="24" cy="24" r="20" />
