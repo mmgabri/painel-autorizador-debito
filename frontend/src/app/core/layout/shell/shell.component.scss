@@ -1,16 +1,84 @@
+// Itaú header — orange background per Itaú brand
+.itau-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  padding: 0 16px;
+  background: #ec7000;
+  color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+  position: relative;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.menu-toggle {
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  transition: background 0.2s;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.15);
+  }
+}
+
+.itau-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border-radius: 10px;
+  width: 42px;
+  height: 36px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.itau-logo-text {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  color: #ec7000;
+  letter-spacing: -0.5px;
+}
+
+.header-title {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+// Sidenav
 .sidenav-container {
-  height: calc(100vh - 64px);
+  height: calc(100vh - 56px);
 }
 
 .sidenav {
-  width: 280px;
+  width: 260px;
+  background: #f7f7f7;
+  border-right: 1px solid #e0e0e0;
 }
 
 .content {
   padding: 24px;
+  background: #fafafa;
 }
 
 .active-link {
-  background-color: var(--mat-sys-surface-container);
-  font-weight: 500;
+  background-color: rgba(236, 112, 0, 0.08) !important;
+  color: #ec7000 !important;
+  font-weight: 600;
 }

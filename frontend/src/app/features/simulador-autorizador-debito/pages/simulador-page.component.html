@@ -1,23 +1,79 @@
 <h1>Simulador Autorizador Debito</h1>
 
-<!-- Fixed top action buttons (always visible) -->
-<div class="fixed-top-actions">
-  <button mat-flat-button class="top-action-btn disparar-btn" (click)="onDispararTransacao()">
+<!-- Itaú-style tabs -->
+<div class="itau-tabs">
+  <button
+    class="itau-tab"
+    [class.active]="activeView() === 'buscar' || activeView() === 'disparar'"
+    (click)="onDispararTransacao()"
+  >
     <mat-icon>play_circle</mat-icon>
     Disparar transação
   </button>
-  <button mat-flat-button class="top-action-btn incluir-btn" (click)="onIncluirTransacao()">
+  <button
+    class="itau-tab"
+    [class.active]="activeView() === 'incluir'"
+    (click)="onIncluirTransacao()"
+  >
     <mat-icon>add_circle</mat-icon>
     Incluir transação
   </button>
-  <button mat-flat-button class="top-action-btn excluir-btn" disabled>
-    <mat-icon>remove_circle</mat-icon>
-    Excluir transação
-  </button>
 </div>
+<div class="itau-tab-content">
+
+<!-- Buscar transacao view -->
+  @if (activeView() === 'buscar') {
+  <div class="buscar-panel">
+    <div class="panel-header">
+      <h2>Buscar transação</h2>
+    </div>
+
+    <div class="filter-row">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filter-field filter-nome">
+        <mat-label>Filtrar por Nome Produto</mat-label>
+        <input matInput [(ngModel)]="buscarFiltro" maxlength="15" (keyup.enter)="onFiltrarBusca()" />
+      </mat-form-field>
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filter-field filter-tag">
+        <mat-label>Filtrar por Tag</mat-label>
+        <input matInput [(ngModel)]="buscarFiltroTag" maxlength="15" (keyup.enter)="onFiltrarBusca()" />
+      </mat-form-field>
+      <button mat-raised-button color="primary" class="filtrar-btn itau-btn" (click)="onFiltrarBusca()">
+        Filtrar
+      </button>
+    </div>
+
+    @if (buscarLoading()) {
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    }
+
+    <div class="transacao-list">
+      @for (item of buscarTransacoes(); track item.id) {
+        <div class="transacao-row">
+          <div class="transacao-info">
+            <span class="nome">{{ item.nomeProduto }}</span>
+            <span class="tag">{{ item.tag }}</span>
+            <span class="descricao">{{ item.descricao }}</span>
+          </div>
+          <button
+            mat-icon-button
+            color="primary"
+            (click)="onSelecionarTransacao(item)"
+            aria-label="Executar transação"
+          >
+            <mat-icon>play_circle</mat-icon>
+          </button>
+        </div>
+      } @empty {
+        @if (!buscarLoading()) {
+          <p class="empty-message">Nenhuma transação encontrada</p>
+        }
+      }
+    </div>
+  </div>
+}
 
 <!-- Incluir transacao view -->
-@if (activeView() === 'incluir') {
+  @if (activeView() === 'incluir') {
   <div class="incluir-panel">
     <div class="panel-header">
       <h2>Incluir transação</h2>
@@ -44,7 +100,7 @@
 
       <!-- Mensagem ISO + Carregar campos button inline -->
       <div class="iso-input-row">
-        <mat-form-field appearance="outline" class="iso-input-field">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="iso-input-field">
           <mat-label>Mensagem ISO 8583 (hex)</mat-label>
           <input matInput formControlName="message" placeholder="Ex: 30313030..." />
         </mat-form-field>
@@ -52,7 +108,7 @@
           mat-raised-button
           color="primary"
           type="button"
-          class="carregar-btn"
+          class="carregar-btn itau-btn"
           [disabled]="loading()"
           (click)="onCarregarCampos()"
         >
@@ -120,6 +176,7 @@
       <button
         mat-raised-button
         color="primary"
+        class="itau-btn"
         [disabled]="saving() || sortedKeys().length === 0"
         (click)="onSalvarTransacao()"
       >
@@ -134,7 +191,7 @@
 }
 
 <!-- Disparar transacao view -->
-@if (activeView() === 'disparar') {
+  @if (activeView() === 'disparar') {
   <div class="disparar-panel">
     <div class="panel-header">
       <h2>Disparar transação</h2>
@@ -233,6 +290,7 @@
       <button
         mat-raised-button
         color="primary"
+        class="itau-btn"
         [disabled]="executing() || sortedKeys().length === 0"
         (click)="onExecutarTransacao()"
       >
@@ -240,6 +298,8 @@
       </button>
       <button
         mat-raised-button
+        color="primary"
+        class="itau-btn"
         (click)="onEditarTransacao()"
       >
         Editar transação
@@ -247,10 +307,12 @@
       <button
         mat-raised-button
         color="warn"
+        class="itau-btn"
         (click)="onExcluirTransacao()"
       >
         Excluir transação
       </button>
     </div>
   </div>
-}
+  }
+</div>

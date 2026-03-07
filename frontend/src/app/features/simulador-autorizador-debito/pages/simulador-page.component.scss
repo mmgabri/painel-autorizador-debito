@@ -3,57 +3,187 @@
 }
 
 h1 {
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
-// Fixed top action buttons (always visible)
-.fixed-top-actions {
+// Itaú-style tabs (like "documentos / comprovantes")
+.itau-tabs {
   display: flex;
-  gap: 12px;
-  margin-bottom: 24px;
-  padding: 12px 16px;
-  background: #f5f5f5;
-  border-radius: 8px;
-  border: 1px solid #e0e0e0;
+  gap: 0;
+  margin-bottom: 0;
   position: sticky;
   top: 0;
   z-index: 10;
+  background: #fafafa;
+  padding-top: 4px;
 }
 
-.top-action-btn {
+.itau-tab {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   font-weight: 500;
-  letter-spacing: 0.3px;
-  border-radius: 20px !important;
-  padding: 0 20px !important;
-  height: 40px;
+  font-size: 13px;
+  letter-spacing: 0.2px;
+  padding: 10px 24px;
+  background: #fff;
+  color: #003366;
+  border: 1px solid #d0d0d0;
+  border-bottom: 1px solid #d0d0d0;
+  border-radius: 8px 8px 0 0;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  margin-right: -1px;
+  position: relative;
+
+  &:hover {
+    background: #f5f5f5;
+  }
+
+  &.active {
+    background: #fff;
+    color: #003366;
+    font-weight: 600;
+    border-bottom-color: #fff;
+    border-top: 2px solid #ec7000;
+    z-index: 1;
+  }
 
   mat-icon {
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: #003366;
   }
 }
 
-.disparar-btn {
-  background-color: #1565c0 !important;
-  color: white !important;
+.itau-tab-content {
+  border: 1px solid #d0d0d0;
+  border-radius: 0 8px 8px 8px;
+  background: #fff;
+  padding: 20px;
+  margin-bottom: 24px;
+  min-height: 200px;
 }
 
-.incluir-btn {
-  background-color: #2e7d32 !important;
-  color: white !important;
-}
+// Itaú "Ver extrato" style button
+.itau-btn {
+  background-color: #ec7000 !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  padding: 0 28px !important;
+  height: 40px !important;
+  letter-spacing: 0.2px;
+  box-shadow: none !important;
+  transition: background-color 0.2s !important;
 
-.excluir-btn {
-  background-color: #c62828 !important;
-  color: white !important;
+  &:hover {
+    background-color: #d56500 !important;
+  }
 
   &:disabled {
-    background-color: #ef9a9a !important;
-    color: rgba(255, 255, 255, 0.7) !important;
+    background-color: #ccc !important;
+    color: #fff !important;
+  }
+}
+
+// Buscar transacao panel
+.buscar-panel {
+  .panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+
+    h2 {
+      margin: 0;
+    }
+  }
+
+  .filter-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+
+    .filter-field {
+      min-width: 200px;
+    }
+
+    .filter-nome {
+      flex: 1;
+      max-width: 280px;
+    }
+
+    .filter-tag {
+      flex: 1;
+      max-width: 280px;
+    }
+
+    .filtrar-btn {
+      align-self: center;
+      height: 40px;
+      font-size: 13px;
+    }
+  }
+
+  .transacao-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .transacao-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background: #fafafa;
+    transition: background 0.2s;
+
+    &:hover {
+      background: #f0f0f0;
+    }
+  }
+
+  .transacao-info {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+
+    .nome {
+      font-weight: 500;
+      font-size: 13px;
+      color: #003366;
+    }
+
+    .tag {
+      font-size: 11px;
+      background: #e8eaf6;
+      color: #3949ab;
+      padding: 2px 8px;
+      border-radius: 12px;
+    }
+
+    .descricao {
+      font-size: 12px;
+      color: rgba(0, 0, 0, 0.54);
+      font-style: italic;
+    }
+  }
+
+  .empty-message {
+    text-align: center;
+    color: rgba(0, 0, 0, 0.54);
+    padding: 32px 16px;
+    font-size: 14px;
   }
 }
 
@@ -95,14 +225,13 @@ h1 {
 .iso-input-row {
   display: flex;
   gap: 16px;
-  align-items: flex-start;
+  align-items: center;
 
   .iso-input-field {
     flex: 1;
   }
 
   .carregar-btn {
-    margin-top: 8px;
     white-space: nowrap;
   }
 }
@@ -138,19 +267,19 @@ h1 {
 .bits-vertical {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 0;
 }
 
 .loading-bar {
-  margin-top: 16px;
+  margin-top: 8px;
 }
 
 .save-actions {
   display: flex;
   gap: 12px;
-  margin-top: 16px;
-  margin-bottom: 32px;
-  padding-bottom: 16px;
+  margin-top: 12px;
+  margin-bottom: 24px;
+  padding-bottom: 12px;
 }
 
 // Disparar transacao panel
@@ -170,8 +299,8 @@ h1 {
 // Side-by-side cards
 .cards-row {
   display: flex;
-  gap: 16px;
-  margin-top: 16px;
+  gap: 12px;
+  margin-top: 12px;
 }
 
 .flex-card {
@@ -193,7 +322,7 @@ h1 {
 .disparar-actions {
   display: flex;
   gap: 12px;
-  margin-top: 16px;
-  margin-bottom: 32px;
-  padding-bottom: 16px;
+  margin-top: 12px;
+  margin-bottom: 24px;
+  padding-bottom: 12px;
 }
