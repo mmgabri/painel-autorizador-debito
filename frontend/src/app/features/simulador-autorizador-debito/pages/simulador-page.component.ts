@@ -111,6 +111,50 @@ export class SimuladorPageComponent {
     this.openDispararView(item);
   }
 
+  onEditarFromBusca(item: TransacaoItem): void {
+    this.activeView.set('incluir');
+    this.showResponse.set(false);
+    this.editingTransacaoId.set(item.id);
+    this.savedSuccessfully.set(false);
+
+    this.incluirForm.patchValue({
+      nomeProduto: item.nomeProduto,
+      tag: item.tag ?? '',
+      descricao: item.descricao,
+      isoMessage: item.isoMessage,
+    });
+
+    if (item.isoMessage && item.isoMessage.trim().length >= 4) {
+      this.loading.set(true);
+      this.isoParserService.parseIso(item.isoMessage).subscribe({
+        next: (result) => {
+          this.loading.set(false);
+          this.mti.set(result.mti ?? '');
+          const fieldsWithMti = { ...result.fields };
+          if (result.mti) {
+            fieldsWithMti['00'] = result.mti;
+          }
+          this.buildBitsForm(fieldsWithMti);
+        },
+        error: () => {
+          this.loading.set(false);
+        },
+      });
+    }
+  }
+
+  onExcluirFromBusca(item: TransacaoItem): void {
+    this.isoParserService.excluirTransacao(item.id).subscribe({
+      next: (result) => {
+        this.snackBar.open(result.message ?? 'Cenário excluído com sucesso', 'Fechar', { duration: 5000 });
+        this.carregarTransacoesBusca(this.buscarFiltro, this.buscarFiltroTag);
+      },
+      error: () => {
+        this.snackBar.open('Erro ao excluir cenário', 'Fechar', { duration: 5000 });
+      },
+    });
+  }
+
   onVoltarMain(): void {
     this.activeView.set('buscar');
     this.showResponse.set(false);
