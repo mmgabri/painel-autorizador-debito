@@ -57,6 +57,40 @@ public class CenarioTesteCsvService {
         throw new IllegalArgumentException("Cenario nao encontrado para atualizacao. id=" + id);
     }
 
+    public void deleteById(String id) {
+        if (id == null || id.isBlank()) {
+            throw new IllegalArgumentException("ID nao pode ser vazio para exclusao.");
+        }
+
+        String idTrimmed = id.trim();
+        List<CenarioTesteCsv> cenarios = csvAdapter.findAll();
+        boolean removed = cenarios.removeIf(cenario -> idTrimmed.equals(cenario.getId()));
+
+        if (!removed) {
+            throw new IllegalArgumentException("Cenario nao encontrado para exclusao. id=" + idTrimmed);
+        }
+
+        csvAdapter.replaceAll(cenarios);
+    }
+
+    public CenarioTesteCsv executeById(String id) {
+        if (id == null || id.isBlank()) {
+            throw new IllegalArgumentException("ID nao pode ser vazio para execucao.");
+        }
+
+        String idTrimmed = id.trim();
+        List<CenarioTesteCsv> cenarios = csvAdapter.findAll();
+
+        for (CenarioTesteCsv cenario : cenarios) {
+            if (idTrimmed.equals(cenario.getId())) {
+                // TODO: Implementar lógica de execução do cenário
+                return cenario;
+            }
+        }
+
+        throw new IllegalArgumentException("Cenario nao encontrado para execucao. id=" + idTrimmed);
+    }
+
     public List<CenarioTesteCsv> findAll() {
         return csvAdapter.findAll();
     }
