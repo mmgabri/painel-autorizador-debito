@@ -70,7 +70,7 @@ h1 {
   background-color: #ec7000 !important;
   color: #fff !important;
   border: none !important;
-  border-radius: 24px !important;
+  border-radius: 8px !important;
   font-weight: 600 !important;
   font-size: 13px !important;
   padding: 0 28px !important;
@@ -105,7 +105,7 @@ h1 {
   .filter-row {
     display: flex;
     gap: 12px;
-    align-items: flex-start;
+    align-items: center;
     flex-wrap: wrap;
     margin-bottom: 16px;
 
@@ -124,8 +124,8 @@ h1 {
     }
 
     .filtrar-btn {
-      margin-top: 8px;
-      height: 36px;
+      align-self: center;
+      height: 40px;
       font-size: 13px;
     }
   }
