@@ -27,20 +27,30 @@ public class FileCenarioTesteCsvAdapter implements CenarioTesteCsvAdapter {
 
     @Override
     public synchronized void append(CenarioTesteCsv cenario) {
-        String line = String.join(",",
-                escape(cenario.getId()),
-                escape(cenario.getNomeProduto()),
-                escape(cenario.getTag()),
-                escape(cenario.getDescricao()),
-                escape(cenario.getIsoMessage()),
-                escape(cenario.getDataUpdate())
-        );
-
         try {
-            Files.writeString(csvPath, line + System.lineSeparator(), StandardCharsets.UTF_8,
+            Files.writeString(csvPath, toCsvLine(cenario) + System.lineSeparator(), StandardCharsets.UTF_8,
                     java.nio.file.StandardOpenOption.APPEND);
         } catch (IOException e) {
             throw new IllegalStateException("Erro ao gravar no arquivo CSV: " + csvPath, e);
+        }
+    }
+
+    @Override
+    public synchronized void replaceAll(List<CenarioTesteCsv> cenarios) {
+        StringBuilder content = new StringBuilder();
+        content.append(HEADER).append(System.lineSeparator());
+
+        for (CenarioTesteCsv cenario : cenarios) {
+            content.append(toCsvLine(cenario)).append(System.lineSeparator());
+        }
+
+        try {
+            Files.writeString(csvPath, content.toString(), StandardCharsets.UTF_8,
+                    java.nio.file.StandardOpenOption.CREATE,
+                    java.nio.file.StandardOpenOption.TRUNCATE_EXISTING,
+                    java.nio.file.StandardOpenOption.WRITE);
+        } catch (IOException e) {
+            throw new IllegalStateException("Erro ao regravar o arquivo CSV: " + csvPath, e);
         }
     }
 
@@ -75,6 +85,17 @@ public class FileCenarioTesteCsvAdapter implements CenarioTesteCsvAdapter {
         } catch (IOException e) {
             throw new IllegalStateException("Erro ao ler o arquivo CSV: " + csvPath, e);
         }
+    }
+
+    private String toCsvLine(CenarioTesteCsv cenario) {
+        return String.join(",",
+                escape(cenario.getId()),
+                escape(cenario.getNomeProduto()),
+                escape(cenario.getTag()),
+                escape(cenario.getDescricao()),
+                escape(cenario.getIsoMessage()),
+                escape(cenario.getDataUpdate())
+        );
     }
 
     private void ensureFileExists() {

@@ -20,6 +20,10 @@ public class CenarioTesteCsvService {
     }
 
     public CenarioTesteCsv save(CenarioTesteCsvRequest request) {
+        if (request.getId() != null && !request.getId().isBlank()) {
+            return updateById(request);
+        }
+
         CenarioTesteCsv row = new CenarioTesteCsv();
         row.setId(UUID.randomUUID().toString());
         row.setNomeProduto(request.getNomeProduto());
@@ -29,6 +33,28 @@ public class CenarioTesteCsvService {
         row.setDataUpdate(LocalDateTime.now().toString());
         csvAdapter.append(row);
         return row;
+    }
+
+    private CenarioTesteCsv updateById(CenarioTesteCsvRequest request) {
+        String id = request.getId().trim();
+        List<CenarioTesteCsv> cenarios = csvAdapter.findAll();
+
+        for (CenarioTesteCsv cenario : cenarios) {
+            if (id.equals(cenario.getId())) {
+                // Atualiza todas as colunas da linha conforme payload da API.
+                cenario.setId(id);
+                cenario.setNomeProduto(request.getNomeProduto());
+                cenario.setTag(request.getTag());
+                cenario.setDescricao(request.getDescricao());
+                cenario.setIsoMessage(request.getIsoMessage());
+                cenario.setDataUpdate(LocalDateTime.now().toString());
+
+                csvAdapter.replaceAll(cenarios);
+                return cenario;
+            }
+        }
+
+        throw new IllegalArgumentException("Cenario nao encontrado para atualizacao. id=" + id);
     }
 
     public List<CenarioTesteCsv> findAll() {
