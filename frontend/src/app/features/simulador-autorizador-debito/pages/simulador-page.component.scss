@@ -224,14 +224,13 @@ h1 {
 .iso-input-row {
   display: flex;
   gap: 16px;
-  align-items: flex-start;
+  align-items: center;
 
   .iso-input-field {
     flex: 1;
   }
 
   .carregar-btn {
-    margin-top: 8px;
     white-space: nowrap;
   }
 }
