@@ -51,12 +51,6 @@ export class IsoParserService {
     return this.http.post<{ isoMessage: string }>(`${this.baseUrl}/api/simulador/iso/build`, { mti, fields });
   }
 
-  executarTransacao(hexIso: string): Observable<SimuladorResponse> {
-    return this.http.post<SimuladorResponse>(`${this.baseUrl}/api/simulador/cenarios/execucao`, {
-      message: hexIso,
-    });
-  }
-
   salvarTransacao(data: SalvarTransacaoRequest): Observable<SalvarTransacaoResponse> {
     return this.http.post<SalvarTransacaoResponse>(`${this.baseUrl}/api/simulador/cenarios/salvar`, data);
   }
@@ -73,6 +67,13 @@ export class IsoParserService {
   }
 
   excluirTransacao(id: string): Observable<{ message: string }> {
-    return this.http.delete<{ message: string }>(`${this.baseUrl}/api/simulador/cenarios/excluir/${id}`);
+    return this.http.delete<{ message: string }>(`${this.baseUrl}/api/simulador/cenarios/${id}`);
   }
+
+  executarTransacao(id: string): Observable<{ message: string }> {
+  return this.http.post<{ message: string }>(
+    `${this.baseUrl}/api/simulador/cenarios/${id}`,
+    null
+  );
+}
 }
