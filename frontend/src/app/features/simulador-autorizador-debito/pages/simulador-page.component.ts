@@ -32,8 +32,8 @@ import { IsoParserService, TransacaoItem } from '../services/iso-parser.service'
   styleUrl: './simulador-page.component.scss',
 })
 export class SimuladorPageComponent {
-  // Active view: 'main' | 'incluir' | 'buscar' | 'disparar'
-  activeView = signal<'main' | 'incluir' | 'buscar' | 'disparar'>('main');
+  // Active view: 'incluir' | 'buscar' | 'disparar'
+  activeView = signal<'incluir' | 'buscar' | 'disparar'>('buscar');
 
   // ─── Incluir transacao ───
   incluirForm = new FormGroup({
@@ -74,7 +74,10 @@ export class SimuladorPageComponent {
   constructor(
     private readonly isoParserService: IsoParserService,
     private readonly snackBar: MatSnackBar,
-  ) {}
+  ) {
+    // Load transactions on init since default view is 'buscar'
+    this.carregarTransacoesBusca();
+  }
 
   // ─── Main view actions ───
 
@@ -107,9 +110,10 @@ export class SimuladorPageComponent {
   }
 
   onVoltarMain(): void {
-    this.activeView.set('main');
+    this.activeView.set('buscar');
     this.showResponse.set(false);
     this.selectedTransacao.set(null);
+    this.carregarTransacoesBusca();
   }
 
   // ─── Incluir view actions ───
@@ -296,9 +300,10 @@ export class SimuladorPageComponent {
     this.isoParserService.excluirTransacao(transacao.id).subscribe({
       next: (result) => {
         this.snackBar.open(result.message, 'Fechar', { duration: 5000 });
-        this.activeView.set('main');
+        this.activeView.set('buscar');
         this.showResponse.set(false);
         this.selectedTransacao.set(null);
+        this.carregarTransacoesBusca();
       },
       error: () => {
         this.snackBar.open('Erro ao excluir transação', 'Fechar', { duration: 5000 });
