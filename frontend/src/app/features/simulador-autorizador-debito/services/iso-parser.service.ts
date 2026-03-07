@@ -1,7 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
+
+export interface IsoParseResponse {
+  mti: string;
+  fields: Record<string, string>;
+}
 
 export interface SimuladorResponse {
   fields: Record<string, string>;
@@ -37,9 +42,11 @@ export class IsoParserService {
   constructor(private readonly http: HttpClient) {}
 
   parseIso(hexIso: string): Observable<Record<string, string>> {
-    return this.http.post<Record<string, string>>(`${this.baseUrl}/api/simulador/iso/parse`, {
+    return this.http.post<IsoParseResponse>(`${this.baseUrl}/api/simulador/iso/parse`, {
       isoMessage: hexIso,
-    });
+    }).pipe(
+      map((response) => response.fields),
+    );
   }
 
   buildIso(fields: Record<string, string>): Observable<{ message: string }> {
