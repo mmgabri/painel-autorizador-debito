@@ -1,6 +1,7 @@
 id,nome_produto,tag,descricao,message_iso,data_update
 
-32be0d80-4f7d-49d8-a307-ad18b2f976dc,aaaaaaa,marcelo,teste,xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,2026-03-07T09:50:19.245481400
-74204ca7-f6e1-4509-bf90-aa052b4b2ad1,aaaaaaa,marcelo,teste,xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,2026-03-07T09:50:38.712356700
-e06264ac-0765-4c66-9e39-f69685232dfe,aaaaaaa,marcelo,teste,xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,2026-03-07T09:55:08.039213200
-64accae5-c9ef-4186-87dd-2f01c917e01c,aaaaaaa,marcelo,teste,xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,2026-03-07T09:55:15.580394100
+32be0d80-4f7d-49d8-a307-ad18b2f976dc,compra,marcelo,teste,xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,2026-03-07T09:50:19.245481400
+74204ca7-f6e1-4509-bf90-aa052b4b2ad1,saque,marcelo,teste,xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,2026-03-07T09:50:38.712356700
+e06264ac-0765-4c66-9e39-f69685232dfe,compra,messias,teste,xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,2026-03-07T09:55:08.039213200
+64accae5-c9ef-4186-87dd-2f01c917e01c,saque,messias,teste,xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,2026-03-07T09:55:15.580394100
+c0affd08-50b5-453d-8e6e-6eb10b322cd7,dss,marcelo,teste,bbbbbbbbbbbbbbbbb,2026-03-07T10:18:05.950693400

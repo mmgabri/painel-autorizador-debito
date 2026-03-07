@@ -38,7 +38,7 @@ public class ControllerPainelAutorizadorDebito {
         return ResponseEntity.ok(new IsoBuildResponse(isoMessage));
     }
 
-    @PostMapping ("/cenarios/salvar")
+    @PostMapping("/cenarios/salvar")
     public ResponseEntity<CenarioTesteCsv> create(@Valid @RequestBody CenarioTesteCsvRequest request) {
         logger.info("Requisição recebida para salvar cenário de teste.");
         var saved = csvService.save(request);
@@ -46,12 +46,36 @@ public class ControllerPainelAutorizadorDebito {
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
-    @GetMapping ("/cenarios")
+    @GetMapping(value = "/cenarios", params = {"!nomeProduto", "!tag"})
     public ResponseEntity<List<CenarioTesteCsv>> list() {
         logger.info("Requisição recebida para listar cenários de teste.");
         var resp = csvService.findAll();
         logger.info("Cenários de teste listados com sucesso.");
         return ResponseEntity.ok(resp);
+    }
 
+    @GetMapping(value = "/cenarios", params = {"nomeProduto", "!tag"})
+    public ResponseEntity<List<CenarioTesteCsv>> listByNomeProduto(@RequestParam String nomeProduto) {
+        logger.info("Requisição recebida para listar cenários por nomeProduto.");
+        var resp = csvService.findByNomeProduto(nomeProduto);
+        logger.info("Cenários de teste filtrados por nomeProduto com sucesso.");
+        return ResponseEntity.ok(resp);
+    }
+
+    @GetMapping(value = "/cenarios", params = {"!nomeProduto", "tag"})
+    public ResponseEntity<List<CenarioTesteCsv>> listByTag(@RequestParam String tag) {
+        logger.info("Requisição recebida para listar cenários por tag.");
+        var resp = csvService.findByTag(tag);
+        logger.info("Cenários de teste filtrados por tag com sucesso.");
+        return ResponseEntity.ok(resp);
+    }
+
+    @GetMapping(value = "/cenarios", params = {"nomeProduto", "tag"})
+    public ResponseEntity<List<CenarioTesteCsv>> listByNomeProdutoAndTag(@RequestParam String nomeProduto,
+                                                                          @RequestParam String tag) {
+        logger.info("Requisição recebida para listar cenários por nomeProduto e tag.");
+        var resp = csvService.findByNomeProdutoAndTag(nomeProduto, tag);
+        logger.info("Cenários de teste filtrados por nomeProduto e tag com sucesso.");
+        return ResponseEntity.ok(resp);
     }
 }

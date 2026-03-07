@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 @Service
@@ -32,5 +33,36 @@ public class CenarioTesteCsvService {
 
     public List<CenarioTesteCsv> findAll() {
         return csvAdapter.findAll();
+    }
+
+    public List<CenarioTesteCsv> findByNomeProduto(String nomeProduto) {
+        return csvAdapter.findAll().stream()
+                .filter(cenario -> containsIgnoreCase(cenario.getNomeProduto(), nomeProduto))
+                .toList();
+    }
+
+    public List<CenarioTesteCsv> findByTag(String tag) {
+        return csvAdapter.findAll().stream()
+                .filter(cenario -> containsIgnoreCase(cenario.getTag(), tag))
+                .toList();
+    }
+
+    public List<CenarioTesteCsv> findByNomeProdutoAndTag(String nomeProduto, String tag) {
+        return csvAdapter.findAll().stream()
+                .filter(cenario -> containsIgnoreCase(cenario.getNomeProduto(), nomeProduto))
+                .filter(cenario -> containsIgnoreCase(cenario.getTag(), tag))
+                .toList();
+    }
+
+    private boolean containsIgnoreCase(String value, String filtro) {
+        if (filtro == null || filtro.isBlank()) {
+            return true;
+        }
+
+        if (value == null) {
+            return false;
+        }
+
+        return value.toLowerCase(Locale.ROOT).contains(filtro.trim().toLowerCase(Locale.ROOT));
     }
 }
