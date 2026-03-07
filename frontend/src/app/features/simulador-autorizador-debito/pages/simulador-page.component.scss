@@ -179,6 +179,12 @@ h1 {
     }
   }
 
+  .transacao-actions {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+  }
+
   .empty-message {
     text-align: center;
     color: rgba(0, 0, 0, 0.54);
