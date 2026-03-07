@@ -8,5 +8,8 @@ public interface CenarioTesteCsvAdapter {
 
     void append(CenarioTesteCsv cenario);
 
+    // Regrava o CSV inteiro com a lista informada (usado em update por ID).
+    void replaceAll(List<CenarioTesteCsv> cenarios);
+
     List<CenarioTesteCsv> findAll();
 }
