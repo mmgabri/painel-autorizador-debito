@@ -220,7 +220,8 @@ export class SimuladorPageComponent {
         next: (result) => {
           this.saving.set(false);
           this.editingTransacaoId.set(result.id);
-          this.snackBar.open(result.message, 'Fechar', { duration: 5000 });
+          const msg = result.message ?? 'Transação salva com sucesso';
+          this.snackBar.open(msg, 'Fechar', { duration: 5000 });
         },
         error: () => {
           this.saving.set(false);
