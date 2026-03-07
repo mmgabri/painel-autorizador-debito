@@ -59,7 +59,7 @@
               (click)="onSelecionarTransacao(item)"
               aria-label="Executar transação"
             >
-              <mat-icon>play_circle</mat-icon>
+              <mat-icon>play_circle_outline</mat-icon>
             </button>
             <button
               mat-icon-button
@@ -75,7 +75,7 @@
               (click)="onExcluirFromBusca(item)"
               aria-label="Excluir cenário"
             >
-              <mat-icon>delete</mat-icon>
+              <mat-icon>delete_outline</mat-icon>
             </button>
           </div>
         </div>
@@ -91,6 +91,10 @@
 <!-- Incluir transacao view -->
   @if (activeView() === 'incluir') {
   <div class="incluir-panel">
+    <div class="panel-header">
+      <h2>{{ editingTransacaoId() ? 'Editar cenário' : 'Criar cenário' }}</h2>
+    </div>
+
 
     <form [formGroup]="incluirForm">
       <!-- Nome Produto -->
