@@ -31,7 +31,7 @@ describe('IsoParserService', () => {
     };
 
     service.parseIso('0200ABCDEF').subscribe((result) => {
-      expect(result).toEqual(mockApiResponse.fields);
+      expect(result).toEqual(mockApiResponse);
     });
 
     const req = httpMock.expectOne(`${environment.apiBaseUrlJava}/api/simulador/iso/parse`);

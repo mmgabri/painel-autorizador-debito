@@ -41,12 +41,10 @@ export class IsoParserService {
 
   constructor(private readonly http: HttpClient) {}
 
-  parseIso(hexIso: string): Observable<Record<string, string>> {
+  parseIso(hexIso: string): Observable<IsoParseResponse> {
     return this.http.post<IsoParseResponse>(`${this.baseUrl}/api/simulador/iso/parse`, {
       isoMessage: hexIso,
-    }).pipe(
-      map((response) => response.fields),
-    );
+    });
   }
 
   buildIso(fields: Record<string, string>): Observable<{ message: string }> {
