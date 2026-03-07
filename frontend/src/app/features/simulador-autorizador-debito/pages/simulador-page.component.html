@@ -29,11 +29,11 @@
     </div>
 
     <div class="filter-row">
-      <mat-form-field appearance="outline" class="filter-field filter-nome">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filter-field filter-nome">
         <mat-label>Filtrar por Nome Produto</mat-label>
         <input matInput [(ngModel)]="buscarFiltro" maxlength="15" (keyup.enter)="onFiltrarBusca()" />
       </mat-form-field>
-      <mat-form-field appearance="outline" class="filter-field filter-tag">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filter-field filter-tag">
         <mat-label>Filtrar por Tag</mat-label>
         <input matInput [(ngModel)]="buscarFiltroTag" maxlength="15" (keyup.enter)="onFiltrarBusca()" />
       </mat-form-field>
