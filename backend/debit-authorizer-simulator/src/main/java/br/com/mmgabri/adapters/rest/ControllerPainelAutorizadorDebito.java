@@ -24,28 +24,34 @@ public class ControllerPainelAutorizadorDebito {
 
     @PostMapping("/iso/parse")
     public ResponseEntity<IsoParseResponse> parse(@Valid @RequestBody IsoParseRequest request) throws Exception {
-        logger.info("Mensagem ISO recebida para parsing: {}", request.getIsoMessage());
-        IsoParseResponse response = isoMessageService.parse(request.getIsoMessage());
-        logger.info("Mensagem ISO parseada com sucesso. MTI: {}, Campos: {}", response.getMti(), response.getFields());
+        logger.info("Mensagem ISO recebida para parsing.");
+        var response = isoMessageService.parse(request.getIsoMessage());
+        logger.info("Mensagem ISO parseada com sucesso.");
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/iso/build")
     public ResponseEntity<IsoBuildResponse> build(@Valid @RequestBody IsoBuildRequest request) throws Exception {
-        logger.info("Requisição recebida para construção de mensagem ISO. MTI: {}, Campos: {}",  request.getMti(), request.getFields());
-        String isoMessage = isoMessageService.build(request);
-        logger.info("Mensagem ISO construída com sucesso: {}", isoMessage);
+        logger.info("Requisição recebida para construção de mensagem ISO.");
+        var isoMessage = isoMessageService.build(request);
+        logger.info("Mensagem ISO construída com sucesso.");
         return ResponseEntity.ok(new IsoBuildResponse(isoMessage));
     }
 
     @PostMapping ("/cenarios/salvar")
     public ResponseEntity<CenarioTesteCsv> create(@Valid @RequestBody CenarioTesteCsvRequest request) {
-        CenarioTesteCsv saved = csvService.save(request);
+        logger.info("Requisição recebida para salvar cenário de teste.");
+        var saved = csvService.save(request);
+        logger.info("Cenário de teste salvo com sucesso.");
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
     @GetMapping ("/cenarios")
     public ResponseEntity<List<CenarioTesteCsv>> list() {
-        return ResponseEntity.ok(csvService.findAll());
+        logger.info("Requisição recebida para listar cenários de teste.");
+        var resp = csvService.findAll();
+        logger.info("Cenários de teste listados com sucesso.");
+        return ResponseEntity.ok(resp);
+
     }
 }

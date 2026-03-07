@@ -25,7 +25,6 @@ public class CenarioTesteCsvService {
         row.setTag(request.getTag());
         row.setDescricao(request.getDescricao());
         row.setMessageIso(request.getMensagemIso());
-        row.setCriador("");
         row.setDataUpdate(LocalDateTime.now().toString());
         csvAdapter.append(row);
         return row;
