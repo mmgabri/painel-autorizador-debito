@@ -46,6 +46,7 @@ export class SimuladorPageComponent {
   });
 
   // Request fields (shared between incluir and disparar views)
+  mti = signal('');
   bitsForm = signal(new FormGroup<Record<string, FormControl<string>>>({}));
   sortedKeys = signal<string[]>([]);
   loading = signal(false);
@@ -125,7 +126,8 @@ export class SimuladorPageComponent {
     this.isoParserService.parseIso(isoMessage).subscribe({
       next: (result) => {
         this.loading.set(false);
-        this.buildBitsForm(result);
+        this.mti.set(result.mti ?? '');
+        this.buildBitsForm(result.fields);
       },
       error: () => {
         this.loading.set(false);
@@ -189,10 +191,10 @@ export class SimuladorPageComponent {
     this.saving.set(true);
 
     this.isoParserService
-      .buildIso(fieldsMap)
+      .buildIso(this.mti(), fieldsMap)
       .pipe(
         switchMap((buildResult) => {
-          this.incluirForm.controls.message.setValue(buildResult.message);
+          this.incluirForm.controls.message.setValue(buildResult.isoMessage);
 
           const tag = this.incluirForm.controls.tag.value ?? '';
           if (!tag.trim()) {
@@ -205,7 +207,7 @@ export class SimuladorPageComponent {
             nomeProduto: nomeProduto.trim(),
             tag: tag.trim(),
             descricao: (this.incluirForm.controls.descricao.value ?? '').trim(),
-            mensagemIso: buildResult.message,
+            mensagemIso: buildResult.isoMessage,
           };
           const currentId = this.editingTransacaoId();
           if (currentId) {
@@ -218,7 +220,8 @@ export class SimuladorPageComponent {
         next: (result) => {
           this.saving.set(false);
           this.editingTransacaoId.set(result.id);
-          this.snackBar.open(result.message, 'Fechar', { duration: 5000 });
+          const msg = result.message ?? 'Transação salva com sucesso';
+          this.snackBar.open(msg, 'Fechar', { duration: 5000 });
         },
         error: () => {
           this.saving.set(false);
@@ -274,7 +277,8 @@ export class SimuladorPageComponent {
       this.isoParserService.parseIso(transacao.mensagemIso).subscribe({
         next: (result) => {
           this.loading.set(false);
-          this.buildBitsForm(result);
+          this.mti.set(result.mti ?? '');
+          this.buildBitsForm(result.fields);
         },
         error: () => {
           this.loading.set(false);
@@ -312,7 +316,8 @@ export class SimuladorPageComponent {
     this.isoParserService.parseIso(transacao.mensagemIso).subscribe({
       next: (result) => {
         this.loading.set(false);
-        this.buildBitsForm(result);
+        this.mti.set(result.mti ?? '');
+        this.buildBitsForm(result.fields);
       },
       error: () => {
         this.loading.set(false);
@@ -344,6 +349,7 @@ export class SimuladorPageComponent {
   }
 
   private resetBitsForm(): void {
+    this.mti.set('');
     this.bitsForm.set(new FormGroup<Record<string, FormControl<string>>>({}));
     this.sortedKeys.set([]);
     this.updateAvailableBits();
