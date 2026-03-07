@@ -477,6 +477,21 @@ h1 {
   width: 250px;
 }
 
+.estorno-fields-card {
+  margin-top: 12px;
+  margin-bottom: 12px;
+}
+
+// Interim overlay (aguardando estorno) — reuses success-overlay styles
+.interim-icon-circle {
+  background: linear-gradient(135deg, #ec7000 0%, #ff9800 100%) !important;
+  box-shadow: 0 4px 16px rgba(236, 112, 0, 0.3) !important;
+}
+
+.interim-ring-progress {
+  stroke: #ec7000 !important;
+}
+
 // Disparar view action buttons
 .disparar-actions {
   display: flex;
