@@ -72,6 +72,10 @@ export class SimuladorPageComponent {
   responseMessage = signal('');
   showResponse = signal(false);
 
+  // Success overlay (Mercado Livre style)
+  showSuccessOverlay = signal(false);
+  private successTimer: ReturnType<typeof setTimeout> | null = null;
+
   constructor(
     private readonly isoParserService: IsoParserService,
     private readonly snackBar: MatSnackBar,
@@ -306,26 +310,40 @@ export class SimuladorPageComponent {
   // ─── Disparar view actions ───
 
   onExecutarTransacao(): void {
-  const transacao = this.selectedTransacao();
-  if (!transacao) return;
+    const transacao = this.selectedTransacao();
+    if (!transacao) return;
 
-  this.executing.set(true);
-  this.showResponse.set(false);
+    this.executing.set(true);
+    this.showResponse.set(false);
+    this.showSuccessOverlay.set(false);
 
-  this.isoParserService.executarTransacao(transacao.id).subscribe({
-    next: (result) => {
-      this.executing.set(false);
-      this.responseFields.set({});
-      this.responseSortedKeys.set([]);
-      this.responseMessage.set(result.message);
-      this.showResponse.set(true);
-    },
-    error: () => {
-      this.executing.set(false);
-      this.snackBar.open('Erro ao executar transação', 'Fechar', { duration: 5000 });
-    },
-  });
-}
+    this.isoParserService.executarTransacao(transacao.id).subscribe({
+      next: () => {
+        this.executing.set(false);
+        this.showSuccessOverlay.set(true);
+
+        // Auto-close after 5 seconds
+        if (this.successTimer) {
+          clearTimeout(this.successTimer);
+        }
+        this.successTimer = setTimeout(() => {
+          this.onFecharSuccessOverlay();
+        }, 5000);
+      },
+      error: () => {
+        this.executing.set(false);
+        this.snackBar.open('Erro ao executar transação', 'Fechar', { duration: 5000 });
+      },
+    });
+  }
+
+  onFecharSuccessOverlay(): void {
+    if (this.successTimer) {
+      clearTimeout(this.successTimer);
+      this.successTimer = null;
+    }
+    this.showSuccessOverlay.set(false);
+  }
 
   onEditarTransacao(): void {
     const transacao = this.selectedTransacao();
