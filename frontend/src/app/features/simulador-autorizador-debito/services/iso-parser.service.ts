@@ -18,12 +18,12 @@ export interface SalvarTransacaoRequest {
   nomeProduto: string;
   tag: string;
   descricao: string;
-  mensagemIso: string;
+  isoMessage: string;
 }
 
 export interface SalvarTransacaoResponse {
   id: string;
-  message: string;
+  isoMessage: string;
 }
 
 export interface TransacaoItem {
@@ -31,7 +31,7 @@ export interface TransacaoItem {
   nomeProduto: string;
   tag: string;
   descricao: string;
-  mensagemIso: string;
+  isoMessage: string;
   criadoEm: string;
 }
 

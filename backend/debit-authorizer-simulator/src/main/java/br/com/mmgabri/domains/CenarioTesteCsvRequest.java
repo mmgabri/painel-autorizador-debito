@@ -16,6 +16,6 @@ public class CenarioTesteCsvRequest {
     private String descricao;
 
 //@NotBlank
-    private String mensagemIso;
+    private String isoMessage;
 
 }

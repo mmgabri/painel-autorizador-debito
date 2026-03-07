@@ -9,6 +9,6 @@ public class CenarioTesteCsv {
     private String nomeProduto;
     private String tag;
     private String descricao;
-    private String messageIso;
+    private String isoMessage;
     private String dataUpdate;
 }
