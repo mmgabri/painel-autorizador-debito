@@ -74,7 +74,9 @@ export class SimuladorPageComponent {
 
   // Success overlay (Mercado Livre style)
   showSuccessOverlay = signal(false);
+  countdownSeconds = signal(5);
   private successTimer: ReturnType<typeof setTimeout> | null = null;
+  private countdownInterval: ReturnType<typeof setInterval> | null = null;
 
   constructor(
     private readonly isoParserService: IsoParserService,
@@ -320,15 +322,21 @@ export class SimuladorPageComponent {
     this.isoParserService.executarTransacao(transacao.id).subscribe({
       next: () => {
         this.executing.set(false);
+        this.countdownSeconds.set(5);
         this.showSuccessOverlay.set(true);
 
-        // Auto-close after 5 seconds
-        if (this.successTimer) {
-          clearTimeout(this.successTimer);
+        // Countdown interval (tick every second)
+        if (this.countdownInterval) {
+          clearInterval(this.countdownInterval);
         }
-        this.successTimer = setTimeout(() => {
-          this.onFecharSuccessOverlay();
-        }, 5000);
+        this.countdownInterval = setInterval(() => {
+          const current = this.countdownSeconds();
+          if (current <= 1) {
+            this.onFecharSuccessOverlay();
+          } else {
+            this.countdownSeconds.set(current - 1);
+          }
+        }, 1000);
       },
       error: () => {
         this.executing.set(false);
@@ -341,6 +349,10 @@ export class SimuladorPageComponent {
     if (this.successTimer) {
       clearTimeout(this.successTimer);
       this.successTimer = null;
+    }
+    if (this.countdownInterval) {
+      clearInterval(this.countdownInterval);
+      this.countdownInterval = null;
     }
     this.showSuccessOverlay.set(false);
   }
