@@ -1,6 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -9,10 +9,8 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { switchMap, EMPTY } from 'rxjs';
 import { IsoParserService, TransacaoItem } from '../services/iso-parser.service';
-import { BuscarTransacaoDialogComponent } from '../components/buscar-transacao-dialog.component';
 
 @Component({
   selector: 'app-simulador-page',
@@ -20,6 +18,7 @@ import { BuscarTransacaoDialogComponent } from '../components/buscar-transacao-d
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    FormsModule,
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,
@@ -28,14 +27,13 @@ import { BuscarTransacaoDialogComponent } from '../components/buscar-transacao-d
     MatSnackBarModule,
     MatIconModule,
     MatSelectModule,
-    MatDialogModule,
   ],
   templateUrl: './simulador-page.component.html',
   styleUrl: './simulador-page.component.scss',
 })
 export class SimuladorPageComponent {
-  // Active view: 'main' | 'incluir' | 'disparar'
-  activeView = signal<'main' | 'incluir' | 'disparar'>('main');
+  // Active view: 'main' | 'incluir' | 'buscar' | 'disparar'
+  activeView = signal<'main' | 'incluir' | 'buscar' | 'disparar'>('main');
 
   // ─── Incluir transacao ───
   incluirForm = new FormGroup({
@@ -58,7 +56,12 @@ export class SimuladorPageComponent {
   // Available bits for "Incluir campo" (2-128, excluding already added)
   availableBits = signal<number[]>([]);
 
-  // ─── Disparar transacao ───
+  // ─── Buscar / Disparar transacao ───
+  buscarFiltro = '';
+  buscarFiltroTag = '';
+  buscarLoading = signal(false);
+  buscarTransacoes = signal<TransacaoItem[]>([]);
+
   selectedTransacao = signal<TransacaoItem | null>(null);
   executing = signal(false);
 
@@ -71,7 +74,6 @@ export class SimuladorPageComponent {
   constructor(
     private readonly isoParserService: IsoParserService,
     private readonly snackBar: MatSnackBar,
-    private readonly dialog: MatDialog,
   ) {}
 
   // ─── Main view actions ───
@@ -84,24 +86,24 @@ export class SimuladorPageComponent {
   }
 
   onDispararTransacao(): void {
-    // Clear current view before opening modal so it doesn't overlay content
-    this.activeView.set('main');
     this.resetBitsForm();
     this.showResponse.set(false);
     this.selectedTransacao.set(null);
     this.incluirForm.reset();
+    this.buscarFiltro = '';
+    this.buscarFiltroTag = '';
+    this.activeView.set('buscar');
+    this.carregarTransacoesBusca();
+  }
 
-    const dialogRef = this.dialog.open(BuscarTransacaoDialogComponent, {
-      width: '560px',
-      maxWidth: '95vw',
-      maxHeight: '80vh',
-    });
+  // ─── Buscar view actions ───
 
-    dialogRef.afterClosed().subscribe((selected: TransacaoItem | undefined) => {
-      if (selected) {
-        this.openDispararView(selected);
-      }
-    });
+  onFiltrarBusca(): void {
+    this.carregarTransacoesBusca(this.buscarFiltro, this.buscarFiltroTag);
+  }
+
+  onSelecionarTransacao(item: TransacaoItem): void {
+    this.openDispararView(item);
   }
 
   onVoltarMain(): void {
@@ -364,5 +366,19 @@ export class SimuladorPageComponent {
       }
     }
     this.availableBits.set(available);
+  }
+
+  private carregarTransacoesBusca(nomeProduto?: string, tag?: string): void {
+    this.buscarLoading.set(true);
+    this.isoParserService.consultarTransacoes(nomeProduto, tag).subscribe({
+      next: (list) => {
+        this.buscarLoading.set(false);
+        this.buscarTransacoes.set(list);
+      },
+      error: () => {
+        this.buscarLoading.set(false);
+        this.buscarTransacoes.set([]);
+      },
+    });
   }
 }
