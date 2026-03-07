@@ -22,7 +22,7 @@ body {
   background-color: #fafafa;
   color: #1a1a1a;
   font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  font-size: 14px;
+  font-size: 13px;
   margin: 0;
   height: 100%;
 }
@@ -35,9 +35,22 @@ body {
 .mat-mdc-unelevated-button.mat-primary {
   --mdc-filled-button-container-color: #{$itau-orange};
   --mdc-filled-button-label-text-color: #fff;
-  border-radius: 8px !important;
-  font-weight: 600;
-  letter-spacing: 0.3px;
+  border-radius: 20px !important;
+  font-weight: 500;
+  font-size: 13px;
+  letter-spacing: 0.2px;
+  height: 36px;
+  padding: 0 24px !important;
+}
+
+// Stroked / outlined buttons — Itaú style
+.mat-mdc-raised-button:not(.mat-primary):not(.mat-accent):not(.mat-warn) {
+  border-radius: 20px !important;
+  font-weight: 500;
+  font-size: 13px;
+  letter-spacing: 0.2px;
+  height: 36px;
+  padding: 0 24px !important;
 }
 
 // Form fields — outline uses Itaú orange for focus + compact sizing
@@ -51,11 +64,25 @@ body {
   color: $itau-orange !important;
 }
 
-// Compact form fields — less vertical spacing
+// Compact form fields — less vertical spacing, delicate font
 .mat-mdc-form-field {
-  --mat-form-field-container-height: 40px;
-  --mat-form-field-container-vertical-padding: 8px;
-  font-size: 13px;
+  --mat-form-field-container-height: 38px;
+  --mat-form-field-container-vertical-padding: 6px;
+  font-size: 12px;
+  letter-spacing: 0.1px;
+}
+
+// Form field input text — smaller, more delicate
+.mat-mdc-form-field .mdc-text-field__input,
+.mat-mdc-form-field .mat-mdc-select-value-text {
+  font-size: 12px !important;
+  font-weight: 400;
+  letter-spacing: 0.1px;
+}
+
+// Form field labels — smaller
+.mat-mdc-form-field .mdc-floating-label {
+  font-size: 12px !important;
 }
 
 // Accent / warn color overrides
@@ -63,7 +90,16 @@ body {
 .mat-mdc-flat-button.mat-accent {
   --mdc-filled-button-container-color: #{$itau-orange};
   --mdc-filled-button-label-text-color: #fff;
-  border-radius: 8px !important;
+  border-radius: 20px !important;
+}
+
+// Warn buttons
+.mat-mdc-raised-button.mat-warn,
+.mat-mdc-flat-button.mat-warn {
+  border-radius: 20px !important;
+  font-size: 13px;
+  font-weight: 500;
+  height: 36px;
 }
 
 // Cards
@@ -76,14 +112,14 @@ body {
 h1 {
   color: $itau-navy;
   font-weight: 600;
-  font-size: 20px;
-  letter-spacing: -0.3px;
+  font-size: 18px;
+  letter-spacing: -0.2px;
 }
 
 h2 {
   color: $itau-navy;
-  font-weight: 600;
-  font-size: 16px;
+  font-weight: 500;
+  font-size: 15px;
 }
 
 // Sidenav link styling
