@@ -258,6 +258,13 @@
           <input matInput [value]="estorno.isoMessage" readonly />
         </mat-form-field>
 
+        @if (estornoBit90()) {
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Bit 90 (Dados da transação original)</mat-label>
+            <input matInput [value]="estornoBit90()" readonly />
+          </mat-form-field>
+        }
+
         <mat-form-field appearance="outline" class="estorno-delay-field">
           <mat-label>Tempo de espera (segundos)</mat-label>
           <input

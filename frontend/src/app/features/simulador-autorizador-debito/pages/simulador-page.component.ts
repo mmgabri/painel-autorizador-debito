@@ -11,7 +11,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialog } from '@angular/material/dialog';
-import { switchMap, EMPTY, delay, of } from 'rxjs';
+import { switchMap, EMPTY, delay, of, tap } from 'rxjs';
 import { IsoParserService, TransacaoItem } from '../services/iso-parser.service';
 import { BuscarEstornoDialogComponent } from '../components/buscar-estorno-dialog.component';
 
@@ -86,6 +86,7 @@ export class SimuladorPageComponent {
   estornarChecked = signal(false);
   estornoTransacao = signal<TransacaoItem | null>(null);
   estornoDelay = signal(0);
+  estornoBit90 = signal('');
   successMessageText = signal('A transação foi disparada com sucesso. Verificar logs');
 
   constructor(
@@ -331,6 +332,7 @@ export class SimuladorPageComponent {
       dialogRef.afterClosed().subscribe((result: TransacaoItem | undefined) => {
         if (result) {
           this.estornoTransacao.set(result);
+          this.populateBit90OnEstorno(result);
         } else {
           // User closed without selecting — uncheck
           this.estornarChecked.set(false);
@@ -362,6 +364,7 @@ export class SimuladorPageComponent {
       switchMap(() => {
         const estorno = this.estornoTransacao();
         if (this.estornarChecked() && estorno) {
+          this.snackBar.open('Transação financeira enviada, aguardando pra enviar o estorno', 'OK', { duration: 3000 });
           const delayMs = (this.estornoDelay() || 0) * 1000;
           return of(null).pipe(
             delay(delayMs),
@@ -477,6 +480,7 @@ export class SimuladorPageComponent {
     this.estornarChecked.set(false);
     this.estornoTransacao.set(null);
     this.estornoDelay.set(0);
+    this.estornoBit90.set('');
 
     // Load ISO request fields from the stored message
     this.loading.set(true);
@@ -484,7 +488,10 @@ export class SimuladorPageComponent {
       next: (result) => {
         this.loading.set(false);
         this.mti.set(result.mti ?? '');
-        this.buildBitsForm(result.fields);
+        // Auto-populate Bit 07 with current timestamp (mmddhhmmss)
+        const fields = { ...result.fields };
+        fields['07'] = this.generateBit07();
+        this.buildBitsForm(fields);
       },
       error: () => {
         this.loading.set(false);
@@ -532,6 +539,37 @@ export class SimuladorPageComponent {
       }
     }
     this.availableBits.set(available);
+  }
+
+  private generateBit07(): string {
+    const now = new Date();
+    const mm = String(now.getMonth() + 1).padStart(2, '0');
+    const dd = String(now.getDate()).padStart(2, '0');
+    const hh = String(now.getHours()).padStart(2, '0');
+    const mi = String(now.getMinutes()).padStart(2, '0');
+    const ss = String(now.getSeconds()).padStart(2, '0');
+    return `${mm}${dd}${hh}${mi}${ss}`;
+  }
+
+  private populateBit90OnEstorno(estornoItem: TransacaoItem): void {
+    // Build Bit 90: xxxyyyyyyzzzzzzzzzz
+    // xxx = mti da primeira transação
+    // yyyyyy = bit 11 da primeira transação
+    // zzzzzzzzzz = bit 07 da primeira transação
+    const mainMti = this.mti() || '0000';
+    const form = this.bitsForm();
+    const bit11 = form.controls['11']?.value ?? '000000';
+    const bit07 = form.controls['07']?.value ?? '0000000000';
+
+    // Pad to expected lengths: mti=4 (use last 3 if > 3, else pad), bit11=6, bit07=10
+    const mtiPart = mainMti.padStart(4, '0').slice(-4);
+    const bit11Part = bit11.padStart(6, '0').slice(-6);
+    const bit07Part = bit07.padStart(10, '0').slice(-10);
+    const bit90Value = `${mtiPart}${bit11Part}${bit07Part}`;
+
+    // Update the estorno isoMessage display field is not needed (readonly display)
+    // Instead, store the bit90 value for display
+    this.estornoBit90.set(bit90Value);
   }
 
   private carregarTransacoesBusca(nomeProduto?: string, tag?: string): void {
