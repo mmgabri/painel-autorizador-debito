@@ -87,7 +87,19 @@ export class SimuladorPageComponent {
   estornoTransacao = signal<TransacaoItem | null>(null);
   estornoDelay = signal(0);
   estornoBit90 = signal('');
+  estornoMti = signal('');
+  estornoSortedKeys = signal<string[]>([]);
+  estornoBitsForm = signal(new FormGroup<Record<string, FormControl<string>>>({}));
+  estornoIsoMessage = signal('');
+  estornoLoading = signal(false);
   successMessageText = signal('A transação foi disparada com sucesso. Verificar logs');
+
+  // Interim overlay ("aguardando estorno")
+  showInterimOverlay = signal(false);
+  interimCountdownSeconds = signal(5);
+  interimMessageText = signal('');
+  private interimTimer: ReturnType<typeof setTimeout> | null = null;
+  private interimCountdownInterval: ReturnType<typeof setInterval> | null = null;
 
   constructor(
     private readonly isoParserService: IsoParserService,
@@ -332,7 +344,7 @@ export class SimuladorPageComponent {
       dialogRef.afterClosed().subscribe((result: TransacaoItem | undefined) => {
         if (result) {
           this.estornoTransacao.set(result);
-          this.populateBit90OnEstorno(result);
+          this.loadEstornoFields(result);
         } else {
           // User closed without selecting — uncheck
           this.estornarChecked.set(false);
@@ -341,6 +353,7 @@ export class SimuladorPageComponent {
       });
     } else {
       this.estornoTransacao.set(null);
+      this.resetEstornoFields();
     }
   }
 
@@ -364,10 +377,35 @@ export class SimuladorPageComponent {
       switchMap(() => {
         const estorno = this.estornoTransacao();
         if (this.estornarChecked() && estorno) {
-          this.snackBar.open('Transação financeira enviada, aguardando pra enviar o estorno', 'OK', { duration: 3000 });
-          const delayMs = (this.estornoDelay() || 0) * 1000;
+          // Show interim overlay (same style as success overlay)
+          const delaySeconds = this.estornoDelay() || 0;
+          this.interimMessageText.set('Transação financeira enviada, aguardando pra enviar o estorno');
+          this.interimCountdownSeconds.set(delaySeconds);
+          this.showInterimOverlay.set(true);
+
+          // Countdown for interim overlay
+          if (this.interimCountdownInterval) {
+            clearInterval(this.interimCountdownInterval);
+          }
+          if (delaySeconds > 0) {
+            this.interimCountdownInterval = setInterval(() => {
+              const current = this.interimCountdownSeconds();
+              if (current <= 1) {
+                if (this.interimCountdownInterval) {
+                  clearInterval(this.interimCountdownInterval);
+                  this.interimCountdownInterval = null;
+                }
+                this.interimCountdownSeconds.set(0);
+              } else {
+                this.interimCountdownSeconds.set(current - 1);
+              }
+            }, 1000);
+          }
+
+          const delayMs = delaySeconds * 1000;
           return of(null).pipe(
             delay(delayMs),
+            tap(() => this.onFecharInterimOverlay()),
             switchMap(() => this.isoParserService.executarTransacao(estorno.id)),
           );
         }
@@ -400,9 +438,22 @@ export class SimuladorPageComponent {
       },
       error: () => {
         this.executing.set(false);
+        this.onFecharInterimOverlay();
         this.snackBar.open('Erro ao executar transação', 'Fechar', { duration: 5000 });
       },
     });
+  }
+
+  onFecharInterimOverlay(): void {
+    if (this.interimTimer) {
+      clearTimeout(this.interimTimer);
+      this.interimTimer = null;
+    }
+    if (this.interimCountdownInterval) {
+      clearInterval(this.interimCountdownInterval);
+      this.interimCountdownInterval = null;
+    }
+    this.showInterimOverlay.set(false);
   }
 
   onFecharSuccessOverlay(): void {
@@ -481,6 +532,7 @@ export class SimuladorPageComponent {
     this.estornoTransacao.set(null);
     this.estornoDelay.set(0);
     this.estornoBit90.set('');
+    this.resetEstornoFields();
 
     // Load ISO request fields from the stored message
     this.loading.set(true);
@@ -551,25 +603,63 @@ export class SimuladorPageComponent {
     return `${mm}${dd}${hh}${mi}${ss}`;
   }
 
-  private populateBit90OnEstorno(estornoItem: TransacaoItem): void {
-    // Build Bit 90: xxxyyyyyyzzzzzzzzzz
-    // xxx = mti da primeira transação
-    // yyyyyy = bit 11 da primeira transação
-    // zzzzzzzzzz = bit 07 da primeira transação
+  private computeBit90(): string {
     const mainMti = this.mti() || '0000';
     const form = this.bitsForm();
     const bit11 = form.controls['11']?.value ?? '000000';
     const bit07 = form.controls['07']?.value ?? '0000000000';
 
-    // Pad to expected lengths: mti=4 (use last 3 if > 3, else pad), bit11=6, bit07=10
     const mtiPart = mainMti.padStart(4, '0').slice(-4);
     const bit11Part = bit11.padStart(6, '0').slice(-6);
     const bit07Part = bit07.padStart(10, '0').slice(-10);
-    const bit90Value = `${mtiPart}${bit11Part}${bit07Part}`;
+    return `${mtiPart}${bit11Part}${bit07Part}`;
+  }
 
-    // Update the estorno isoMessage display field is not needed (readonly display)
-    // Instead, store the bit90 value for display
+  private loadEstornoFields(estornoItem: TransacaoItem): void {
+    this.estornoLoading.set(true);
+    const bit90Value = this.computeBit90();
     this.estornoBit90.set(bit90Value);
+
+    // Step 1: Parse the estorno ISO message to get fields
+    this.isoParserService.parseIso(estornoItem.isoMessage).pipe(
+      switchMap((parsed) => {
+        // Step 2: Update Bit 90 in the parsed fields
+        const updatedFields = { ...parsed.fields, '90': bit90Value };
+        const estornoMti = parsed.mti || '0400';
+        // Step 3: Build the new ISO message with updated Bit 90
+        return this.isoParserService.buildIso(estornoMti, updatedFields).pipe(
+          switchMap((built) => {
+            // Step 4: Parse the rebuilt ISO to display full fields
+            this.estornoIsoMessage.set(built.isoMessage);
+            return this.isoParserService.parseIso(built.isoMessage);
+          }),
+        );
+      }),
+    ).subscribe({
+      next: (finalParsed) => {
+        this.estornoLoading.set(false);
+        this.estornoMti.set(finalParsed.mti || '');
+        const keys = Object.keys(finalParsed.fields).sort((a, b) => Number(a) - Number(b));
+        this.estornoSortedKeys.set(keys);
+        const group: Record<string, FormControl<string>> = {};
+        for (const key of keys) {
+          group[key] = new FormControl(finalParsed.fields[key], { nonNullable: true });
+        }
+        this.estornoBitsForm.set(new FormGroup(group));
+      },
+      error: () => {
+        this.estornoLoading.set(false);
+        this.snackBar.open('Erro ao carregar campos do estorno', 'Fechar', { duration: 5000 });
+      },
+    });
+  }
+
+  private resetEstornoFields(): void {
+    this.estornoMti.set('');
+    this.estornoSortedKeys.set([]);
+    this.estornoBitsForm.set(new FormGroup<Record<string, FormControl<string>>>({}));
+    this.estornoIsoMessage.set('');
+    this.estornoBit90.set('');
   }
 
   private carregarTransacoesBusca(nomeProduto?: string, tag?: string): void {
