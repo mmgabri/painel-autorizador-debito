@@ -306,27 +306,26 @@ export class SimuladorPageComponent {
   // ─── Disparar view actions ───
 
   onExecutarTransacao(): void {
-    const transacao = this.selectedTransacao();
-    if (!transacao) return;
+  const transacao = this.selectedTransacao();
+  if (!transacao) return;
 
-    this.executing.set(true);
-    this.showResponse.set(false);
+  this.executing.set(true);
+  this.showResponse.set(false);
 
-    this.isoParserService.executarTransacao(transacao.isoMessage).subscribe({
-      next: (result) => {
-        this.executing.set(false);
-        this.responseFields.set(result.fields);
-        const keys = Object.keys(result.fields).sort((a, b) => Number(a) - Number(b));
-        this.responseSortedKeys.set(keys);
-        this.responseMessage.set(result.message);
-        this.showResponse.set(true);
-      },
-      error: () => {
-        this.executing.set(false);
-        this.snackBar.open('Erro ao executar transação', 'Fechar', { duration: 5000 });
-      },
-    });
-  }
+  this.isoParserService.executarTransacao(transacao.id).subscribe({
+    next: (result) => {
+      this.executing.set(false);
+      this.responseFields.set({});
+      this.responseSortedKeys.set([]);
+      this.responseMessage.set(result.message);
+      this.showResponse.set(true);
+    },
+    error: () => {
+      this.executing.set(false);
+      this.snackBar.open('Erro ao executar transação', 'Fechar', { duration: 5000 });
+    },
+  });
+}
 
   onEditarTransacao(): void {
     const transacao = this.selectedTransacao();
