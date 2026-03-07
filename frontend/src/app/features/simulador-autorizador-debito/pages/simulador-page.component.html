@@ -287,6 +287,17 @@
           </div>
           <h3 class="success-title">Tudo certo!</h3>
           <p class="success-message">A transação foi disparada com sucesso. Verificar logs</p>
+          <div class="countdown-container">
+            <svg class="countdown-ring" viewBox="0 0 48 48">
+              <circle class="countdown-ring-bg" cx="24" cy="24" r="20" />
+              <circle
+                class="countdown-ring-progress"
+                cx="24" cy="24" r="20"
+                [style.stroke-dashoffset]="125.6 - (125.6 * countdownSeconds() / 5)"
+              />
+            </svg>
+            <span class="countdown-number">{{ countdownSeconds() }}</span>
+          </div>
           <button
             mat-raised-button
             class="success-close-btn"

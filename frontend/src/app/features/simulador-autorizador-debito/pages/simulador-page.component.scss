@@ -416,6 +416,45 @@ h1 {
   line-height: 1.5;
 }
 
+// Countdown timer ring
+.countdown-container {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 20px;
+}
+
+.countdown-ring {
+  width: 48px;
+  height: 48px;
+  transform: rotate(-90deg);
+}
+
+.countdown-ring-bg {
+  fill: none;
+  stroke: #e0e0e0;
+  stroke-width: 3;
+}
+
+.countdown-ring-progress {
+  fill: none;
+  stroke: #00a650;
+  stroke-width: 3;
+  stroke-dasharray: 125.6;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.3s ease;
+}
+
+.countdown-number {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 16px;
+  font-weight: 700;
+  color: #00a650;
+}
+
 .success-close-btn {
   background-color: #00a650 !important;
   color: #fff !important;
