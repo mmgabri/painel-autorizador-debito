@@ -282,6 +282,14 @@
     @if (showSuccessOverlay()) {
       <div class="success-overlay">
         <div class="success-card">
+          <button
+            mat-icon-button
+            class="success-close-x"
+            (click)="onFecharSuccessOverlay()"
+            aria-label="Fechar"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
           <div class="success-icon-circle">
             <mat-icon class="success-check-icon">check</mat-icon>
           </div>
@@ -298,13 +306,6 @@
             </svg>
             <span class="countdown-number">{{ countdownSeconds() }}</span>
           </div>
-          <button
-            mat-raised-button
-            class="success-close-btn"
-            (click)="onFecharSuccessOverlay()"
-          >
-            Fechar
-          </button>
         </div>
       </div>
     }
