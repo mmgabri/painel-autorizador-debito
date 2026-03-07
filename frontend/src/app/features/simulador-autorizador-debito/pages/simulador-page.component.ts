@@ -135,7 +135,11 @@ export class SimuladorPageComponent {
       next: (result) => {
         this.loading.set(false);
         this.mti.set(result.mti ?? '');
-        this.buildBitsForm(result.fields);
+        const fieldsWithMti = { ...result.fields };
+        if (result.mti) {
+          fieldsWithMti['00'] = result.mti;
+        }
+        this.buildBitsForm(fieldsWithMti);
       },
       error: () => {
         this.loading.set(false);
@@ -198,8 +202,12 @@ export class SimuladorPageComponent {
 
     this.saving.set(true);
 
+    const mtiValue = fieldsMap['00'] ?? '';
+    const fieldsWithoutMti = { ...fieldsMap };
+    delete fieldsWithoutMti['00'];
+
     this.isoParserService
-      .buildIso(this.mti(), fieldsMap)
+      .buildIso(mtiValue, fieldsWithoutMti)
       .pipe(
         switchMap((buildResult) => {
           this.incluirForm.controls.isoMessage.setValue(buildResult.isoMessage);
@@ -212,15 +220,12 @@ export class SimuladorPageComponent {
           }
 
           const payload: import('../services/iso-parser.service').SalvarTransacaoRequest = {
+            id: this.editingTransacaoId() ?? '',
             nomeProduto: nomeProduto.trim(),
             tag: tag.trim(),
             descricao: (this.incluirForm.controls.descricao.value ?? '').trim(),
             isoMessage: buildResult.isoMessage,
           };
-          const currentId = this.editingTransacaoId();
-          if (currentId) {
-            payload.id = currentId;
-          }
           return this.isoParserService.salvarTransacao(payload);
         }),
       )
@@ -302,7 +307,11 @@ export class SimuladorPageComponent {
         next: (result) => {
           this.loading.set(false);
           this.mti.set(result.mti ?? '');
-          this.buildBitsForm(result.fields);
+          const fieldsWithMti = { ...result.fields };
+          if (result.mti) {
+            fieldsWithMti['00'] = result.mti;
+          }
+          this.buildBitsForm(fieldsWithMti);
         },
         error: () => {
           this.loading.set(false);
@@ -384,7 +393,8 @@ export class SimuladorPageComponent {
   private updateAvailableBits(): void {
     const usedKeys = new Set(this.sortedKeys().map((k) => Number(k)));
     const available: number[] = [];
-    for (let i = 2; i <= 128; i++) {
+    for (let i = 0; i <= 128; i++) {
+      if (i === 1) continue; // skip bit 1
       if (!usedKeys.has(i)) {
         available.push(i);
       }
