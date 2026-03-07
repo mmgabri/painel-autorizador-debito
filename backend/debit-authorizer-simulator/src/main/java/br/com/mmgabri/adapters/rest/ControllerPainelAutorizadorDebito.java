@@ -46,6 +46,14 @@ public class ControllerPainelAutorizadorDebito {
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
+    @PostMapping("/cenarios/{id}")
+    public ResponseEntity<CenarioTesteCsv> execute(@PathVariable String id) {
+        logger.info("Requisição recebida para executar cenário com id: {}", id);
+        var cenario = csvService.executeById(id);
+        logger.info("Cenário de teste executado com sucesso: {}", cenario);
+        return ResponseEntity.ok(cenario);
+    }
+
     @GetMapping(value = "/cenarios", params = {"!nomeProduto", "!tag"})
     public ResponseEntity<List<CenarioTesteCsv>> list() {
         logger.info("Requisição recebida para listar cenários de teste.");
@@ -77,5 +85,13 @@ public class ControllerPainelAutorizadorDebito {
         var resp = csvService.findByNomeProdutoAndTag(nomeProduto, tag);
         logger.info("Cenários de teste filtrados por nomeProduto e tag com sucesso.");
         return ResponseEntity.ok(resp);
+    }
+
+    @DeleteMapping("/cenarios/{id}")
+    public ResponseEntity<Void> delete(@PathVariable String id) {
+        logger.info("Requisição recebida para deletar cenário com id: {}", id);
+        csvService.deleteById(id);
+        logger.info("Cenário de teste deletado com sucesso.");
+        return ResponseEntity.noContent().build();
     }
 }
