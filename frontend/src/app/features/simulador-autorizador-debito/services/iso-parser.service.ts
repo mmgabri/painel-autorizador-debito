@@ -38,7 +38,7 @@ export class IsoParserService {
 
   parseIso(hexIso: string): Observable<Record<string, string>> {
     return this.http.post<Record<string, string>>(`${this.baseUrl}/api/simulador/iso/parse`, {
-      message: hexIso,
+      isoMessage: hexIso,
     });
   }
 

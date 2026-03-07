@@ -6,7 +6,6 @@ import lombok.Data;
 @Data
 public class IsoParseRequest {
 
-    @NotBlank
+   // @NotBlank
     private String isoMessage;
-
 }
