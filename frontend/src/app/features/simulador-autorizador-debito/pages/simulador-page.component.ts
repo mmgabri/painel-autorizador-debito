@@ -52,6 +52,7 @@ export class SimuladorPageComponent {
   // Save state
   saving = signal(false);
   editingTransacaoId = signal<string | null>(null);
+  savedSuccessfully = signal(false);
 
   // Available bits for "Incluir campo" (2-128, excluding already added)
   availableBits = signal<number[]>([]);
@@ -86,6 +87,7 @@ export class SimuladorPageComponent {
     this.incluirForm.reset();
     this.resetBitsForm();
     this.editingTransacaoId.set(null);
+    this.savedSuccessfully.set(false);
   }
 
   onDispararTransacao(): void {
@@ -226,6 +228,7 @@ export class SimuladorPageComponent {
         next: (result) => {
           this.saving.set(false);
           this.editingTransacaoId.set(result.id);
+          this.savedSuccessfully.set(true);
           this.snackBar.open('Transação salva com sucesso', 'Fechar', { duration: 5000 });
         },
         error: () => {
@@ -233,6 +236,22 @@ export class SimuladorPageComponent {
           this.snackBar.open('Erro ao salvar transação', 'Fechar', { duration: 5000 });
         },
       });
+  }
+
+  onDispararFromIncluir(): void {
+    const id = this.editingTransacaoId();
+    if (!id) return;
+
+    const transacao: TransacaoItem = {
+      id,
+      nomeProduto: (this.incluirForm.controls.nomeProduto.value ?? '').trim(),
+      tag: (this.incluirForm.controls.tag.value ?? '').trim(),
+      descricao: (this.incluirForm.controls.descricao.value ?? '').trim(),
+      isoMessage: (this.incluirForm.controls.isoMessage.value ?? '').trim(),
+      criadoEm: new Date().toISOString(),
+    };
+
+    this.openDispararView(transacao);
   }
 
   // ─── Disparar view actions ───
