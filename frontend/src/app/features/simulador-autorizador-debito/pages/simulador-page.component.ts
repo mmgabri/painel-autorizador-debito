@@ -152,8 +152,8 @@ export class SimuladorPageComponent {
   onExcluirFromBusca(item: TransacaoItem): void {
     this.isoParserService.excluirTransacao(item.id).subscribe({
       next: (result) => {
-        this.snackBar.open(result.message ?? 'Cenário excluído com sucesso', 'Fechar', { duration: 5000 });
-        this.carregarTransacoesBusca(this.buscarFiltro, this.buscarFiltroTag);
+        this.snackBar.open(result?.message ?? 'Cenário excluído com sucesso', 'Fechar', { duration: 5000 });
+        this.buscarTransacoes.set(this.buscarTransacoes().filter(t => t.id !== item.id));
       },
       error: () => {
         this.snackBar.open('Erro ao excluir cenário', 'Fechar', { duration: 5000 });
@@ -399,7 +399,7 @@ export class SimuladorPageComponent {
 
     this.isoParserService.excluirTransacao(transacao.id).subscribe({
       next: (result) => {
-        this.snackBar.open(result.message, 'Fechar', { duration: 5000 });
+        this.snackBar.open(result?.message ?? 'Cenário excluído com sucesso', 'Fechar', { duration: 5000 });
         this.activeView.set('buscar');
         this.showResponse.set(false);
         this.selectedTransacao.set(null);
