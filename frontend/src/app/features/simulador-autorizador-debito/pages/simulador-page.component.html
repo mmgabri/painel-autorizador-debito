@@ -1,23 +1,28 @@
 <h1>Simulador Autorizador Debito</h1>
 
-<!-- Fixed top action buttons (always visible) -->
-<div class="fixed-top-actions">
-  <button mat-flat-button class="top-action-btn disparar-btn" (click)="onDispararTransacao()">
+<!-- Itaú-style tabs -->
+<div class="itau-tabs">
+  <button
+    class="itau-tab"
+    [class.active]="activeView() === 'buscar' || activeView() === 'disparar'"
+    (click)="onDispararTransacao()"
+  >
     <mat-icon>play_circle</mat-icon>
     Disparar transação
   </button>
-  <button mat-flat-button class="top-action-btn incluir-btn" (click)="onIncluirTransacao()">
+  <button
+    class="itau-tab"
+    [class.active]="activeView() === 'incluir'"
+    (click)="onIncluirTransacao()"
+  >
     <mat-icon>add_circle</mat-icon>
     Incluir transação
   </button>
-  <button mat-flat-button class="top-action-btn excluir-btn" disabled>
-    <mat-icon>remove_circle</mat-icon>
-    Excluir transação
-  </button>
 </div>
+<div class="itau-tab-content">
 
 <!-- Buscar transacao view -->
-@if (activeView() === 'buscar') {
+  @if (activeView() === 'buscar') {
   <div class="buscar-panel">
     <div class="panel-header">
       <h2>Buscar transação</h2>
@@ -32,7 +37,7 @@
         <mat-label>Filtrar por Tag</mat-label>
         <input matInput [(ngModel)]="buscarFiltroTag" maxlength="15" (keyup.enter)="onFiltrarBusca()" />
       </mat-form-field>
-      <button mat-raised-button color="primary" class="filtrar-btn" (click)="onFiltrarBusca()">
+      <button mat-raised-button color="primary" class="filtrar-btn itau-btn" (click)="onFiltrarBusca()">
         Filtrar
       </button>
     </div>
@@ -68,7 +73,7 @@
 }
 
 <!-- Incluir transacao view -->
-@if (activeView() === 'incluir') {
+  @if (activeView() === 'incluir') {
   <div class="incluir-panel">
     <div class="panel-header">
       <h2>Incluir transação</h2>
@@ -103,7 +108,7 @@
           mat-raised-button
           color="primary"
           type="button"
-          class="carregar-btn"
+          class="carregar-btn itau-btn"
           [disabled]="loading()"
           (click)="onCarregarCampos()"
         >
@@ -171,6 +176,7 @@
       <button
         mat-raised-button
         color="primary"
+        class="itau-btn"
         [disabled]="saving() || sortedKeys().length === 0"
         (click)="onSalvarTransacao()"
       >
@@ -185,7 +191,7 @@
 }
 
 <!-- Disparar transacao view -->
-@if (activeView() === 'disparar') {
+  @if (activeView() === 'disparar') {
   <div class="disparar-panel">
     <div class="panel-header">
       <h2>Disparar transação</h2>
@@ -284,6 +290,7 @@
       <button
         mat-raised-button
         color="primary"
+        class="itau-btn"
         [disabled]="executing() || sortedKeys().length === 0"
         (click)="onExecutarTransacao()"
       >
@@ -291,6 +298,7 @@
       </button>
       <button
         mat-raised-button
+        class="itau-btn"
         (click)="onEditarTransacao()"
       >
         Editar transação
@@ -298,10 +306,12 @@
       <button
         mat-raised-button
         color="warn"
+        class="itau-btn"
         (click)="onExcluirTransacao()"
       >
         Excluir transação
       </button>
     </div>
   </div>
-}
+  }
+</div>
