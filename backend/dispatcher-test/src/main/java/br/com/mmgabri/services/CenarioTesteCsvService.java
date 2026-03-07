@@ -5,7 +5,7 @@ import br.com.mmgabri.domains.CenarioTesteCsv;
 import br.com.mmgabri.domains.CenarioTesteCsvRequest;
 import org.springframework.stereotype.Service;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,16 +20,13 @@ public class CenarioTesteCsvService {
 
     public CenarioTesteCsv save(CenarioTesteCsvRequest request) {
         CenarioTesteCsv row = new CenarioTesteCsv();
-        row.setId(request.getId() == null || request.getId().isBlank() ? UUID.randomUUID().toString() : request.getId());
+        row.setId(UUID.randomUUID().toString());
         row.setNomeProduto(request.getNomeProduto());
         row.setTag(request.getTag());
         row.setDescricao(request.getDescricao());
-        row.setMessageIso(request.getMessageIso());
-        row.setCriador(request.getCriador());
-        row.setDataUpdate(request.getDataUpdate() == null || request.getDataUpdate().isBlank()
-                ? OffsetDateTime.now().toString()
-                : request.getDataUpdate());
-
+        row.setMessageIso(request.getMensagemIso());
+        row.setCriador("");
+        row.setDataUpdate(LocalDateTime.now().toString());
         csvAdapter.append(row);
         return row;
     }
