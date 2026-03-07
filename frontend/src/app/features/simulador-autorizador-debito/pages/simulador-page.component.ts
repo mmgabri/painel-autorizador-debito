@@ -112,8 +112,8 @@ export class SimuladorPageComponent {
   // ─── Incluir view actions ───
 
   onCarregarCampos(): void {
-    const message = this.incluirForm.controls.message.value ?? '';
-    if (!message || message.trim().length < 4) {
+    const isoMessage = this.incluirForm.controls.message.value ?? '';
+    if (!isoMessage || isoMessage.trim().length < 4) {
       this.snackBar.open('Informe a mensagem ISO com no mínimo 4 caracteres', 'Fechar', {
         duration: 3000,
       });
@@ -122,7 +122,7 @@ export class SimuladorPageComponent {
 
     this.loading.set(true);
 
-    this.isoParserService.parseIso(message).subscribe({
+    this.isoParserService.parseIso(isoMessage).subscribe({
       next: (result) => {
         this.loading.set(false);
         this.buildBitsForm(result);
