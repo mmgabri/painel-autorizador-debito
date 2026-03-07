@@ -46,6 +46,7 @@ export class SimuladorPageComponent {
   });
 
   // Request fields (shared between incluir and disparar views)
+  mti = signal('');
   bitsForm = signal(new FormGroup<Record<string, FormControl<string>>>({}));
   sortedKeys = signal<string[]>([]);
   loading = signal(false);
@@ -125,7 +126,8 @@ export class SimuladorPageComponent {
     this.isoParserService.parseIso(isoMessage).subscribe({
       next: (result) => {
         this.loading.set(false);
-        this.buildBitsForm(result);
+        this.mti.set(result.mti ?? '');
+        this.buildBitsForm(result.fields);
       },
       error: () => {
         this.loading.set(false);
@@ -274,7 +276,8 @@ export class SimuladorPageComponent {
       this.isoParserService.parseIso(transacao.mensagemIso).subscribe({
         next: (result) => {
           this.loading.set(false);
-          this.buildBitsForm(result);
+          this.mti.set(result.mti ?? '');
+          this.buildBitsForm(result.fields);
         },
         error: () => {
           this.loading.set(false);
@@ -312,7 +315,8 @@ export class SimuladorPageComponent {
     this.isoParserService.parseIso(transacao.mensagemIso).subscribe({
       next: (result) => {
         this.loading.set(false);
-        this.buildBitsForm(result);
+        this.mti.set(result.mti ?? '');
+        this.buildBitsForm(result.fields);
       },
       error: () => {
         this.loading.set(false);
@@ -344,6 +348,7 @@ export class SimuladorPageComponent {
   }
 
   private resetBitsForm(): void {
+    this.mti.set('');
     this.bitsForm.set(new FormGroup<Record<string, FormControl<string>>>({}));
     this.sortedKeys.set([]);
     this.updateAvailableBits();
