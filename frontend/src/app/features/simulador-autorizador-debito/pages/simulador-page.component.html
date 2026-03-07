@@ -16,6 +16,57 @@
   </button>
 </div>
 
+<!-- Buscar transacao view -->
+@if (activeView() === 'buscar') {
+  <div class="buscar-panel">
+    <div class="panel-header">
+      <h2>Buscar transação</h2>
+    </div>
+
+    <div class="filter-row">
+      <mat-form-field appearance="outline" class="filter-field filter-nome">
+        <mat-label>Filtrar por Nome Produto</mat-label>
+        <input matInput [(ngModel)]="buscarFiltro" maxlength="15" (keyup.enter)="onFiltrarBusca()" />
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="filter-field filter-tag">
+        <mat-label>Filtrar por Tag</mat-label>
+        <input matInput [(ngModel)]="buscarFiltroTag" maxlength="15" (keyup.enter)="onFiltrarBusca()" />
+      </mat-form-field>
+      <button mat-raised-button color="primary" class="filtrar-btn" (click)="onFiltrarBusca()">
+        Filtrar
+      </button>
+    </div>
+
+    @if (buscarLoading()) {
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    }
+
+    <div class="transacao-list">
+      @for (item of buscarTransacoes(); track item.id) {
+        <div class="transacao-row">
+          <div class="transacao-info">
+            <span class="nome">{{ item.nomeProduto }}</span>
+            <span class="tag">{{ item.tag }}</span>
+            <span class="descricao">{{ item.descricao }}</span>
+          </div>
+          <button
+            mat-icon-button
+            color="primary"
+            (click)="onSelecionarTransacao(item)"
+            aria-label="Executar transação"
+          >
+            <mat-icon>play_circle</mat-icon>
+          </button>
+        </div>
+      } @empty {
+        @if (!buscarLoading()) {
+          <p class="empty-message">Nenhuma transação encontrada</p>
+        }
+      }
+    </div>
+  </div>
+}
+
 <!-- Incluir transacao view -->
 @if (activeView() === 'incluir') {
   <div class="incluir-panel">

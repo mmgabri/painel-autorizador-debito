@@ -1,17 +1,16 @@
-
-// Include theming for Angular Material with `mat.theme()`.
-// This Sass mixin will define CSS variables that are used for styling Angular Material
-// components according to the Material 3 design spec.
-// Learn more about theming and how to use it for your application's
-// custom components at https://material.angular.dev/guide/theming
+// Itaú Design System — Angular Material theming
 @use '@angular/material' as mat;
+
+// Itaú brand colors
+$itau-navy: #003366;
+$itau-orange: #ec7000;
 
 html {
   height: 100%;
   @include mat.theme((
     color: (
       primary: mat.$azure-palette,
-      tertiary: mat.$blue-palette,
+      tertiary: mat.$orange-palette,
     ),
     typography: Roboto,
     density: 0,
@@ -19,20 +18,70 @@ html {
 }
 
 body {
-  // Default the application to a light color theme. This can be changed to
-  // `dark` to enable the dark color theme, or to `light dark` to defer to the
-  // user's system settings.
   color-scheme: light;
-
-  // Set a default background, font and text colors for the application using
-  // Angular Material's system-level CSS variables. Learn more about these
-  // variables at https://material.angular.dev/guide/system-variables
-  background-color: var(--mat-sys-surface);
-  color: var(--mat-sys-on-surface);
-  font: var(--mat-sys-body-medium);
-
-  // Reset the user agent margin.
+  background-color: #fafafa;
+  color: #1a1a1a;
+  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 14px;
   margin: 0;
   height: 100%;
 }
-/* You can add global styles to this file, and also import other style files */
+
+// Global Itaú overrides
+
+// Buttons — primary uses Itaú navy
+.mat-mdc-raised-button.mat-primary,
+.mat-mdc-flat-button.mat-primary,
+.mat-mdc-unelevated-button.mat-primary {
+  --mdc-filled-button-container-color: #{$itau-navy};
+  --mdc-filled-button-label-text-color: #fff;
+}
+
+// Form fields — outline uses Itaú navy for focus
+.mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
+.mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
+.mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
+  border-color: $itau-navy !important;
+}
+
+.mat-mdc-form-field.mat-focused .mat-mdc-floating-label {
+  color: $itau-navy !important;
+}
+
+// Accent / warn color overrides
+.mat-mdc-raised-button.mat-accent,
+.mat-mdc-flat-button.mat-accent {
+  --mdc-filled-button-container-color: #{$itau-orange};
+  --mdc-filled-button-label-text-color: #fff;
+}
+
+// Cards
+.mat-mdc-card {
+  border-radius: 8px !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06) !important;
+}
+
+// Page headings (h1)
+h1 {
+  color: $itau-navy;
+  font-weight: 600;
+  font-size: 22px;
+  letter-spacing: -0.3px;
+}
+
+h2 {
+  color: $itau-navy;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+// Sidenav link styling
+.mat-mdc-nav-list .mat-mdc-list-item {
+  border-radius: 0 !important;
+  margin: 0 !important;
+}
+
+// Snackbar
+.mat-mdc-snack-bar-container {
+  --mdc-snackbar-container-color: #{$itau-navy};
+}
