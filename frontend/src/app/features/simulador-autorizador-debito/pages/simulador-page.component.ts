@@ -191,7 +191,7 @@ export class SimuladorPageComponent {
     this.saving.set(true);
 
     this.isoParserService
-      .buildIso(fieldsMap)
+      .buildIso(this.mti(), fieldsMap)
       .pipe(
         switchMap((buildResult) => {
           this.incluirForm.controls.message.setValue(buildResult.message);
