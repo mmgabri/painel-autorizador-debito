@@ -7,16 +7,16 @@
     [class.active]="activeView() === 'buscar' || activeView() === 'disparar'"
     (click)="onDispararTransacao()"
   >
-    <mat-icon>play_circle</mat-icon>
-    Disparar transação
+    <mat-icon>search</mat-icon>
+    Pesquisar Cenários
   </button>
   <button
     class="itau-tab"
     [class.active]="activeView() === 'incluir'"
     (click)="onIncluirTransacao()"
   >
-    <mat-icon>add_circle</mat-icon>
-    Incluir transação
+    <mat-icon>settings</mat-icon>
+    Configurar Cenário
   </button>
 </div>
 <div class="itau-tab-content">
@@ -24,9 +24,7 @@
 <!-- Buscar transacao view -->
   @if (activeView() === 'buscar') {
   <div class="buscar-panel">
-    <div class="panel-header">
-      <h2>Buscar transação</h2>
-    </div>
+    
 
     <div class="filter-row">
       <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filter-field filter-nome">
@@ -75,9 +73,6 @@
 <!-- Incluir transacao view -->
   @if (activeView() === 'incluir') {
   <div class="incluir-panel">
-    <div class="panel-header">
-      <h2>{{ editingTransacaoId() ? 'Editar transação' : 'Incluir transação' }}</h2>
-    </div>
 
     <form [formGroup]="incluirForm">
       <!-- Nome Produto -->
