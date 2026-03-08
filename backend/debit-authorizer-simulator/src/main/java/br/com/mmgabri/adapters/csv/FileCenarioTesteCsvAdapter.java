@@ -20,7 +20,7 @@ public class FileCenarioTesteCsvAdapter implements CenarioTesteCsvAdapter {
     private final Path csvPath;
 
     public FileCenarioTesteCsvAdapter(
-            @Value("${app.csv.cenarios-file:src/main/resources/cenarios_testes.csv}") String csvFile) {
+            @Value("${app.csv.cenarios-file:../../local/simulador_cenarios_testes.csv}") String csvFile) {
         this.csvPath = Paths.get(csvFile);
         ensureFileExists();
     }

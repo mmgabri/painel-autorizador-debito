@@ -118,7 +118,7 @@
       <!-- Mensagem ISO + Carregar campos button inline -->
       <div class="iso-input-row">
         <mat-form-field appearance="outline" subscriptSizing="dynamic" class="iso-input-field">
-          <mat-label>Mensagem ISO 8583 (hex)</mat-label>
+          <mat-label>Mensagem ISO</mat-label>
           <input matInput formControlName="isoMessage" placeholder="Ex: 30313030..." />
         </mat-form-field>
         <button
@@ -215,6 +215,7 @@
       <h2>Disparar transação</h2>
     </div>
 
+
     @if (selectedTransacao(); as transacao) {
       <!-- Nome Produto (readonly) -->
       <mat-form-field appearance="outline" class="full-width">
@@ -236,7 +237,7 @@
 
       <!-- Mensagem ISO (readonly) -->
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Mensagem ISO 8583 (hex)</mat-label>
+        <mat-label>Mensagem ISO</mat-label>
         <input matInput [value]="transacao.isoMessage" readonly />
       </mat-form-field>
 
@@ -288,16 +289,16 @@
           (change)="onToggleEstornar($event.checked)"
           color="primary"
         >
-          Estornar
+          Estornar transação ?
         </mat-checkbox>
 
         @if (estornarChecked() && estornoTransacao()) {
           <mat-form-field appearance="outline" class="estorno-delay-field" subscriptSizing="dynamic">
-            <mat-label>Tempo de espera (segundos)</mat-label>
+            <mat-label>Estornar após (seg)</mat-label>
             <input
               matInput
               type="number"
-              min="0"
+              min="5"
               [value]="estornoDelay()"
               (input)="estornoDelay.set(+$any($event.target).value)"
             />
@@ -309,7 +310,7 @@
     <!-- Estorno fields (after Campos ISO Request) -->
     @if (estornarChecked() && estornoTransacao(); as estorno) {
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Mensagem ISO Estorno (hex)</mat-label>
+        <mat-label>Mensagem ISO de Estorno</mat-label>
         <input matInput [value]="estornoIsoMessage() || estorno.isoMessage" readonly />
       </mat-form-field>
 
@@ -339,6 +340,32 @@
           </mat-card-content>
         </mat-card>
       }
+    }
+
+     <!-- Conciliar checkbox + Tempo de espera inline (outside the card, after cards-row) -->
+    @if (selectedTransacao()) {
+      <div class="conciliacao-section" [class.conciliacao-section-estorno]="estornarChecked()" [class.conciliacao-section-normal]="!estornarChecked()">
+        <mat-checkbox
+          [checked]="conciliarChecked()"
+          color="primary"
+          disabled
+        >
+          Conciliar transação ? (em construção)
+        </mat-checkbox>
+
+        @if (conciliarChecked()) {
+          <mat-form-field appearance="outline" class="estorno-delay-field" subscriptSizing="dynamic">
+            <mat-label>Conciliar após (seg)</mat-label>
+            <input
+              matInput
+              type="number"
+              min="5"
+              [value]="estornoDelay()"
+              (input)="estornoDelay.set(+$any($event.target).value)"
+            />
+          </mat-form-field>
+        }
+      </div>
     }
 
     <!-- Interim overlay (aguardando estorno) -->
@@ -390,7 +417,6 @@
           <div class="success-icon-circle">
             <mat-icon class="success-check-icon">check</mat-icon>
           </div>
-          <h3 class="success-title">Tudo certo!</h3>
           <p class="success-message">{{ successMessageText() }}</p>
           <div class="countdown-container">
             <svg class="countdown-ring" viewBox="0 0 48 48">
@@ -398,7 +424,7 @@
               <circle
                 class="countdown-ring-progress"
                 cx="24" cy="24" r="20"
-                [style.stroke-dashoffset]="125.6 - (125.6 * countdownSeconds() / 5)"
+                [style.stroke-dashoffset]="125.6 - (125.6 * countdownSeconds() / 3)"
               />
             </svg>
             <span class="countdown-number">{{ countdownSeconds() }}</span>

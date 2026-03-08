@@ -3,7 +3,7 @@ package br.com.mmgabri.services;
 import br.com.mmgabri.adapters.csv.CenarioTesteCsvAdapter;
 import br.com.mmgabri.domains.CenarioTesteCsv;
 import br.com.mmgabri.domains.CenarioTesteCsvRequest;
-import br.com.mmgabri.domains.ExecucaoCenarioRequest;
+import br.com.mmgabri.domains.IsoParseRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -74,20 +74,15 @@ public class CenarioTesteCsvService {
         csvAdapter.replaceAll(cenarios);
     }
 
-    public void executeById(ExecucaoCenarioRequest request) {
+    public void executeById(IsoParseRequest request) {
 
     }
 
-    public CenarioTesteCsv executeByIsoMessage(String isoMessage) {
-        if (isoMessage == null || isoMessage.isBlank()) {
+    public void execute(IsoParseRequest request) {
+        if (request.getIsoMessage() == null || request.getIsoMessage().isBlank()) {
             throw new IllegalArgumentException("isoMessage nao pode ser vazia para execucao.");
         }
 
-        // TODO: Implementar lógica real de execução da transação via isoMessage
-        CenarioTesteCsv result = new CenarioTesteCsv();
-        result.setIsoMessage(isoMessage.trim());
-        result.setDataUpdate(LocalDateTime.now().toString());
-        return result;
     }
 
     public List<CenarioTesteCsv> findAll() {

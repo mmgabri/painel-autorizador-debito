@@ -72,7 +72,7 @@ export class IsoParserService {
 
   executarTransacao(isoMessage: string): Observable<{ message: string }> {
     return this.http.post<{ message: string }>(
-      `${this.baseUrl}/api/simulador/cenarios/execucao`,
+      `${this.baseUrl}/api/simulador/cenarios/executar`,
       { isoMessage },
     );
   }
