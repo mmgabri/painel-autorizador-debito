@@ -373,75 +373,96 @@ export class SimuladorPageComponent {
     this.showResponse.set(false);
     this.showSuccessOverlay.set(false);
 
-    this.isoParserService.executarTransacao(transacao.id).pipe(
-      switchMap(() => {
-        const estorno = this.estornoTransacao();
-        if (this.estornarChecked() && estorno) {
-          // Show interim overlay (same style as success overlay)
-          const delaySeconds = this.estornoDelay() || 0;
-          this.interimMessageText.set('Transação financeira enviada, aguardando pra enviar o estorno');
-          this.interimCountdownSeconds.set(delaySeconds);
-          this.showInterimOverlay.set(true);
+    // Dynamically update Bit 07 with current timestamp before each dispatch
+    const newBit07 = this.generateBit07();
+    const form = this.bitsForm();
+    if (form.controls['07']) {
+      form.controls['07'].setValue(newBit07);
+    }
 
-          // Countdown for interim overlay
-          if (this.interimCountdownInterval) {
-            clearInterval(this.interimCountdownInterval);
-          }
-          if (delaySeconds > 0) {
-            this.interimCountdownInterval = setInterval(() => {
-              const current = this.interimCountdownSeconds();
-              if (current <= 1) {
-                if (this.interimCountdownInterval) {
-                  clearInterval(this.interimCountdownInterval);
-                  this.interimCountdownInterval = null;
-                }
-                this.interimCountdownSeconds.set(0);
-              } else {
-                this.interimCountdownSeconds.set(current - 1);
-              }
-            }, 1000);
-          }
+    // Rebuild the main ISO message with updated Bit 07
+    const currentFields = this.getRequestFieldsMap();
+    const currentMti = this.mti() || '0200';
 
-          const delayMs = delaySeconds * 1000;
-          return of(null).pipe(
-            delay(delayMs),
-            tap(() => this.onFecharInterimOverlay()),
-            switchMap(() => this.isoParserService.executarTransacao(estorno.id)),
-          );
-        }
-        return of(null);
+    this.isoParserService.buildIso(currentMti, currentFields).pipe(
+      switchMap((built) => {
+        // Update the selected transacao's isoMessage in memory
+        const updatedTransacao = { ...transacao, isoMessage: built.isoMessage };
+        this.selectedTransacao.set(updatedTransacao);
+        return this.isoParserService.executarTransacao(transacao.id);
       }),
+      switchMap(() => this.afterMainTransactionExecuted(transacao)),
     ).subscribe({
-      next: () => {
-        this.executing.set(false);
-        const estorno = this.estornoTransacao();
-        if (this.estornarChecked() && estorno) {
-          this.successMessageText.set('Transação e estorno disparados com sucesso. Verificar logs');
-        } else {
-          this.successMessageText.set('A transação foi disparada com sucesso. Verificar logs');
-        }
-        this.countdownSeconds.set(5);
-        this.showSuccessOverlay.set(true);
-
-        // Countdown interval (tick every second)
-        if (this.countdownInterval) {
-          clearInterval(this.countdownInterval);
-        }
-        this.countdownInterval = setInterval(() => {
-          const current = this.countdownSeconds();
-          if (current <= 1) {
-            this.onFecharSuccessOverlay();
-          } else {
-            this.countdownSeconds.set(current - 1);
-          }
-        }, 1000);
-      },
+      next: () => this.onTransactionSuccess(),
       error: () => {
         this.executing.set(false);
         this.onFecharInterimOverlay();
         this.snackBar.open('Erro ao executar transação', 'Fechar', { duration: 5000 });
       },
     });
+  }
+
+  private afterMainTransactionExecuted(_transacao: TransacaoItem) {
+    const estorno = this.estornoTransacao();
+    if (this.estornarChecked() && estorno) {
+      // Show interim overlay (same style as success overlay)
+      const delaySeconds = this.estornoDelay() || 0;
+      this.interimMessageText.set('Transação financeira enviada, aguardando pra enviar o estorno');
+      this.interimCountdownSeconds.set(delaySeconds);
+      this.showInterimOverlay.set(true);
+
+      // Countdown for interim overlay
+      if (this.interimCountdownInterval) {
+        clearInterval(this.interimCountdownInterval);
+      }
+      if (delaySeconds > 0) {
+        this.interimCountdownInterval = setInterval(() => {
+          const current = this.interimCountdownSeconds();
+          if (current <= 1) {
+            if (this.interimCountdownInterval) {
+              clearInterval(this.interimCountdownInterval);
+              this.interimCountdownInterval = null;
+            }
+            this.interimCountdownSeconds.set(0);
+          } else {
+            this.interimCountdownSeconds.set(current - 1);
+          }
+        }, 1000);
+      }
+
+      const delayMs = delaySeconds * 1000;
+      return of(null).pipe(
+        delay(delayMs),
+        tap(() => this.onFecharInterimOverlay()),
+        switchMap(() => this.isoParserService.executarTransacao(estorno.id)),
+      );
+    }
+    return of(null);
+  }
+
+  private onTransactionSuccess(): void {
+    this.executing.set(false);
+    const estorno = this.estornoTransacao();
+    if (this.estornarChecked() && estorno) {
+      this.successMessageText.set('Transação e estorno disparados com sucesso. Verificar logs');
+    } else {
+      this.successMessageText.set('A transação foi disparada com sucesso. Verificar logs');
+    }
+    this.countdownSeconds.set(5);
+    this.showSuccessOverlay.set(true);
+
+    // Countdown interval (tick every second)
+    if (this.countdownInterval) {
+      clearInterval(this.countdownInterval);
+    }
+    this.countdownInterval = setInterval(() => {
+      const current = this.countdownSeconds();
+      if (current <= 1) {
+        this.onFecharSuccessOverlay();
+      } else {
+        this.countdownSeconds.set(current - 1);
+      }
+    }, 1000);
   }
 
   onFecharInterimOverlay(): void {
