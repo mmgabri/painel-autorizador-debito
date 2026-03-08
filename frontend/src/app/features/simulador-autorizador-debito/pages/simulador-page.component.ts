@@ -376,8 +376,9 @@ export class SimuladorPageComponent {
     // Dynamically update Bit 07 with current timestamp before each dispatch
     const newBit07 = this.generateBit07();
     const form = this.bitsForm();
-    if (form.controls['07']) {
-      form.controls['07'].setValue(newBit07);
+    const bit07FormKey = this.findFormKey(form, 7);
+    if (bit07FormKey) {
+      form.controls[bit07FormKey].setValue(newBit07);
     }
 
     // Also update Bit 07 inside Bit 90 of the estorno (if estorno is selected)
@@ -570,10 +571,15 @@ export class SimuladorPageComponent {
       next: (result) => {
         this.loading.set(false);
         this.mti.set(result.mti ?? '');
-        // Auto-populate Bit 07 with current timestamp (mmddhhmmss)
-        const fields = { ...result.fields };
-        fields['07'] = this.generateBit07();
-        this.buildBitsForm(fields);
+            // Auto-populate Bit 07 with current timestamp (mmddhhmmss)
+            const fields = { ...result.fields };
+            const bit07Key = this.findFieldKey(fields, 7);
+            if (bit07Key) {
+              fields[bit07Key] = this.generateBit07();
+            } else {
+              fields['07'] = this.generateBit07();
+            }
+            this.buildBitsForm(fields);
       },
       error: () => {
         this.loading.set(false);
@@ -636,8 +642,10 @@ export class SimuladorPageComponent {
   private computeBit90(): string {
     const mainMti = this.mti() || '0000';
     const form = this.bitsForm();
-    const bit11 = form.controls['11']?.value ?? '000000';
-    const bit07 = form.controls['07']?.value ?? '0000000000';
+    const bit11Key = this.findFormKey(form, 11) || '11';
+    const bit07Key = this.findFormKey(form, 7) || '07';
+    const bit11 = form.controls[bit11Key]?.value ?? '000000';
+    const bit07 = form.controls[bit07Key]?.value ?? '0000000000';
 
     const mtiPart = mainMti.padStart(4, '0').slice(-4);
     const bit11Part = bit11.padStart(6, '0').slice(-6);
@@ -725,6 +733,24 @@ export class SimuladorPageComponent {
     this.estornoBitsForm.set(new FormGroup<Record<string, FormControl<string>>>({}));
     this.estornoIsoMessage.set('');
     this.estornoBit90.set('');
+  }
+
+  /** Find the key for a given bit number in a fields map (handles '7' vs '07') */
+  private findFieldKey(fields: Record<string, string>, bitNum: number): string | null {
+    const padded = String(bitNum).padStart(2, '0');
+    const unpadded = String(bitNum);
+    if (padded in fields) return padded;
+    if (unpadded in fields) return unpadded;
+    return null;
+  }
+
+  /** Find the key for a given bit number in a FormGroup (handles '7' vs '07') */
+  private findFormKey(form: FormGroup, bitNum: number): string | null {
+    const padded = String(bitNum).padStart(2, '0');
+    const unpadded = String(bitNum);
+    if (form.controls[padded]) return padded;
+    if (form.controls[unpadded]) return unpadded;
+    return null;
   }
 
   private carregarTransacoesBusca(nomeProduto?: string, tag?: string): void {
