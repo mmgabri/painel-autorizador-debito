@@ -15,15 +15,25 @@ import java.util.List;
 @Component
 public class FileCenarioTesteCsvAdapter implements CenarioTesteCsvAdapter {
 
-    private static final String HEADER = "id,nome_produto,tag,descricao,message_iso,message_model,bandeira,data_update";
+    private static final String HEADER = "id,nome_produto,message_model,bandeira,tag,descricao,message_iso,data_update";
 
     private final Path csvPath;
 
+    //Aponta para o arquivo csv em painel-autorizador-debito\local
     public FileCenarioTesteCsvAdapter(
             @Value("${app.csv.cenarios-file:../../local/simulador_cenarios_testes.csv}") String csvFile) {
         this.csvPath = Paths.get(csvFile);
         ensureFileExists();
     }
+
+
+     //Aponta para o arquivo csv em resources
+//    public FileCenarioTesteCsvAdapter(
+//            @Value("${app.csv.cenarios-file:src/main/resources/cenarios_testes.csv}") String csvFile) {
+//        this.csvPath = Paths.get(csvFile);
+//        ensureFileExists();
+//    }
+
 
     @Override
     public synchronized void append(CenarioTesteCsv cenario) {
@@ -68,19 +78,19 @@ public class FileCenarioTesteCsvAdapter implements CenarioTesteCsvAdapter {
                 }
 
                 List<String> values = parseCsvLine(line);
-                if (values.size() < 6) {
+                if (values.size() < 7) {
                     continue;
                 }
 
                 CenarioTesteCsv row = new CenarioTesteCsv();
                 row.setId(values.get(0));
                 row.setNomeProduto(values.get(1));
-                row.setTag(values.get(2));
-                row.setDescricao(values.get(3));
-                row.setIsoMessage(values.get(4));
-                row.setMessageModel(values.size() > 5 ? values.get(5) : "");
-                row.setBandeira(values.size() > 6 ? values.get(6) : "");
-                row.setDataUpdate(values.size() > 7 ? values.get(7) : (values.size() > 5 ? values.get(5) : ""));
+                row.setMessageModel(values.get(2));
+                row.setBandeira(values.get(3));
+                row.setTag(values.get(4));
+                row.setDescricao(values.get(5));
+                row.setIsoMessage(values.get(6));
+                row.setDataUpdate(values.size() >= 8 ? values.get(7) : "");
                 result.add(row);
             }
             return result;
@@ -93,11 +103,11 @@ public class FileCenarioTesteCsvAdapter implements CenarioTesteCsvAdapter {
         return String.join(",",
                 escape(cenario.getId()),
                 escape(cenario.getNomeProduto()),
+                escape(cenario.getMessageModel()),
+                escape(cenario.getBandeira()),
                 escape(cenario.getTag()),
                 escape(cenario.getDescricao()),
                 escape(cenario.getIsoMessage()),
-                escape(cenario.getMessageModel()),
-                escape(cenario.getBandeira()),
                 escape(cenario.getDataUpdate())
         );
     }

@@ -7,13 +7,8 @@ import java.util.Map;
 
 @Data
 public class IsoBuildRequest {
-
-    @NotBlank
-    private String mti;
-
-    private Map<String, String> fields;
-
     private String messageModel;
     private String bandeira;
-
+    private String mti;
+    private Map<String, String> fields;
 }

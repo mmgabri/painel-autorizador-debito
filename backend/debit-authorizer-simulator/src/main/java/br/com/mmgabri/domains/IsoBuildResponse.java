@@ -5,9 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Data
 public class IsoBuildResponse {
-
     private String isoMessage;
-
     public IsoBuildResponse() {
     }
 

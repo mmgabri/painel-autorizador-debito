@@ -6,7 +6,6 @@ import java.util.Map;
 
 @Data
 public class IsoParseResponse {
-
     private String mti;
     private Map<String, String> fields;
 
