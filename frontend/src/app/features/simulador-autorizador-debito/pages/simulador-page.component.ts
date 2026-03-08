@@ -812,6 +812,30 @@ export class SimuladorPageComponent {
     });
   }
 
+  /** Rebuild the estorno ISO message when the user edits a field in Disparar view */
+  onEstornoFieldChanged(): void {
+    const estorno = this.estornoTransacao();
+    if (!estorno || this.estornoSortedKeys().length === 0) return;
+
+    const estornoForm = this.estornoBitsForm();
+    const estornoFields: Record<string, string> = {};
+    for (const key of this.estornoSortedKeys()) {
+      estornoFields[key] = estornoForm.controls[key]?.value ?? '';
+    }
+    const estornoMti = this.estornoMti() || '0400';
+    const estornoMessageModel = estorno.messageModel || '';
+    const estornoBandeira = estorno.bandeira || '';
+
+    this.isoParserService.buildIso(estornoMti, estornoFields, estornoMessageModel, estornoBandeira).subscribe({
+      next: (built) => {
+        this.estornoIsoMessage.set(built.isoMessage);
+      },
+      error: () => {
+        // silently ignore rebuild errors while editing
+      },
+    });
+  }
+
   private carregarTransacoesBusca(nomeProduto?: string, tag?: string, bandeira?: string): void {
     this.buscarLoading.set(true);
     this.isoParserService.consultarTransacoes(nomeProduto, tag, bandeira).subscribe({
