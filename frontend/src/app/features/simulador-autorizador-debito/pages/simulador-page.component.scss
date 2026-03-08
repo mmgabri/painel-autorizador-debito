@@ -470,6 +470,9 @@ h1 {
 
 // Estorno section
 .estorno-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
   margin: 12px 0 8px;
 }
 

@@ -240,7 +240,7 @@
         <input matInput [value]="transacao.isoMessage" readonly />
       </mat-form-field>
 
-      <!-- Estornar checkbox -->
+      <!-- Estornar checkbox + Tempo de espera inline -->
       <div class="estorno-section">
         <mat-checkbox
           [checked]="estornarChecked()"
@@ -249,53 +249,20 @@
         >
           Estornar
         </mat-checkbox>
+
+        @if (estornarChecked() && estornoTransacao()) {
+          <mat-form-field appearance="outline" class="estorno-delay-field" subscriptSizing="dynamic">
+            <mat-label>Tempo de espera (segundos)</mat-label>
+            <input
+              matInput
+              type="number"
+              min="0"
+              [value]="estornoDelay()"
+              (input)="estornoDelay.set(+$any($event.target).value)"
+            />
+          </mat-form-field>
+        }
       </div>
-
-      <!-- Estorno selected model -->
-      @if (estornarChecked() && estornoTransacao(); as estorno) {
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Mensagem ISO Estorno (hex)</mat-label>
-          <input matInput [value]="estornoIsoMessage() || estorno.isoMessage" readonly />
-        </mat-form-field>
-
-        @if (estornoLoading()) {
-          <mat-progress-bar mode="indeterminate" class="loading-bar"></mat-progress-bar>
-        }
-
-        <!-- Estorno parsed fields card -->
-        @if (estornoSortedKeys().length > 0) {
-          <mat-card class="bits-card outlined-card estorno-fields-card">
-            <span class="card-legend">Campos ISO Estorno</span>
-            <mat-card-content>
-              @if (estornoMti()) {
-                <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>MTI</mat-label>
-                  <input matInput [value]="estornoMti()" readonly />
-                </mat-form-field>
-              }
-              <form [formGroup]="estornoBitsForm()" class="bits-vertical">
-                @for (key of estornoSortedKeys(); track key) {
-                  <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>Bit {{ key }}</mat-label>
-                    <input matInput [formControlName]="key" readonly />
-                  </mat-form-field>
-                }
-              </form>
-            </mat-card-content>
-          </mat-card>
-        }
-
-        <mat-form-field appearance="outline" class="estorno-delay-field">
-          <mat-label>Tempo de espera (segundos)</mat-label>
-          <input
-            matInput
-            type="number"
-            min="0"
-            [value]="estornoDelay()"
-            (input)="estornoDelay.set(+$any($event.target).value)"
-          />
-        </mat-form-field>
-      }
     }
 
     @if (loading()) {
@@ -334,6 +301,41 @@
       </mat-card>
 
     </div>
+
+    <!-- Estorno fields (after Campos ISO Request) -->
+    @if (estornarChecked() && estornoTransacao(); as estorno) {
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Mensagem ISO Estorno (hex)</mat-label>
+        <input matInput [value]="estornoIsoMessage() || estorno.isoMessage" readonly />
+      </mat-form-field>
+
+      @if (estornoLoading()) {
+        <mat-progress-bar mode="indeterminate" class="loading-bar"></mat-progress-bar>
+      }
+
+      <!-- Estorno parsed fields card -->
+      @if (estornoSortedKeys().length > 0) {
+        <mat-card class="bits-card outlined-card estorno-fields-card">
+          <span class="card-legend">Campos ISO Estorno</span>
+          <mat-card-content>
+            @if (estornoMti()) {
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>MTI</mat-label>
+                <input matInput [value]="estornoMti()" readonly />
+              </mat-form-field>
+            }
+            <form [formGroup]="estornoBitsForm()" class="bits-vertical">
+              @for (key of estornoSortedKeys(); track key) {
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Bit {{ key }}</mat-label>
+                  <input matInput [formControlName]="key" readonly />
+                </mat-form-field>
+              }
+            </form>
+          </mat-card-content>
+        </mat-card>
+      }
+    }
 
     <!-- Interim overlay (aguardando estorno) -->
     @if (showInterimOverlay()) {
