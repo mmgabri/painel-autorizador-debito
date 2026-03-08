@@ -275,35 +275,36 @@
             }
           }
 
-          <!-- Estornar checkbox + Tempo de espera inline (after last bit) -->
-          @if (selectedTransacao()) {
-            <div class="estorno-section">
-              <mat-checkbox
-                [checked]="estornarChecked()"
-                (change)="onToggleEstornar($event.checked)"
-                color="primary"
-              >
-                Estornar
-              </mat-checkbox>
-
-              @if (estornarChecked() && estornoTransacao()) {
-                <mat-form-field appearance="outline" class="estorno-delay-field" subscriptSizing="dynamic">
-                  <mat-label>Tempo de espera (segundos)</mat-label>
-                  <input
-                    matInput
-                    type="number"
-                    min="0"
-                    [value]="estornoDelay()"
-                    (input)="estornoDelay.set(+$any($event.target).value)"
-                  />
-                </mat-form-field>
-              }
-            </div>
-          }
         </mat-card-content>
       </mat-card>
 
     </div>
+
+    <!-- Estornar checkbox + Tempo de espera inline (outside the card, after cards-row) -->
+    @if (selectedTransacao()) {
+      <div class="estorno-section">
+        <mat-checkbox
+          [checked]="estornarChecked()"
+          (change)="onToggleEstornar($event.checked)"
+          color="primary"
+        >
+          Estornar
+        </mat-checkbox>
+
+        @if (estornarChecked() && estornoTransacao()) {
+          <mat-form-field appearance="outline" class="estorno-delay-field" subscriptSizing="dynamic">
+            <mat-label>Tempo de espera (segundos)</mat-label>
+            <input
+              matInput
+              type="number"
+              min="0"
+              [value]="estornoDelay()"
+              (input)="estornoDelay.set(+$any($event.target).value)"
+            />
+          </mat-form-field>
+        }
+      </div>
+    }
 
     <!-- Estorno fields (after Campos ISO Request) -->
     @if (estornarChecked() && estornoTransacao(); as estorno) {
