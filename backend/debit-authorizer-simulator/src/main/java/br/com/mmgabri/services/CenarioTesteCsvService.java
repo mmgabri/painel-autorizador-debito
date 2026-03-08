@@ -28,11 +28,11 @@ public class CenarioTesteCsvService {
         CenarioTesteCsv row = new CenarioTesteCsv();
         row.setId(UUID.randomUUID().toString());
         row.setNomeProduto(request.getNomeProduto());
+        row.setMessageModel(request.getMessageModel());
+        row.setBandeira(request.getBandeira());
         row.setTag(request.getTag());
         row.setDescricao(request.getDescricao());
         row.setIsoMessage(request.getIsoMessage());
-        row.setMessageModel(request.getMessageModel());
-        row.setBandeira(request.getBandeira());
         row.setDataUpdate(LocalDateTime.now().toString());
         csvAdapter.append(row);
         return row;
@@ -47,11 +47,11 @@ public class CenarioTesteCsvService {
                 // Atualiza todas as colunas da linha conforme payload da API.
                 cenario.setId(id);
                 cenario.setNomeProduto(request.getNomeProduto());
+                cenario.setMessageModel(request.getMessageModel());
+                cenario.setBandeira(request.getBandeira());
                 cenario.setTag(request.getTag());
                 cenario.setDescricao(request.getDescricao());
                 cenario.setIsoMessage(request.getIsoMessage());
-                cenario.setMessageModel(request.getMessageModel());
-                cenario.setBandeira(request.getBandeira());
                 cenario.setDataUpdate(LocalDateTime.now().toString());
 
                 csvAdapter.replaceAll(cenarios);
@@ -109,20 +109,6 @@ public class CenarioTesteCsvService {
         return csvAdapter.findAll().stream()
                 .filter(cenario -> containsIgnoreCase(cenario.getNomeProduto(), nomeProduto))
                 .filter(cenario -> containsIgnoreCase(cenario.getTag(), tag))
-                .toList();
-    }
-
-    public List<CenarioTesteCsv> findByBandeira(String bandeira) {
-        return csvAdapter.findAll().stream()
-                .filter(cenario -> containsIgnoreCase(cenario.getBandeira(), bandeira))
-                .toList();
-    }
-
-    public List<CenarioTesteCsv> findByFilters(String nomeProduto, String tag, String bandeira) {
-        return csvAdapter.findAll().stream()
-                .filter(cenario -> containsIgnoreCase(cenario.getNomeProduto(), nomeProduto))
-                .filter(cenario -> containsIgnoreCase(cenario.getTag(), tag))
-                .filter(cenario -> containsIgnoreCase(cenario.getBandeira(), bandeira))
                 .toList();
     }
 
