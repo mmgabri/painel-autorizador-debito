@@ -70,10 +70,10 @@ export class IsoParserService {
     return this.http.delete<{ message: string }>(`${this.baseUrl}/api/simulador/cenarios/${id}`);
   }
 
-  executarTransacao(id: string): Observable<{ message: string }> {
-  return this.http.post<{ message: string }>(
-    `${this.baseUrl}/api/simulador/cenarios/${id}`,
-    null
-  );
-}
+  executarTransacao(isoMessage: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(
+      `${this.baseUrl}/api/simulador/cenarios/execucao`,
+      { isoMessage },
+    );
+  }
 }
