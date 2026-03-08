@@ -11,7 +11,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialog } from '@angular/material/dialog';
-import { switchMap, EMPTY, delay, of, tap } from 'rxjs';
+import { switchMap, EMPTY, delay, of, tap, Observable } from 'rxjs';
 import { IsoParserService, TransacaoItem } from '../services/iso-parser.service';
 import { BuscarEstornoDialogComponent } from '../components/buscar-estorno-dialog.component';
 
@@ -380,6 +380,11 @@ export class SimuladorPageComponent {
       form.controls['07'].setValue(newBit07);
     }
 
+    // Also update Bit 07 inside Bit 90 of the estorno (if estorno is selected)
+    if (this.estornarChecked() && this.estornoTransacao()) {
+      this.updateEstornoBit90WithNewBit07(newBit07);
+    }
+
     // Rebuild the main ISO message with updated Bit 07
     const currentFields = this.getRequestFieldsMap();
     const currentMti = this.mti() || '0200';
@@ -391,6 +396,7 @@ export class SimuladorPageComponent {
         this.selectedTransacao.set(updatedTransacao);
         return this.isoParserService.executarTransacao(built.isoMessage);
       }),
+      switchMap(() => this.rebuildEstornoIsoIfNeeded()),
       switchMap(() => this.afterMainTransactionExecuted(transacao)),
     ).subscribe({
       next: () => this.onTransactionSuccess(),
@@ -637,6 +643,41 @@ export class SimuladorPageComponent {
     const bit11Part = bit11.padStart(6, '0').slice(-6);
     const bit07Part = bit07.padStart(10, '0').slice(-10);
     return `${mtiPart}${bit11Part}${bit07Part}`;
+  }
+
+  /** Update Bit 90 in the estorno form with the new Bit 07 from the main transaction */
+  private updateEstornoBit90WithNewBit07(newBit07: string): void {
+    const newBit90 = this.computeBit90();
+    this.estornoBit90.set(newBit90);
+
+    // Update Bit 90 in the estorno form if it exists
+    const estornoForm = this.estornoBitsForm();
+    if (estornoForm.controls['90']) {
+      estornoForm.controls['90'].setValue(newBit90);
+    }
+  }
+
+  /** Rebuild the estorno ISO message with updated Bit 90 (after Bit 07 changed) */
+  private rebuildEstornoIsoIfNeeded(): Observable<unknown> {
+    const estorno = this.estornoTransacao();
+    if (!this.estornarChecked() || !estorno || this.estornoSortedKeys().length === 0) {
+      return of(null);
+    }
+
+    // Collect current estorno fields from form
+    const estornoForm = this.estornoBitsForm();
+    const estornoFields: Record<string, string> = {};
+    for (const key of this.estornoSortedKeys()) {
+      estornoFields[key] = estornoForm.controls[key]?.value ?? '';
+    }
+    const estornoMti = this.estornoMti() || '0400';
+
+    // Rebuild estorno ISO with updated fields (including new Bit 90)
+    return this.isoParserService.buildIso(estornoMti, estornoFields).pipe(
+      tap((built) => {
+        this.estornoIsoMessage.set(built.isoMessage);
+      }),
+    );
   }
 
   private loadEstornoFields(estornoItem: TransacaoItem): void {
