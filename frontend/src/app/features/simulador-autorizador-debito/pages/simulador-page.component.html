@@ -380,7 +380,7 @@
               @for (key of estornoSortedKeys(); track key) {
                 <mat-form-field appearance="outline" class="full-width">
                   <mat-label>Bit {{ key }}</mat-label>
-                  <input matInput [formControlName]="key" readonly />
+                  <input matInput [formControlName]="key" (blur)="onEstornoFieldChanged()" />
                 </mat-form-field>
               }
             </form>
