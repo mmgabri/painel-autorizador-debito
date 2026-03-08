@@ -59,11 +59,11 @@
           <div class="transacao-info">
             <span class="nome">{{ item.nomeProduto }}</span>
             <span class="tag">{{ item.tag }}</span>
-            @if (item.messageModel) {
-              <span class="badge message-model">{{ item.messageModel }}</span>
-            }
             @if (item.bandeira) {
               <span class="badge bandeira-badge">{{ item.bandeira }}</span>
+            }
+             @if (item.messageModel) {
+              <span class="badge message-model">{{ item.messageModel }}</span>
             }
             <span class="descricao">{{ item.descricao }}</span>
           </div>
@@ -124,16 +124,6 @@
         <input matInput formControlName="tag" maxlength="60" />
       </mat-form-field>
 
-      <!-- Message Model -->
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Message Model</mat-label>
-        <mat-select formControlName="messageModel">
-          @for (opt of messageModelOptions; track opt) {
-            <mat-option [value]="opt">{{ opt }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
-
       <!-- Bandeira -->
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Bandeira</mat-label>
@@ -143,6 +133,17 @@
           }
         </mat-select>
       </mat-form-field>
+
+            <!-- Message Model -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Message Model</mat-label>
+        <mat-select formControlName="messageModel">
+          @for (opt of messageModelOptions; track opt) {
+            <mat-option [value]="opt">{{ opt }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
 
       <!-- Descricao -->
       <mat-form-field appearance="outline" class="full-width">
@@ -258,16 +259,16 @@
         <input matInput [value]="transacao.nomeProduto" readonly />
       </mat-form-field>
 
-      <!-- Message Model (readonly) -->
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Message Model</mat-label>
-        <input matInput [value]="transacao.messageModel" readonly />
-      </mat-form-field>
-
       <!-- Bandeira (readonly) -->
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Bandeira</mat-label>
         <input matInput [value]="transacao.bandeira" readonly />
+      </mat-form-field>
+
+      <!-- Message Model (readonly) -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Message Model</mat-label>
+        <input matInput [value]="transacao.messageModel" readonly />
       </mat-form-field>
 
       <!-- Tag (readonly) -->

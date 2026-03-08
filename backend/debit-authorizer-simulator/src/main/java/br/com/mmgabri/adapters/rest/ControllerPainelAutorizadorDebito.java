@@ -88,6 +88,42 @@ public class ControllerPainelAutorizadorDebito {
         return ResponseEntity.ok(resp);
     }
 
+    @GetMapping(value = "/cenarios", params = {"bandeira", "!nomeProduto", "!tag"})
+    public ResponseEntity<List<CenarioTesteCsv>> listByBandeira(@RequestParam String bandeira) {
+        logger.info("Requisição recebida para listar cenários por bandeira.");
+        var resp = csvService.findByBandeira(bandeira);
+        logger.info("Cenários de teste filtrados por bandeira com sucesso.");
+        return ResponseEntity.ok(resp);
+    }
+
+    @GetMapping(value = "/cenarios", params = {"bandeira", "nomeProduto", "!tag"})
+    public ResponseEntity<List<CenarioTesteCsv>> listByBandeiraAndNomeProduto(@RequestParam String bandeira,
+                                                                               @RequestParam String nomeProduto) {
+        logger.info("Requisição recebida para listar cenários por bandeira e nomeProduto.");
+        var resp = csvService.findByBandeiraAndNomeProduto(bandeira, nomeProduto);
+        logger.info("Cenários de teste filtrados por bandeira e nomeProduto com sucesso.");
+        return ResponseEntity.ok(resp);
+    }
+
+    @GetMapping(value = "/cenarios", params = {"bandeira", "!nomeProduto", "tag"})
+    public ResponseEntity<List<CenarioTesteCsv>> listByBandeiraAndTag(@RequestParam String bandeira,
+                                                                      @RequestParam String tag) {
+        logger.info("Requisição recebida para listar cenários por bandeira e tag.");
+        var resp = csvService.findByBandeiraAndTag(bandeira, tag);
+        logger.info("Cenários de teste filtrados por bandeira e tag com sucesso.");
+        return ResponseEntity.ok(resp);
+    }
+
+    @GetMapping(value = "/cenarios", params = {"bandeira", "nomeProduto", "tag"})
+    public ResponseEntity<List<CenarioTesteCsv>> listByBandeiraAndNomeProdutoAndTag(@RequestParam String bandeira,
+                                                                                    @RequestParam String nomeProduto,
+                                                                                    @RequestParam String tag) {
+        logger.info("Requisição recebida para listar cenários por bandeira, nomeProduto e tag.");
+        var resp = csvService.findByBandeiraAndNomeProdutoAndTag(bandeira, nomeProduto, tag);
+        logger.info("Cenários de teste filtrados por bandeira, nomeProduto e tag com sucesso.");
+        return ResponseEntity.ok(resp);
+    }
+
     @DeleteMapping("/cenarios/{id}")
     public ResponseEntity<Void> delete(@PathVariable String id) {
         logger.info("Requisição recebida para deletar cenário com id: {}", id);
