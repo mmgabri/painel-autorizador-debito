@@ -466,12 +466,14 @@ export class SimuladorPageComponent {
       }
 
       const delayMs = delaySeconds * 1000;
+      const estornoMessageModel = estorno.messageModel || '';
+      const estornoBandeira = estorno.bandeira || '';
       return of(null).pipe(
         delay(delayMs),
         tap(() => this.onFecharInterimOverlay()),
         switchMap(() => {
           const estornoIso = this.estornoIsoMessage() || estorno.isoMessage;
-          return this.isoParserService.executarTransacao(estornoIso);
+          return this.isoParserService.executarTransacao(estornoIso, estornoMessageModel, estornoBandeira);
         }),
       );
     }
@@ -713,7 +715,9 @@ export class SimuladorPageComponent {
     const estornoMti = this.estornoMti() || '0400';
 
     // Rebuild estorno ISO with updated fields (including new Bit 90)
-    return this.isoParserService.buildIso(estornoMti, estornoFields).pipe(
+    const estornoMessageModel = estorno.messageModel || '';
+    const estornoBandeira = estorno.bandeira || '';
+    return this.isoParserService.buildIso(estornoMti, estornoFields, estornoMessageModel, estornoBandeira).pipe(
       tap((built) => {
         this.estornoIsoMessage.set(built.isoMessage);
       }),
@@ -726,17 +730,19 @@ export class SimuladorPageComponent {
     this.estornoBit90.set(bit90Value);
 
     // Step 1: Parse the estorno ISO message to get fields
-    this.isoParserService.parseIso(estornoItem.isoMessage).pipe(
+    const estornoMessageModel = estornoItem.messageModel || '';
+    const estornoBandeira = estornoItem.bandeira || '';
+    this.isoParserService.parseIso(estornoItem.isoMessage, estornoMessageModel, estornoBandeira).pipe(
       switchMap((parsed) => {
         // Step 2: Update Bit 90 in the parsed fields
         const updatedFields = { ...parsed.fields, '90': bit90Value };
         const estornoMti = parsed.mti || '0400';
         // Step 3: Build the new ISO message with updated Bit 90
-        return this.isoParserService.buildIso(estornoMti, updatedFields).pipe(
+        return this.isoParserService.buildIso(estornoMti, updatedFields, estornoMessageModel, estornoBandeira).pipe(
           switchMap((built) => {
             // Step 4: Parse the rebuilt ISO to display full fields
             this.estornoIsoMessage.set(built.isoMessage);
-            return this.isoParserService.parseIso(built.isoMessage);
+            return this.isoParserService.parseIso(built.isoMessage, estornoMessageModel, estornoBandeira);
           }),
         );
       }),
