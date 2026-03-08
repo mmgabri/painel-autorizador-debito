@@ -54,6 +54,14 @@ public class ControllerPainelAutorizadorDebito {
         return ResponseEntity.ok("sucess");
     }
 
+    @PostMapping("/cenarios/execucao")
+    public ResponseEntity<CenarioTesteCsv> executeByIsoMessage(@Valid @RequestBody IsoParseRequest request) {
+        logger.info("Requisição recebida para executar cenário com isoMessage.");
+        var result = csvService.executeByIsoMessage(request.getIsoMessage());
+        logger.info("Cenário executado com sucesso via isoMessage.");
+        return ResponseEntity.ok(result);
+    }
+
     @GetMapping(value = "/cenarios", params = {"!nomeProduto", "!tag"})
     public ResponseEntity<List<CenarioTesteCsv>> list() {
         logger.info("Requisição recebida para listar cenários de teste.");

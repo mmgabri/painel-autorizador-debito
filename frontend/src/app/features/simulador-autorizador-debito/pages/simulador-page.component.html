@@ -240,29 +240,6 @@
         <input matInput [value]="transacao.isoMessage" readonly />
       </mat-form-field>
 
-      <!-- Estornar checkbox + Tempo de espera inline -->
-      <div class="estorno-section">
-        <mat-checkbox
-          [checked]="estornarChecked()"
-          (change)="onToggleEstornar($event.checked)"
-          color="primary"
-        >
-          Estornar
-        </mat-checkbox>
-
-        @if (estornarChecked() && estornoTransacao()) {
-          <mat-form-field appearance="outline" class="estorno-delay-field" subscriptSizing="dynamic">
-            <mat-label>Tempo de espera (segundos)</mat-label>
-            <input
-              matInput
-              type="number"
-              min="0"
-              [value]="estornoDelay()"
-              (input)="estornoDelay.set(+$any($event.target).value)"
-            />
-          </mat-form-field>
-        }
-      </div>
     }
 
     @if (loading()) {
@@ -296,6 +273,32 @@
             @if (!loading()) {
               <p class="empty-text">Nenhum campo carregado</p>
             }
+          }
+
+          <!-- Estornar checkbox + Tempo de espera inline (after last bit) -->
+          @if (selectedTransacao()) {
+            <div class="estorno-section">
+              <mat-checkbox
+                [checked]="estornarChecked()"
+                (change)="onToggleEstornar($event.checked)"
+                color="primary"
+              >
+                Estornar
+              </mat-checkbox>
+
+              @if (estornarChecked() && estornoTransacao()) {
+                <mat-form-field appearance="outline" class="estorno-delay-field" subscriptSizing="dynamic">
+                  <mat-label>Tempo de espera (segundos)</mat-label>
+                  <input
+                    matInput
+                    type="number"
+                    min="0"
+                    [value]="estornoDelay()"
+                    (input)="estornoDelay.set(+$any($event.target).value)"
+                  />
+                </mat-form-field>
+              }
+            </div>
           }
         </mat-card-content>
       </mat-card>
