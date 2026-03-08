@@ -84,8 +84,9 @@ export class SimuladorPageComponent {
 
   // Estorno
   estornarChecked = signal(false);
+  conciliarChecked = signal(false);
   estornoTransacao = signal<TransacaoItem | null>(null);
-  estornoDelay = signal(0);
+  estornoDelay = signal(5);
   estornoBit90 = signal('');
   estornoMti = signal('');
   estornoSortedKeys = signal<string[]>([]);
@@ -401,7 +402,8 @@ export class SimuladorPageComponent {
       switchMap(() => this.afterMainTransactionExecuted(transacao)),
     ).subscribe({
       next: () => this.onTransactionSuccess(),
-      error: () => {
+      error: (err) => {
+        console.error('Erro ao executar transação:', err);
         this.executing.set(false);
         this.onFecharInterimOverlay();
         this.snackBar.open('Erro ao executar transação', 'Fechar', { duration: 5000 });
@@ -414,7 +416,7 @@ export class SimuladorPageComponent {
     if (this.estornarChecked() && estorno) {
       // Show interim overlay (same style as success overlay)
       const delaySeconds = this.estornoDelay() || 0;
-      this.interimMessageText.set('Transação financeira enviada, aguardando pra enviar o estorno');
+      this.interimMessageText.set('Transação financeira enviada, aguardando para enviar o estorno.');
       this.interimCountdownSeconds.set(delaySeconds);
       this.showInterimOverlay.set(true);
 
@@ -458,7 +460,7 @@ export class SimuladorPageComponent {
     } else {
       this.successMessageText.set('A transação foi disparada com sucesso. Verificar logs');
     }
-    this.countdownSeconds.set(5);
+    this.countdownSeconds.set(3);
     this.showSuccessOverlay.set(true);
 
     // Countdown interval (tick every second)
@@ -560,8 +562,9 @@ export class SimuladorPageComponent {
     this.activeView.set('disparar');
     this.showResponse.set(false);
     this.estornarChecked.set(false);
+    this.conciliarChecked.set(false);
     this.estornoTransacao.set(null);
-    this.estornoDelay.set(0);
+    this.estornoDelay.set(5);
     this.estornoBit90.set('');
     this.resetEstornoFields();
 
@@ -571,15 +574,15 @@ export class SimuladorPageComponent {
       next: (result) => {
         this.loading.set(false);
         this.mti.set(result.mti ?? '');
-            // Auto-populate Bit 07 with current timestamp (mmddhhmmss)
-            const fields = { ...result.fields };
-            const bit07Key = this.findFieldKey(fields, 7);
-            if (bit07Key) {
-              fields[bit07Key] = this.generateBit07();
-            } else {
-              fields['07'] = this.generateBit07();
-            }
-            this.buildBitsForm(fields);
+        // Auto-populate Bit 07 with current timestamp (mmddhhmmss)
+        const fields = { ...result.fields };
+        const bit07Key = this.findFieldKey(fields, 7);
+        if (bit07Key) {
+          fields[bit07Key] = this.generateBit07();
+        } else {
+          fields['07'] = this.generateBit07();
+        }
+        this.buildBitsForm(fields);
       },
       error: () => {
         this.loading.set(false);

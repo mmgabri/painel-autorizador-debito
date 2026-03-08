@@ -17,7 +17,7 @@ import { IsoParserService, TransacaoItem } from '../services/iso-parser.service'
     MatProgressBarModule,
   ],
   template: `
-    <h2 mat-dialog-title>Buscar modelo desfazimento</h2>
+    <h2 mat-dialog-title>Selecione um cenário de estorno</h2>
     <mat-dialog-content>
       @if (loading()) {
         <mat-progress-bar mode="indeterminate"></mat-progress-bar>
@@ -36,7 +36,7 @@ import { IsoParserService, TransacaoItem } from '../services/iso-parser.service'
               color="primary"
               aria-label="Selecionar modelo"
             >
-              <mat-icon>check_circle_outline</mat-icon>
+              <mat-icon>save_alt</mat-icon>
             </button>
           </div>
         } @empty {

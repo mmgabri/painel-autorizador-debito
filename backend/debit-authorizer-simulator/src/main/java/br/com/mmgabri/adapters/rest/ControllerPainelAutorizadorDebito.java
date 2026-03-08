@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/simulador")
@@ -46,20 +47,13 @@ public class ControllerPainelAutorizadorDebito {
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
-    @PostMapping("/cenarios")
-    public ResponseEntity<String> execute(@Valid @RequestBody ExecucaoCenarioRequest request) {
-        logger.info("Requisição recebida para executar cenário. Messagem ISO: {} ", request.getIsoMessage());
-        csvService.executeById(request);
-        logger.info("Cenário de teste executado com sucesso." );
-        return ResponseEntity.ok("sucess");
-    }
-
-    @PostMapping("/cenarios/execucao")
-    public ResponseEntity<CenarioTesteCsv> executeByIsoMessage(@Valid @RequestBody IsoParseRequest request) {
+    @PostMapping("/cenarios/executar")
+    public ResponseEntity<Map<String, String>> execute(@Valid @RequestBody IsoParseRequest request) {
         logger.info("Requisição recebida para executar cenário com isoMessage.");
-        var result = csvService.executeByIsoMessage(request.getIsoMessage());
+        csvService.execute(request);
         logger.info("Cenário executado com sucesso via isoMessage.");
-        return ResponseEntity.ok(result);
+     //   return ResponseEntity.ok("success");//
+        return ResponseEntity.ok(Map.of("message", "success"));
     }
 
     @GetMapping(value = "/cenarios", params = {"!nomeProduto", "!tag"})

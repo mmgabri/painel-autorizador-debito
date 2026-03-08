@@ -219,11 +219,14 @@ h1 {
     top: -12px;
     left: 12px;
     padding: 0 6px;
-    font-size: 16px;
-    font-weight: bold;
+    font-size: 13px;
+    font-weight: 500;
     line-height: 24px;
-    color: var(--mat-sys-on-surface, rgba(0, 0, 0, 0.87));
+    color: #003366;
     background: var(--mat-sys-surface, #fff);
+
+
+   
   }
 }
 
@@ -298,6 +301,7 @@ h1 {
 
     h2 {
       margin: 0;
+      font-size: 19px;
     }
   }
 }
@@ -376,9 +380,9 @@ h1 {
   text-align: center;
   background: #fff;
   border-radius: 16px;
-  padding: 48px 40px 36px;
+  padding: 24px 30px 18px;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
-  max-width: 420px;
+  max-width: 350px;
   width: 100%;
 }
 
@@ -411,9 +415,9 @@ h1 {
 }
 
 .success-message {
-  font-size: 14px;
+  font-size: 18px;
   color: #666;
-  margin: 0 0 28px;
+  margin: 0 0 10px;
   line-height: 1.5;
 }
 
@@ -439,7 +443,7 @@ h1 {
 
 .countdown-ring-progress {
   fill: none;
-  stroke: #00a650;
+  stroke: #ec7000;
   stroke-width: 3;
   stroke-dasharray: 125.6;
   stroke-linecap: round;
@@ -453,7 +457,7 @@ h1 {
   transform: translate(-50%, -50%);
   font-size: 16px;
   font-weight: 700;
-  color: #00a650;
+  color: #ec7000;
 }
 
 .success-close-x {
@@ -474,6 +478,22 @@ h1 {
   align-items: center;
   gap: 16px;
   margin: 28px 0 24px;
+}
+
+// Conciliar section - Com estorno
+.conciliacao-section-estorno {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 10px 0 24px;
+}
+
+// Conciliar section - Sem estorno
+.conciliacao-section-normal {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: -20px 0 24px;
 }
 
 .estorno-delay-field {
