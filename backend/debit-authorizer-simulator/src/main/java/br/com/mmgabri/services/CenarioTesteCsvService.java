@@ -3,6 +3,7 @@ package br.com.mmgabri.services;
 import br.com.mmgabri.adapters.csv.CenarioTesteCsvAdapter;
 import br.com.mmgabri.domains.CenarioTesteCsv;
 import br.com.mmgabri.domains.CenarioTesteCsvRequest;
+import br.com.mmgabri.domains.ExecucaoCenarioRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -73,22 +74,8 @@ public class CenarioTesteCsvService {
         csvAdapter.replaceAll(cenarios);
     }
 
-    public CenarioTesteCsv executeById(String id) {
-        if (id == null || id.isBlank()) {
-            throw new IllegalArgumentException("ID nao pode ser vazio para execucao.");
-        }
+    public void executeById(ExecucaoCenarioRequest request) {
 
-        String idTrimmed = id.trim();
-        List<CenarioTesteCsv> cenarios = csvAdapter.findAll();
-
-        for (CenarioTesteCsv cenario : cenarios) {
-            if (idTrimmed.equals(cenario.getId())) {
-                // TODO: Implementar lógica de execução do cenário
-                return cenario;
-            }
-        }
-
-        throw new IllegalArgumentException("Cenario nao encontrado para execucao. id=" + idTrimmed);
     }
 
     public List<CenarioTesteCsv> findAll() {
