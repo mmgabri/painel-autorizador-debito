@@ -52,7 +52,6 @@ public class ControllerPainelAutorizadorDebito {
         logger.info("Requisição recebida para executar cenário com isoMessage.");
         csvService.execute(request);
         logger.info("Cenário executado com sucesso via isoMessage.");
-     //   return ResponseEntity.ok("success");//
         return ResponseEntity.ok(Map.of("message", "success"));
     }
 
