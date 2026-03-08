@@ -13,4 +13,7 @@ public class IsoBuildRequest {
 
     private Map<String, String> fields;
 
+    private String messageModel;
+    private String bandeira;
+
 }

@@ -15,7 +15,7 @@ import java.util.List;
 @Component
 public class FileCenarioTesteCsvAdapter implements CenarioTesteCsvAdapter {
 
-    private static final String HEADER = "id,nome_produto,tag,descricao,message_iso,criador,data_update";
+    private static final String HEADER = "id,nome_produto,tag,descricao,message_iso,message_model,bandeira,data_update";
 
     private final Path csvPath;
 
@@ -78,7 +78,9 @@ public class FileCenarioTesteCsvAdapter implements CenarioTesteCsvAdapter {
                 row.setTag(values.get(2));
                 row.setDescricao(values.get(3));
                 row.setIsoMessage(values.get(4));
-                row.setDataUpdate(values.get(5));
+                row.setMessageModel(values.size() > 5 ? values.get(5) : "");
+                row.setBandeira(values.size() > 6 ? values.get(6) : "");
+                row.setDataUpdate(values.size() > 7 ? values.get(7) : (values.size() > 5 ? values.get(5) : ""));
                 result.add(row);
             }
             return result;
@@ -94,6 +96,8 @@ public class FileCenarioTesteCsvAdapter implements CenarioTesteCsvAdapter {
                 escape(cenario.getTag()),
                 escape(cenario.getDescricao()),
                 escape(cenario.getIsoMessage()),
+                escape(cenario.getMessageModel()),
+                escape(cenario.getBandeira()),
                 escape(cenario.getDataUpdate())
         );
     }

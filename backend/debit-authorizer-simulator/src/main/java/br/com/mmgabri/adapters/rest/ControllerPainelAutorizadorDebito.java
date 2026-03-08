@@ -55,36 +55,14 @@ public class ControllerPainelAutorizadorDebito {
         return ResponseEntity.ok(Map.of("message", "success"));
     }
 
-    @GetMapping(value = "/cenarios", params = {"!nomeProduto", "!tag"})
-    public ResponseEntity<List<CenarioTesteCsv>> list() {
+    @GetMapping("/cenarios")
+    public ResponseEntity<List<CenarioTesteCsv>> list(
+            @RequestParam(required = false) String nomeProduto,
+            @RequestParam(required = false) String tag,
+            @RequestParam(required = false) String bandeira) {
         logger.info("Requisição recebida para listar cenários de teste.");
-        var resp = csvService.findAll();
+        var resp = csvService.findByFilters(nomeProduto, tag, bandeira);
         logger.info("Cenários de teste listados com sucesso.");
-        return ResponseEntity.ok(resp);
-    }
-
-    @GetMapping(value = "/cenarios", params = {"nomeProduto", "!tag"})
-    public ResponseEntity<List<CenarioTesteCsv>> listByNomeProduto(@RequestParam String nomeProduto) {
-        logger.info("Requisição recebida para listar cenários por nomeProduto.");
-        var resp = csvService.findByNomeProduto(nomeProduto);
-        logger.info("Cenários de teste filtrados por nomeProduto com sucesso.");
-        return ResponseEntity.ok(resp);
-    }
-
-    @GetMapping(value = "/cenarios", params = {"!nomeProduto", "tag"})
-    public ResponseEntity<List<CenarioTesteCsv>> listByTag(@RequestParam String tag) {
-        logger.info("Requisição recebida para listar cenários por tag.");
-        var resp = csvService.findByTag(tag);
-        logger.info("Cenários de teste filtrados por tag com sucesso.");
-        return ResponseEntity.ok(resp);
-    }
-
-    @GetMapping(value = "/cenarios", params = {"nomeProduto", "tag"})
-    public ResponseEntity<List<CenarioTesteCsv>> listByNomeProdutoAndTag(@RequestParam String nomeProduto,
-                                                                          @RequestParam String tag) {
-        logger.info("Requisição recebida para listar cenários por nomeProduto e tag.");
-        var resp = csvService.findByNomeProdutoAndTag(nomeProduto, tag);
-        logger.info("Cenários de teste filtrados por nomeProduto e tag com sucesso.");
         return ResponseEntity.ok(resp);
     }
 

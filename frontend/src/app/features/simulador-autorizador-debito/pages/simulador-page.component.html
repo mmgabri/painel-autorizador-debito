@@ -35,6 +35,15 @@
         <mat-label>Filtrar por Tag</mat-label>
         <input matInput [(ngModel)]="buscarFiltroTag" maxlength="15" (keyup.enter)="onFiltrarBusca()" />
       </mat-form-field>
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filter-field filter-bandeira">
+        <mat-label>Filtrar por Bandeira</mat-label>
+        <mat-select [(ngModel)]="buscarFiltroBandeira">
+          <mat-option value="">Todas</mat-option>
+          @for (opt of bandeiraOptions; track opt) {
+            <mat-option [value]="opt">{{ opt }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
       <button mat-raised-button color="primary" class="filtrar-btn itau-btn" (click)="onFiltrarBusca()">
         Filtrar
       </button>
@@ -50,6 +59,12 @@
           <div class="transacao-info">
             <span class="nome">{{ item.nomeProduto }}</span>
             <span class="tag">{{ item.tag }}</span>
+            @if (item.messageModel) {
+              <span class="badge message-model">{{ item.messageModel }}</span>
+            }
+            @if (item.bandeira) {
+              <span class="badge bandeira-badge">{{ item.bandeira }}</span>
+            }
             <span class="descricao">{{ item.descricao }}</span>
           </div>
           <div class="transacao-actions">
@@ -107,6 +122,26 @@
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Tag</mat-label>
         <input matInput formControlName="tag" maxlength="60" />
+      </mat-form-field>
+
+      <!-- Message Model -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Message Model</mat-label>
+        <mat-select formControlName="messageModel">
+          @for (opt of messageModelOptions; track opt) {
+            <mat-option [value]="opt">{{ opt }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Bandeira -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Bandeira</mat-label>
+        <mat-select formControlName="bandeira">
+          @for (opt of bandeiraOptions; track opt) {
+            <mat-option [value]="opt">{{ opt }}</mat-option>
+          }
+        </mat-select>
       </mat-form-field>
 
       <!-- Descricao -->
@@ -223,6 +258,18 @@
         <input matInput [value]="transacao.nomeProduto" readonly />
       </mat-form-field>
 
+      <!-- Message Model (readonly) -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Message Model</mat-label>
+        <input matInput [value]="transacao.messageModel" readonly />
+      </mat-form-field>
+
+      <!-- Bandeira (readonly) -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Bandeira</mat-label>
+        <input matInput [value]="transacao.bandeira" readonly />
+      </mat-form-field>
+
       <!-- Tag (readonly) -->
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Tag</mat-label>
@@ -266,7 +313,7 @@
               @for (key of sortedKeys(); track key) {
                 <mat-form-field appearance="outline" class="full-width">
                   <mat-label>Bit {{ key }}</mat-label>
-                  <input matInput [formControlName]="key" readonly />
+                  <input matInput [formControlName]="key" (blur)="onFieldChanged()" />
                 </mat-form-field>
               }
             </form>
@@ -333,7 +380,7 @@
               @for (key of estornoSortedKeys(); track key) {
                 <mat-form-field appearance="outline" class="full-width">
                   <mat-label>Bit {{ key }}</mat-label>
-                  <input matInput [formControlName]="key" readonly />
+                  <input matInput [formControlName]="key" (blur)="onEstornoFieldChanged()" />
                 </mat-form-field>
               }
             </form>
