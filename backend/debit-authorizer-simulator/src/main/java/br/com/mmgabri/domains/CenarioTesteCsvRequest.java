@@ -7,16 +7,11 @@ import lombok.Data;
 public class CenarioTesteCsvRequest {
 
     private String id;
-   // @NotBlank
     private String nomeProduto;
-
-  //  @NotBlank
     private String tag;
-
-  //  @NotBlank
     private String descricao;
-
-//@NotBlank
     private String isoMessage;
+    private String messageModel;
+    private String bandeira;
 
 }

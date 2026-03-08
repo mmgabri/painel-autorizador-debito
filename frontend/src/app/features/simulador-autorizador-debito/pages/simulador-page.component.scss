@@ -124,6 +124,11 @@ h1 {
       max-width: 280px;
     }
 
+    .filter-bandeira {
+      flex: 1;
+      max-width: 220px;
+    }
+
     .filtrar-btn {
       align-self: center;
       height: 40px;
@@ -170,6 +175,23 @@ h1 {
       color: #3949ab;
       padding: 2px 8px;
       border-radius: 12px;
+    }
+
+    .badge {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-weight: 500;
+    }
+
+    .message-model {
+      background: #fff3e0;
+      color: #e65100;
+    }
+
+    .bandeira-badge {
+      background: #e8f5e9;
+      color: #2e7d32;
     }
 
     .descricao {
