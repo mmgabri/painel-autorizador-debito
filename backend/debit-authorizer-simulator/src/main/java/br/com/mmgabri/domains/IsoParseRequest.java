@@ -6,6 +6,7 @@ import lombok.Data;
 @Data
 public class IsoParseRequest {
 
-   // @NotBlank
     private String isoMessage;
+    private String messageModel;
+    private String bandeira;
 }
