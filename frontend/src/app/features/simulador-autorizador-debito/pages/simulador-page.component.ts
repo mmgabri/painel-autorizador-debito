@@ -389,7 +389,7 @@ export class SimuladorPageComponent {
         // Update the selected transacao's isoMessage in memory
         const updatedTransacao = { ...transacao, isoMessage: built.isoMessage };
         this.selectedTransacao.set(updatedTransacao);
-        return this.isoParserService.executarTransacao(transacao.id);
+        return this.isoParserService.executarTransacao(built.isoMessage);
       }),
       switchMap(() => this.afterMainTransactionExecuted(transacao)),
     ).subscribe({
@@ -434,7 +434,10 @@ export class SimuladorPageComponent {
       return of(null).pipe(
         delay(delayMs),
         tap(() => this.onFecharInterimOverlay()),
-        switchMap(() => this.isoParserService.executarTransacao(estorno.id)),
+        switchMap(() => {
+          const estornoIso = this.estornoIsoMessage() || estorno.isoMessage;
+          return this.isoParserService.executarTransacao(estornoIso);
+        }),
       );
     }
     return of(null);

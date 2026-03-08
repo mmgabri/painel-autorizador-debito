@@ -91,6 +91,18 @@ public class CenarioTesteCsvService {
         throw new IllegalArgumentException("Cenario nao encontrado para execucao. id=" + idTrimmed);
     }
 
+    public CenarioTesteCsv executeByIsoMessage(String isoMessage) {
+        if (isoMessage == null || isoMessage.isBlank()) {
+            throw new IllegalArgumentException("isoMessage nao pode ser vazia para execucao.");
+        }
+
+        // TODO: Implementar lógica real de execução da transação via isoMessage
+        CenarioTesteCsv result = new CenarioTesteCsv();
+        result.setIsoMessage(isoMessage.trim());
+        result.setDataUpdate(LocalDateTime.now().toString());
+        return result;
+    }
+
     public List<CenarioTesteCsv> findAll() {
         return csvAdapter.findAll();
     }
