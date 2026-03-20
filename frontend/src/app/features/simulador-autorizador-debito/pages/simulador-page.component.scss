@@ -129,6 +129,11 @@ h1 {
       max-width: 220px;
     }
 
+    .filter-message-type {
+      flex: 1;
+      max-width: 220px;
+    }
+
     .filtrar-btn {
       align-self: center;
       height: 40px;
@@ -187,6 +192,11 @@ h1 {
     .message-model {
       background: #fff3e0;
       color: #e65100;
+    }
+
+    .message-type {
+      background: #e3f2fd;
+      color: #1565c0;
     }
 
     .bandeira-badge {

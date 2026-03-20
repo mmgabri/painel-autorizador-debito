@@ -29,6 +29,7 @@ public class TestScenarioService {
         row.setId(UUID.randomUUID().toString());
         row.setProductName(request.getProductName());
         row.setMessageModel(request.getMessageModel());
+        row.setMessageType(request.getMessageType());
         row.setPaymentNetwork(request.getPaymentNetwork());
         row.setTag(request.getTag());
         row.setDescription(request.getDescription());
@@ -48,6 +49,7 @@ public class TestScenarioService {
                 cenario.setId(id);
                 cenario.setProductName(request.getProductName());
                 cenario.setMessageModel(request.getMessageModel());
+                cenario.setMessageType(request.getMessageType());
                 cenario.setPaymentNetwork(request.getPaymentNetwork());
                 cenario.setTag(request.getTag());
                 cenario.setDescription(request.getDescription());
@@ -93,72 +95,12 @@ public class TestScenarioService {
         return csvAdapter.findAll();
     }
 
-    public List<TestScenarioCsvRow> findByProductName(String nomeProduto) {
+    public List<TestScenarioCsvRow> findByFilters(String productName, String tag, String paymentNetwork, String messageType) {
         return csvAdapter.findAll().stream()
-                .filter(cenario -> containsIgnoreCase(cenario.getProductName(), nomeProduto))
-                .toList();
-    }
-
-    public List<TestScenarioCsvRow> findByTag(String tag) {
-        return csvAdapter.findAll().stream()
+                .filter(cenario -> containsIgnoreCase(cenario.getProductName(), productName))
                 .filter(cenario -> containsIgnoreCase(cenario.getTag(), tag))
-                .toList();
-    }
-
-    public List<TestScenarioCsvRow> findByNomeProdutoAndTag(String nomeProduto, String tag) {
-        return csvAdapter.findAll().stream()
-                .filter(cenario -> containsIgnoreCase(cenario.getProductName(), nomeProduto))
-                .filter(cenario -> containsIgnoreCase(cenario.getTag(), tag))
-                .toList();
-    }
-
-    public List<TestScenarioCsvRow> findByBandeira(String bandeira) {
-        return csvAdapter.findAll().stream()
-                .filter(cenario -> containsIgnoreCase(cenario.getPaymentNetwork(), bandeira))
-                .toList();
-    }
-
-    public List<TestScenarioCsvRow> findByBandeiraAndNomeProduto(String bandeira, String nomeProduto) {
-        return csvAdapter.findAll().stream()
-                .filter(cenario -> containsIgnoreCase(cenario.getPaymentNetwork(), bandeira))
-                .filter(cenario -> containsIgnoreCase(cenario.getProductName(), nomeProduto))
-                .toList();
-    }
-
-    public List<TestScenarioCsvRow> findByBandeiraAndTag(String bandeira, String tag) {
-        return csvAdapter.findAll().stream()
-                .filter(cenario -> containsIgnoreCase(cenario.getPaymentNetwork(), bandeira))
-                .filter(cenario -> containsIgnoreCase(cenario.getTag(), tag))
-                .toList();
-    }
-
-    public List<TestScenarioCsvRow> findByBandeiraAndNomeProdutoAndTag(String bandeira, String nomeProduto, String tag) {
-        return csvAdapter.findAll().stream()
-                .filter(cenario -> containsIgnoreCase(cenario.getPaymentNetwork(), bandeira))
-                .filter(cenario -> containsIgnoreCase(cenario.getProductName(), nomeProduto))
-                .filter(cenario -> containsIgnoreCase(cenario.getTag(), tag))
-                .toList();
-    }
-
-    public List<TestScenarioCsvRow> findByNomeProdutoAndBandeira(String nomeProduto, String bandeira) {
-        return csvAdapter.findAll().stream()
-                .filter(cenario -> containsIgnoreCase(cenario.getProductName(), nomeProduto))
-                .filter(cenario -> containsIgnoreCase(cenario.getPaymentNetwork(), bandeira))
-                .toList();
-    }
-
-    public List<TestScenarioCsvRow> findByTagAndBandeira(String tag, String bandeira) {
-        return csvAdapter.findAll().stream()
-                .filter(cenario -> containsIgnoreCase(cenario.getTag(), tag))
-                .filter(cenario -> containsIgnoreCase(cenario.getPaymentNetwork(), bandeira))
-                .toList();
-    }
-
-    public List<TestScenarioCsvRow> findByNomeProdutoAndTagAndBandeira(String nomeProduto, String tag, String bandeira) {
-        return csvAdapter.findAll().stream()
-                .filter(cenario -> containsIgnoreCase(cenario.getProductName(), nomeProduto))
-                .filter(cenario -> containsIgnoreCase(cenario.getTag(), tag))
-                .filter(cenario -> containsIgnoreCase(cenario.getPaymentNetwork(), bandeira))
+                .filter(cenario -> containsIgnoreCase(cenario.getPaymentNetwork(), paymentNetwork))
+                .filter(cenario -> containsIgnoreCase(cenario.getMessageType(), messageType))
                 .toList();
     }
 

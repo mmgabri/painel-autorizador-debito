@@ -41,72 +41,16 @@ public class TestScenarioController {
         return ResponseEntity.ok(Map.of("message", "success"));
     }
 
-    @GetMapping(params = {"!productName", "!tag"})
-    public ResponseEntity<List<TestScenarioCsvRow>> list() {
-        logger.info("Request received to list test scenarios.");
-        var resp = testScenarioService.findAll();
-        logger.info("Test scenarios listed successfully.");
-        return ResponseEntity.ok(resp);
-    }
-
-    @GetMapping(params = {"productName", "!tag"})
-    public ResponseEntity<List<TestScenarioCsvRow>> listByNomeProduto(@RequestParam String productName) {
-        logger.info("Request received to list scenarios by productName.");
-        var resp = testScenarioService.findByProductName(productName);
-        logger.info("Test scenarios filtered by productName successfully.");
-        return ResponseEntity.ok(resp);
-    }
-
-    @GetMapping(params = {"!productName", "tag"})
-    public ResponseEntity<List<TestScenarioCsvRow>> listByTag(@RequestParam String tag) {
-        logger.info("Request received to list scenarios by tag.");
-        var resp = testScenarioService.findByTag(tag);
-        logger.info("Test scenarios filtered by tag successfully.");
-        return ResponseEntity.ok(resp);
-    }
-
-    @GetMapping(params = {"productName", "tag"})
-    public ResponseEntity<List<TestScenarioCsvRow>> listByNomeProdutoAndTag(@RequestParam String productName,
-                                                                            @RequestParam String tag) {
-        logger.info("Request received to list scenarios by productName and tag.");
-        var resp = testScenarioService.findByNomeProdutoAndTag(productName, tag);
-        logger.info("Test scenarios filtered by productName and tag successfully.");
-        return ResponseEntity.ok(resp);
-    }
-
-    @GetMapping(params = {"paymentNetwork", "!productName", "!tag"})
-    public ResponseEntity<List<TestScenarioCsvRow>> listByBandeira(@RequestParam String paymentNetwork) {
-        logger.info("Request received to list scenarios by paymentNetwork.");
-        var resp = testScenarioService.findByBandeira(paymentNetwork);
-        logger.info("Test scenarios filtered by paymentNetwork successfully.");
-        return ResponseEntity.ok(resp);
-    }
-
-    @GetMapping(params = {"paymentNetwork", "productName", "!tag"})
-    public ResponseEntity<List<TestScenarioCsvRow>> listByBandeiraAndNomeProduto(@RequestParam String paymentNetwork,
-                                                                                 @RequestParam String productName) {
-        logger.info("Request received to list scenarios by paymentNetwork and productName.");
-        var resp = testScenarioService.findByBandeiraAndNomeProduto(paymentNetwork, productName);
-        logger.info("Test scenarios filtered by paymentNetwork and productName successfully.");
-        return ResponseEntity.ok(resp);
-    }
-
-    @GetMapping(params = {"paymentNetwork", "!productName", "tag"})
-    public ResponseEntity<List<TestScenarioCsvRow>> listByBandeiraAndTag(@RequestParam String paymentNetwork,
-                                                                         @RequestParam String tag) {
-        logger.info("Request received to list scenarios by paymentNetwork and tag.");
-        var resp = testScenarioService.findByBandeiraAndTag(paymentNetwork, tag);
-        logger.info("Test scenarios filtered by paymentNetwork and tag successfully.");
-        return ResponseEntity.ok(resp);
-    }
-
-    @GetMapping(params = {"paymentNetwork", "productName", "tag"})
-    public ResponseEntity<List<TestScenarioCsvRow>> listByBandeiraAndNomeProdutoAndTag(@RequestParam String paymentNetwork,
-                                                                                       @RequestParam String productName,
-                                                                                       @RequestParam String tag) {
-        logger.info("Request received to list scenarios by paymentNetwork, productName and tag.");
-        var resp = testScenarioService.findByBandeiraAndNomeProdutoAndTag(paymentNetwork, productName, tag);
-        logger.info("Test scenarios filtered by paymentNetwork, productName and tag successfully.");
+    @GetMapping
+    public ResponseEntity<List<TestScenarioCsvRow>> list(
+            @RequestParam(required = false) String productName,
+            @RequestParam(required = false) String tag,
+            @RequestParam(required = false) String paymentNetwork,
+            @RequestParam(required = false) String messageType) {
+        logger.info("Request received to list test scenarios with filters: productName={}, tag={}, paymentNetwork={}, messageType={}",
+                productName, tag, paymentNetwork, messageType);
+        var resp = testScenarioService.findByFilters(productName, tag, paymentNetwork, messageType);
+        logger.info("Test scenarios listed successfully. count={}", resp.size());
         return ResponseEntity.ok(resp);
     }
 
