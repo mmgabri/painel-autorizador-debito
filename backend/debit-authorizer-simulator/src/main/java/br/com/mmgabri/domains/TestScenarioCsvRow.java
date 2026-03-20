@@ -12,6 +12,6 @@ public class TestScenarioCsvRow {
     private String paymentNetwork;
     private String tag;
     private String description;
-    private String isoMessage;
+    private String message;
     private String updatedAt;
 }

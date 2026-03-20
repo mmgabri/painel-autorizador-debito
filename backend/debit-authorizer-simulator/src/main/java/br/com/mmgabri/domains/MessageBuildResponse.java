@@ -4,11 +4,11 @@ import lombok.Data;
 
 @Data
 public class MessageBuildResponse {
-    private String isoMessage;
+    private String message;
     public MessageBuildResponse() {
     }
 
     public MessageBuildResponse(String isoMessage) {
-        this.isoMessage = isoMessage;
+        this.message = isoMessage;
     }
 }
