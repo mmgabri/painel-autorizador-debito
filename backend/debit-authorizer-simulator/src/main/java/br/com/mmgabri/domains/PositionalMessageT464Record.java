@@ -1,4 +1,4 @@
-package br.com.mmgabri.adapters.bindy;
+package br.com.mmgabri.domains;
 
 import lombok.Data;
 import org.apache.camel.dataformat.bindy.annotation.DataField;

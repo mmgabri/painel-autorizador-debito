@@ -1,5 +1,6 @@
 package br.com.mmgabri.adapters.bindy;
 
+import br.com.mmgabri.domains.PositionalMessageTcrRecord;
 import jakarta.annotation.PreDestroy;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
@@ -26,9 +27,9 @@ public class PositionalMessageBuilderBindyTcrAdapter implements PositionalMessag
     }
 
     @Override
-    public String build(Map<String, String> fields) {
+    public String build(Map<String, String> fields, String mti) {
         try {
-            PositionalMessageTcrRecord record = mapToRecord(fields);
+            PositionalMessageTcrRecord record = mapToRecord(fields, mti);
 
             Exchange exchange = new DefaultExchange(camelContext);
             ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -40,9 +41,9 @@ public class PositionalMessageBuilderBindyTcrAdapter implements PositionalMessag
         }
     }
 
-    private PositionalMessageTcrRecord mapToRecord(Map<String, String> fields) {
+    private PositionalMessageTcrRecord mapToRecord(Map<String, String> fields, String mti) {
         PositionalMessageTcrRecord record = new PositionalMessageTcrRecord();
-        record.setMti(getOrEmpty(fields, "mti"));
+        record.setMti(mti);
         record.setFakeAccount(getOrEmpty(fields, "fakeAccountVisa"));
         record.setFakeProcessingCode(getOrEmpty(fields, "fakeProcessingCodeVisa"));
         record.setFakeAmount(getOrEmpty(fields, "fakeAmountVisa"));
