@@ -13,6 +13,6 @@ public class TestScenarioCsvRequest {
     private String paymentNetwork;
     private String tag;
     private String description;
-    private String isoMessage;
+    private String message;
 
 }

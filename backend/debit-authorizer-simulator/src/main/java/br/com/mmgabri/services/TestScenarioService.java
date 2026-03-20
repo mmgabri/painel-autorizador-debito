@@ -33,7 +33,7 @@ public class TestScenarioService {
         row.setPaymentNetwork(request.getPaymentNetwork());
         row.setTag(request.getTag());
         row.setDescription(request.getDescription());
-        row.setIsoMessage(request.getIsoMessage());
+        row.setMessage(request.getMessage());
         row.setUpdatedAt(LocalDateTime.now().toString());
         csvAdapter.append(row);
         return row;
@@ -53,7 +53,7 @@ public class TestScenarioService {
                 cenario.setPaymentNetwork(request.getPaymentNetwork());
                 cenario.setTag(request.getTag());
                 cenario.setDescription(request.getDescription());
-                cenario.setIsoMessage(request.getIsoMessage());
+                cenario.setMessage(request.getMessage());
                 cenario.setUpdatedAt(LocalDateTime.now().toString());
 
                 csvAdapter.replaceAll(cenarios);

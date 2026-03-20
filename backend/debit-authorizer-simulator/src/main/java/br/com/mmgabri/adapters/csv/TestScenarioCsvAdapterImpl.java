@@ -15,7 +15,7 @@ import java.util.List;
 @Component
 public class TestScenarioCsvAdapterImpl implements TestScenarioCsvAdapter {
 
-    private static final String HEADER = "id,product_name,message_model,message_type,payment_network,tag,description,message_iso,updated_at";
+    private static final String HEADER = "id,product_name,message_model,message_type,payment_network,tag,description,message,updated_at";
 
     private final Path csvPath;
 
@@ -91,14 +91,14 @@ public class TestScenarioCsvAdapterImpl implements TestScenarioCsvAdapter {
                     row.setPaymentNetwork(values.get(4));
                     row.setTag(values.get(5));
                     row.setDescription(values.get(6));
-                    row.setIsoMessage(values.get(7));
+                    row.setMessage(values.get(7));
                     row.setUpdatedAt(values.get(8));
                 } else {
                     row.setMessageType("");
                     row.setPaymentNetwork(values.get(3));
                     row.setTag(values.get(4));
                     row.setDescription(values.get(5));
-                    row.setIsoMessage(values.get(6));
+                    row.setMessage(values.get(6));
                     row.setUpdatedAt(values.size() >= 8 ? values.get(7) : "");
                 }
                 result.add(row);
@@ -118,7 +118,7 @@ public class TestScenarioCsvAdapterImpl implements TestScenarioCsvAdapter {
                 escape(cenario.getPaymentNetwork()),
                 escape(cenario.getTag()),
                 escape(cenario.getDescription()),
-                escape(cenario.getIsoMessage()),
+                escape(cenario.getMessage()),
                 escape(cenario.getUpdatedAt())
         );
     }
