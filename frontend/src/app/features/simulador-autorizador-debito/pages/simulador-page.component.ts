@@ -260,7 +260,7 @@ export class SimuladorPageComponent {
     }
     newGroup.addControl(key, new FormControl('', { nonNullable: true }));
 
-    const newKeys = this.sortIsoFieldKeys([...currentKeys, key]);
+    const newKeys = this.moveMtiKeyFirst([...currentKeys, key]);
 
     this.bitsForm.set(newGroup);
     this.sortedKeys.set(newKeys);
@@ -649,7 +649,7 @@ export class SimuladorPageComponent {
 
   private buildBitsForm(map: Record<string, string>): void {
     const group: Record<string, FormControl<string>> = {};
-    const keys = this.sortIsoFieldKeys(Object.keys(map));
+    const keys = this.moveMtiKeyFirst(Object.keys(map));
     this.sortedKeys.set(keys);
 
     for (const key of keys) {
@@ -660,19 +660,19 @@ export class SimuladorPageComponent {
     this.updateAvailableBits();
   }
 
-  private sortIsoFieldKeys(keys: string[]): string[] {
-    return [...keys].sort((a, b) => this.isoFieldKeySortValue(a) - this.isoFieldKeySortValue(b));
-  }
+  private moveMtiKeyFirst(keys: string[]): string[] {
+    const result = [...keys];
+    const idx = result.findIndex((k) => {
+      const normalized = k.trim();
+      return normalized === '00' || normalized === '0';
+    });
 
-  private isoFieldKeySortValue(key: string): number {
-    const normalized = key.trim();
-    if (normalized === '00' || normalized === '0') {
-      return -1;
+    if (idx > 0) {
+      const [mtiKey] = result.splice(idx, 1);
+      result.unshift(mtiKey);
     }
-    if (/^\d+$/.test(normalized)) {
-      return Number(normalized);
-    }
-    return Number.POSITIVE_INFINITY;
+
+    return result;
   }
 
   private resetBitsForm(): void {
@@ -783,7 +783,7 @@ export class SimuladorPageComponent {
       next: (finalParsed) => {
         this.estornoLoading.set(false);
         this.estornoMti.set(finalParsed.mti || '');
-        const keys = this.sortIsoFieldKeys(Object.keys(finalParsed.fields));
+        const keys = Object.keys(finalParsed.fields);
         this.estornoSortedKeys.set(keys);
         const group: Record<string, FormControl<string>> = {};
         for (const key of keys) {
