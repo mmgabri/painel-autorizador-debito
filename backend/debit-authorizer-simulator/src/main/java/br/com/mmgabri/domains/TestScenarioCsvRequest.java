@@ -9,6 +9,7 @@ public class TestScenarioCsvRequest {
     private String id;
     private String productName;
     private String messageModel;
+    private String messageType;
     private String paymentNetwork;
     private String tag;
     private String description;
