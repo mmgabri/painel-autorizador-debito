@@ -194,7 +194,7 @@
         <div class="incluir-campo-row">
           <mat-form-field appearance="outline" class="select-bit-field">
             <mat-label>Incluir campo</mat-label>
-            <mat-select (selectionChange)="onIncluirCampo($event.value)">
+            <mat-select (selectionChange)="onIncluirCampo($event.value)" [disabled]="isConciliacaoIncluir()">
               @for (bit of availableBits(); track bit) {
                 <mat-option [value]="bit">{{ bit === 0 ? 'MTI' : 'Bit ' + (bit < 10 ? '0' + bit : bit) }}</mat-option>
               }
@@ -218,6 +218,7 @@
                   (click)="onRemoverCampo(key)"
                   class="remove-btn"
                   aria-label="Remover campo"
+                  [disabled]="isConciliacaoIncluir()"
                 >
                   <mat-icon>delete</mat-icon>
                 </button>
@@ -304,7 +305,7 @@
       <!-- Mensagem ISO (readonly) -->
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Mensagem ISO</mat-label>
-        <input matInput [value]="transacao.isoMessage" readonly />
+        <input matInput [value]="transacao.message" readonly />
       </mat-form-field>
 
     }
@@ -377,7 +378,7 @@
     @if (estornarChecked() && estornoTransacao(); as estorno) {
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Mensagem ISO de Estorno</mat-label>
-        <input matInput [value]="estornoIsoMessage() || estorno.isoMessage" readonly />
+        <input matInput [value]="estornoIsoMessage() || estorno.message" readonly />
       </mat-form-field>
 
       @if (estornoLoading()) {
