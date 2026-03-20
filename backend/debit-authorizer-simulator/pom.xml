@@ -16,6 +16,7 @@
         <protobuf.plugin.version>0.6.1</protobuf.plugin.version> <!-- ex. xolstice / protoc plugin -->
         <protobuf.version>3.23.4</protobuf.version>
         <lombok.version>1.18.42</lombok.version>
+        <camel.version>4.8.4</camel.version>
     </properties>
 
     <!-- spring boot starter parent -->
@@ -55,6 +56,18 @@
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
             <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-core</artifactId>
+            <version>${camel.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-bindy</artifactId>
+            <version>${camel.version}</version>
         </dependency>
 
     </dependencies>

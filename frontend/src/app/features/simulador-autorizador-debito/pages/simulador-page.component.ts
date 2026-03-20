@@ -44,13 +44,19 @@ export class SimuladorPageComponent {
     nomeProduto: new FormControl('', [Validators.required]),
     tag: new FormControl('', [Validators.required]),
     messageModel: new FormControl('', [Validators.required]),
+    messageType: new FormControl('', [Validators.required]),
     bandeira: new FormControl('', [Validators.required]),
     descricao: new FormControl(''),
     isoMessage: new FormControl('', [Validators.required, Validators.minLength(4)]),
   });
 
   messageModelOptions = ['SINGLE_MESSAGE', 'DUAL_MESSAGE'];
+  messageTypeOptions = ['AUTORIZACAO', 'CONCILIACAO'];
   bandeiraOptions = ['MASTERCARD', 'VISA'];
+
+  isConciliacaoIncluir(): boolean {
+    return (this.incluirForm.controls.messageType.value ?? '') === 'CONCILIACAO';
+  }
 
   // Request fields (shared between incluir and disparar views)
   mti = signal('');
@@ -134,6 +140,7 @@ export class SimuladorPageComponent {
     this.incluirForm.reset();
     this.buscarFiltro = '';
     this.buscarFiltroTag = '';
+    this.buscarFiltroBandeira = '';
     this.activeView.set('buscar');
     this.carregarTransacoesBusca();
   }
@@ -155,17 +162,18 @@ export class SimuladorPageComponent {
     this.savedSuccessfully.set(false);
 
     this.incluirForm.patchValue({
-      nomeProduto: item.nomeProduto,
+      nomeProduto: item.productName,
       tag: item.tag ?? '',
       messageModel: item.messageModel ?? '',
-      bandeira: item.bandeira ?? '',
-      descricao: item.descricao,
-      isoMessage: item.isoMessage,
+      messageType: item.messageType ?? '',
+      bandeira: item.paymentNetwork ?? '',
+      descricao: item.description,
+      isoMessage: item.message,
     });
 
-    if (item.isoMessage && item.isoMessage.trim().length >= 4) {
+    if (item.message && item.message.trim().length >= 4) {
       this.loading.set(true);
-      this.isoParserService.parseIso(item.isoMessage, item.messageModel, item.bandeira).subscribe({
+      this.isoParserService.parseIso(item.message, item.messageModel, item.paymentNetwork, item.messageType).subscribe({
         next: (result) => {
           this.loading.set(false);
           this.mti.set(result.mti ?? '');
@@ -204,8 +212,8 @@ export class SimuladorPageComponent {
   // ─── Incluir view actions ───
 
   onCarregarCampos(): void {
-    const isoMessage = this.incluirForm.controls.isoMessage.value ?? '';
-    if (!isoMessage || isoMessage.trim().length < 4) {
+    const message = this.incluirForm.controls.isoMessage.value ?? '';
+    if (!message || message.trim().length < 4) {
       this.snackBar.open('Informe a mensagem ISO com no mínimo 4 caracteres', 'Fechar', {
         duration: 3000,
       });
@@ -213,9 +221,10 @@ export class SimuladorPageComponent {
     }
 
     const messageModel = this.incluirForm.controls.messageModel.value ?? '';
+    const messageType = this.incluirForm.controls.messageType.value ?? '';
     const bandeira = this.incluirForm.controls.bandeira.value ?? '';
-    if (!messageModel || !bandeira) {
-      this.snackBar.open('Preencha os campos Message Model e Bandeira antes de carregar', 'Fechar', {
+    if (!messageModel || !messageType || !bandeira) {
+      this.snackBar.open('Preencha os campos Message Model, Tipo Mensagem e Bandeira antes de carregar', 'Fechar', {
         duration: 3000,
       });
       return;
@@ -223,7 +232,7 @@ export class SimuladorPageComponent {
 
     this.loading.set(true);
 
-    this.isoParserService.parseIso(isoMessage, messageModel, bandeira).subscribe({
+    this.isoParserService.parseIso(message, messageModel, bandeira, messageType).subscribe({
       next: (result) => {
         this.loading.set(false);
         this.mti.set(result.mti ?? '');
@@ -241,6 +250,7 @@ export class SimuladorPageComponent {
   }
 
   onIncluirCampo(bitNumber: number): void {
+    if (this.isConciliacaoIncluir()) return;
     const key = String(bitNumber).padStart(2, '0');
     const currentForm = this.bitsForm();
     const currentKeys = this.sortedKeys();
@@ -255,7 +265,7 @@ export class SimuladorPageComponent {
     }
     newGroup.addControl(key, new FormControl('', { nonNullable: true }));
 
-    const newKeys = [...currentKeys, key].sort((a, b) => Number(a) - Number(b));
+    const newKeys = this.moveMtiKeyFirst([...currentKeys, key]);
 
     this.bitsForm.set(newGroup);
     this.sortedKeys.set(newKeys);
@@ -263,6 +273,7 @@ export class SimuladorPageComponent {
   }
 
   onRemoverCampo(key: string): void {
+    if (this.isConciliacaoIncluir()) return;
     const currentForm = this.bitsForm();
     const currentKeys = this.sortedKeys();
 
@@ -299,13 +310,19 @@ export class SimuladorPageComponent {
     delete fieldsWithoutMti['00'];
 
     const messageModel = this.incluirForm.controls.messageModel.value ?? '';
+    const messageType = this.incluirForm.controls.messageType.value ?? '';
     const bandeira = this.incluirForm.controls.bandeira.value ?? '';
+    if (!messageModel || !messageType || !bandeira) {
+      this.saving.set(false);
+      this.snackBar.open('Preencha os campos Message Model, Tipo Mensagem e Bandeira antes de salvar', 'Fechar', { duration: 3000 });
+      return;
+    }
 
     this.isoParserService
-      .buildIso(mtiValue, fieldsWithoutMti, messageModel, bandeira)
+      .buildIso(mtiValue, fieldsWithoutMti, messageModel, bandeira, messageType)
       .pipe(
         switchMap((buildResult) => {
-          this.incluirForm.controls.isoMessage.setValue(buildResult.isoMessage);
+          this.incluirForm.controls.isoMessage.setValue(buildResult.message);
 
           const tag = this.incluirForm.controls.tag.value ?? '';
           if (!tag.trim()) {
@@ -316,12 +333,13 @@ export class SimuladorPageComponent {
 
           const payload: import('../services/iso-parser.service').SalvarTransacaoRequest = {
             id: this.editingTransacaoId() ?? '',
-            nomeProduto: nomeProduto.trim(),
+            productName: nomeProduto.trim(),
             tag: tag.trim(),
-            descricao: (this.incluirForm.controls.descricao.value ?? '').trim(),
-            isoMessage: buildResult.isoMessage,
+            description: (this.incluirForm.controls.descricao.value ?? '').trim(),
+            message: buildResult.message,
             messageModel: messageModel,
-            bandeira: bandeira,
+            messageType: messageType,
+            paymentNetwork: bandeira,
           };
           return this.isoParserService.salvarTransacao(payload);
         }),
@@ -346,12 +364,13 @@ export class SimuladorPageComponent {
 
     const transacao: TransacaoItem = {
       id,
-      nomeProduto: (this.incluirForm.controls.nomeProduto.value ?? '').trim(),
+      productName: (this.incluirForm.controls.nomeProduto.value ?? '').trim(),
       tag: (this.incluirForm.controls.tag.value ?? '').trim(),
-      descricao: (this.incluirForm.controls.descricao.value ?? '').trim(),
-      isoMessage: (this.incluirForm.controls.isoMessage.value ?? '').trim(),
+      description: (this.incluirForm.controls.descricao.value ?? '').trim(),
+      message: (this.incluirForm.controls.isoMessage.value ?? '').trim(),
       messageModel: (this.incluirForm.controls.messageModel.value ?? '').trim(),
-      bandeira: (this.incluirForm.controls.bandeira.value ?? '').trim(),
+      messageType: (this.incluirForm.controls.messageType.value ?? '').trim(),
+      paymentNetwork: (this.incluirForm.controls.bandeira.value ?? '').trim(),
       criadoEm: new Date().toISOString(),
     };
 
@@ -412,17 +431,18 @@ export class SimuladorPageComponent {
     }
 
     // Rebuild the main ISO message with updated Bit 07
-    const currentFields = this.getRequestFieldsMap();
-    const currentMti = this.mti() || '0200';
+    const { mti: mtiFromForm, fields: currentFields } = this.getBuildIsoInputFromRequestForm();
+    const currentMti = mtiFromForm || '0200';
     const txMessageModel = transacao.messageModel || '';
-    const txBandeira = transacao.bandeira || '';
+    const txMessageType = transacao.messageType || '';
+    const txPaymentNetwork = transacao.paymentNetwork || '';
 
-    this.isoParserService.buildIso(currentMti, currentFields, txMessageModel, txBandeira).pipe(
+    this.isoParserService.buildIso(currentMti, currentFields, txMessageModel, txPaymentNetwork, txMessageType).pipe(
       switchMap((built) => {
-        // Update the selected transacao's isoMessage in memory
-        const updatedTransacao = { ...transacao, isoMessage: built.isoMessage };
+        // Update the selected transacao's message in memory
+        const updatedTransacao = { ...transacao, message: built.message };
         this.selectedTransacao.set(updatedTransacao);
-        return this.isoParserService.executarTransacao(built.isoMessage, txMessageModel, txBandeira);
+        return this.isoParserService.executarTransacao(built.message, txMessageModel, txPaymentNetwork, txMessageType);
       }),
       switchMap(() => this.rebuildEstornoIsoIfNeeded()),
       switchMap(() => this.afterMainTransactionExecuted(transacao)),
@@ -467,13 +487,14 @@ export class SimuladorPageComponent {
 
       const delayMs = delaySeconds * 1000;
       const estornoMessageModel = estorno.messageModel || '';
-      const estornoBandeira = estorno.bandeira || '';
+      const estornoMessageType = estorno.messageType || '';
+      const estornoPaymentNetwork = estorno.paymentNetwork || '';
       return of(null).pipe(
         delay(delayMs),
         tap(() => this.onFecharInterimOverlay()),
         switchMap(() => {
-          const estornoIso = this.estornoIsoMessage() || estorno.isoMessage;
-          return this.isoParserService.executarTransacao(estornoIso, estornoMessageModel, estornoBandeira);
+          const estornoIso = this.estornoIsoMessage() || estorno.message;
+          return this.isoParserService.executarTransacao(estornoIso, estornoMessageModel, estornoPaymentNetwork, estornoMessageType);
         }),
       );
     }
@@ -540,18 +561,19 @@ export class SimuladorPageComponent {
     this.editingTransacaoId.set(transacao.id);
 
     this.incluirForm.patchValue({
-      nomeProduto: transacao.nomeProduto,
+      nomeProduto: transacao.productName,
       tag: transacao.tag ?? '',
       messageModel: transacao.messageModel ?? '',
-      bandeira: transacao.bandeira ?? '',
-      descricao: transacao.descricao,
-      isoMessage: transacao.isoMessage,
+      messageType: transacao.messageType ?? '',
+      bandeira: transacao.paymentNetwork ?? '',
+      descricao: transacao.description,
+      isoMessage: transacao.message,
     });
 
     // Load ISO fields from the message
-    if (transacao.isoMessage && transacao.isoMessage.trim().length >= 4) {
+    if (transacao.message && transacao.message.trim().length >= 4) {
       this.loading.set(true);
-      this.isoParserService.parseIso(transacao.isoMessage, transacao.messageModel, transacao.bandeira).subscribe({
+      this.isoParserService.parseIso(transacao.message, transacao.messageModel, transacao.paymentNetwork, transacao.messageType).subscribe({
         next: (result) => {
           this.loading.set(false);
           this.mti.set(result.mti ?? '');
@@ -601,12 +623,15 @@ export class SimuladorPageComponent {
 
     // Load ISO request fields from the stored message
     this.loading.set(true);
-    this.isoParserService.parseIso(transacao.isoMessage, transacao.messageModel, transacao.bandeira).subscribe({
+    this.isoParserService.parseIso(transacao.message, transacao.messageModel, transacao.paymentNetwork, transacao.messageType).subscribe({
       next: (result) => {
         this.loading.set(false);
         this.mti.set(result.mti ?? '');
-        // Auto-populate Bit 07 with current timestamp (mmddhhmmss)
+        // Remove MTI key from fields map (shown separately as standalone MTI field)
         const fields = { ...result.fields };
+        delete fields['00'];
+        delete fields['0'];
+        // Auto-populate Bit 07 with current timestamp (mmddhhmmss)
         const bit07Key = this.findFieldKey(fields, 7);
         if (bit07Key) {
           fields[bit07Key] = this.generateBit07();
@@ -631,9 +656,17 @@ export class SimuladorPageComponent {
     return map;
   }
 
+  private getBuildIsoInputFromRequestForm(): { mti: string; fields: Record<string, string> } {
+    const fieldsMap = this.getRequestFieldsMap();
+    const mtiValue = fieldsMap['00'] ?? this.mti() ?? '';
+    const fieldsWithoutMti = { ...fieldsMap };
+    delete fieldsWithoutMti['00'];
+    return { mti: mtiValue, fields: fieldsWithoutMti };
+  }
+
   private buildBitsForm(map: Record<string, string>): void {
     const group: Record<string, FormControl<string>> = {};
-    const keys = Object.keys(map).sort((a, b) => Number(a) - Number(b));
+    const keys = this.moveMtiKeyFirst(Object.keys(map));
     this.sortedKeys.set(keys);
 
     for (const key of keys) {
@@ -642,6 +675,21 @@ export class SimuladorPageComponent {
 
     this.bitsForm.set(new FormGroup(group));
     this.updateAvailableBits();
+  }
+
+  private moveMtiKeyFirst(keys: string[]): string[] {
+    const result = [...keys];
+    const idx = result.findIndex((k) => {
+      const normalized = k.trim();
+      return normalized === '00' || normalized === '0';
+    });
+
+    if (idx > 0) {
+      const [mtiKey] = result.splice(idx, 1);
+      result.unshift(mtiKey);
+    }
+
+    return result;
   }
 
   private resetBitsForm(): void {
@@ -716,10 +764,11 @@ export class SimuladorPageComponent {
 
     // Rebuild estorno ISO with updated fields (including new Bit 90)
     const estornoMessageModel = estorno.messageModel || '';
-    const estornoBandeira = estorno.bandeira || '';
-    return this.isoParserService.buildIso(estornoMti, estornoFields, estornoMessageModel, estornoBandeira).pipe(
+    const estornoMessageType = estorno.messageType || '';
+    const estornoPaymentNetwork = estorno.paymentNetwork || '';
+    return this.isoParserService.buildIso(estornoMti, estornoFields, estornoMessageModel, estornoPaymentNetwork, estornoMessageType).pipe(
       tap((built) => {
-        this.estornoIsoMessage.set(built.isoMessage);
+        this.estornoIsoMessage.set(built.message);
       }),
     );
   }
@@ -731,18 +780,19 @@ export class SimuladorPageComponent {
 
     // Step 1: Parse the estorno ISO message to get fields
     const estornoMessageModel = estornoItem.messageModel || '';
-    const estornoBandeira = estornoItem.bandeira || '';
-    this.isoParserService.parseIso(estornoItem.isoMessage, estornoMessageModel, estornoBandeira).pipe(
+    const estornoMessageType = estornoItem.messageType || '';
+    const estornoPaymentNetwork = estornoItem.paymentNetwork || '';
+    this.isoParserService.parseIso(estornoItem.message, estornoMessageModel, estornoPaymentNetwork, estornoMessageType).pipe(
       switchMap((parsed) => {
         // Step 2: Update Bit 90 in the parsed fields
         const updatedFields = { ...parsed.fields, '90': bit90Value };
         const estornoMti = parsed.mti || '0400';
         // Step 3: Build the new ISO message with updated Bit 90
-        return this.isoParserService.buildIso(estornoMti, updatedFields, estornoMessageModel, estornoBandeira).pipe(
+        return this.isoParserService.buildIso(estornoMti, updatedFields, estornoMessageModel, estornoPaymentNetwork, estornoMessageType).pipe(
           switchMap((built) => {
             // Step 4: Parse the rebuilt ISO to display full fields
-            this.estornoIsoMessage.set(built.isoMessage);
-            return this.isoParserService.parseIso(built.isoMessage, estornoMessageModel, estornoBandeira);
+            this.estornoIsoMessage.set(built.message);
+            return this.isoParserService.parseIso(built.message, estornoMessageModel, estornoPaymentNetwork, estornoMessageType);
           }),
         );
       }),
@@ -750,7 +800,7 @@ export class SimuladorPageComponent {
       next: (finalParsed) => {
         this.estornoLoading.set(false);
         this.estornoMti.set(finalParsed.mti || '');
-        const keys = Object.keys(finalParsed.fields).sort((a, b) => Number(a) - Number(b));
+        const keys = Object.keys(finalParsed.fields);
         this.estornoSortedKeys.set(keys);
         const group: Record<string, FormControl<string>> = {};
         for (const key of keys) {
@@ -796,14 +846,15 @@ export class SimuladorPageComponent {
     const transacao = this.selectedTransacao();
     if (!transacao) return;
 
-    const currentFields = this.getRequestFieldsMap();
-    const currentMti = this.mti() || '0200';
+    const { mti: mtiFromForm, fields: currentFields } = this.getBuildIsoInputFromRequestForm();
+    const currentMti = mtiFromForm || '0200';
     const txMessageModel = transacao.messageModel || '';
-    const txBandeira = transacao.bandeira || '';
+    const txMessageType = transacao.messageType || '';
+    const txPaymentNetwork = transacao.paymentNetwork || '';
 
-    this.isoParserService.buildIso(currentMti, currentFields, txMessageModel, txBandeira).subscribe({
+    this.isoParserService.buildIso(currentMti, currentFields, txMessageModel, txPaymentNetwork, txMessageType).subscribe({
       next: (built) => {
-        const updatedTransacao = { ...transacao, isoMessage: built.isoMessage };
+        const updatedTransacao = { ...transacao, message: built.message };
         this.selectedTransacao.set(updatedTransacao);
       },
       error: () => {
@@ -824,11 +875,12 @@ export class SimuladorPageComponent {
     }
     const estornoMti = this.estornoMti() || '0400';
     const estornoMessageModel = estorno.messageModel || '';
-    const estornoBandeira = estorno.bandeira || '';
+    const estornoMessageType = estorno.messageType || '';
+    const estornoPaymentNetwork = estorno.paymentNetwork || '';
 
-    this.isoParserService.buildIso(estornoMti, estornoFields, estornoMessageModel, estornoBandeira).subscribe({
+    this.isoParserService.buildIso(estornoMti, estornoFields, estornoMessageModel, estornoPaymentNetwork, estornoMessageType).subscribe({
       next: (built) => {
-        this.estornoIsoMessage.set(built.isoMessage);
+        this.estornoIsoMessage.set(built.message);
       },
       error: () => {
         // silently ignore rebuild errors while editing

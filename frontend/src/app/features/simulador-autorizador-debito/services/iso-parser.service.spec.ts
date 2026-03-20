@@ -20,7 +20,7 @@ describe('IsoParserService', () => {
     httpMock.verify();
   });
 
-  it('should call POST /api/simulador/iso/parse with the correct URL and body', () => {
+  it('should call POST /api/simulador/message/parse with the correct URL and body', () => {
     const mockApiResponse = {
       mti: '0100',
       fields: {
@@ -34,19 +34,22 @@ describe('IsoParserService', () => {
       expect(result).toEqual(mockApiResponse);
     });
 
-    const req = httpMock.expectOne(`${environment.apiBaseUrlJava}/api/simulador/iso/parse`);
+    const req = httpMock.expectOne(`${environment.apiBaseUrlJava}/api/simulador/message/parse`);
     expect(req.request.method).toBe('POST');
-    expect(req.request.body).toEqual({ isoMessage: '0200ABCDEF' });
+    expect(req.request.body).toEqual({ message: '0200ABCDEF' });
     req.flush(mockApiResponse);
   });
 
-  it('should call POST /api/transacao/salvar with the correct URL and body', () => {
+  it('should call POST /api/simulador/cenarios/salvar with the correct URL and body', () => {
     const mockResponse = { id: 'abc-123', message: 'Transação salva com sucesso' };
     const payload = {
-      nomeProduto: 'Produto Teste',
+      productName: 'Produto Teste',
       tag: 'TAG1',
-      descricao: 'Descrição',
-      isoMessage: '0200AABBCC',
+      description: 'Descrição',
+      message: '0200AABBCC',
+      messageModel: 'SINGLE_MESSAGE',
+      messageType: 'AUTORIZACAO',
+      paymentNetwork: 'VISA',
     };
 
     service.salvarTransacao(payload).subscribe((result) => {
@@ -59,17 +62,14 @@ describe('IsoParserService', () => {
     req.flush(mockResponse);
   });
 
-  it('should call POST /api/simulador/cenarios/execucao with the correct URL and body', () => {
-    const mockResponse = {
-      fields: { '02': '5454545454', '39': '00' },
-      message: 'Transação autorizada com sucesso',
-    };
+  it('should call POST /api/simulador/cenarios/executar with the correct URL and body', () => {
+    const mockResponse = { message: 'Transação autorizada com sucesso' };
 
     service.executarTransacao('0200AABBCC').subscribe((result) => {
       expect(result).toEqual(mockResponse);
     });
 
-    const req = httpMock.expectOne(`${environment.apiBaseUrlJava}/api/simulador/cenarios/execucao`);
+    const req = httpMock.expectOne(`${environment.apiBaseUrlJava}/api/simulador/cenarios/executar`);
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual({ message: '0200AABBCC' });
     req.flush(mockResponse);
@@ -77,7 +77,17 @@ describe('IsoParserService', () => {
 
   it('should call GET /api/simulador/cenarios without filter', () => {
     const mockList = [
-      { id: '1', nomeProduto: 'Prod1', tag: 'TAG1', descricao: 'Desc1', isoMessage: '0200AA', criadoEm: '' },
+      {
+        id: '1',
+        productName: 'Prod1',
+        tag: 'TAG1',
+        description: 'Desc1',
+        message: '0200AA',
+        messageModel: 'SINGLE_MESSAGE',
+        messageType: 'AUTORIZACAO',
+        paymentNetwork: 'VISA',
+        criadoEm: '',
+      },
     ];
 
     service.consultarTransacoes().subscribe((result) => {
@@ -89,14 +99,14 @@ describe('IsoParserService', () => {
     req.flush(mockList);
   });
 
-  it('should call DELETE /api/simulador/cenarios/excluir/:id', () => {
+  it('should call DELETE /api/simulador/cenarios/:id', () => {
     const mockResponse = { message: 'Transação excluída com sucesso' };
 
     service.excluirTransacao('test-uuid').subscribe((result) => {
       expect(result).toEqual(mockResponse);
     });
 
-    const req = httpMock.expectOne(`${environment.apiBaseUrlJava}/api/simulador/cenarios/excluir/test-uuid`);
+    const req = httpMock.expectOne(`${environment.apiBaseUrlJava}/api/simulador/cenarios/test-uuid`);
     expect(req.request.method).toBe('DELETE');
     req.flush(mockResponse);
   });
