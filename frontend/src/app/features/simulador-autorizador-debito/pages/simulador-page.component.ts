@@ -260,7 +260,7 @@ export class SimuladorPageComponent {
     }
     newGroup.addControl(key, new FormControl('', { nonNullable: true }));
 
-    const newKeys = [...currentKeys, key].sort((a, b) => Number(a) - Number(b));
+    const newKeys = this.sortIsoFieldKeys([...currentKeys, key]);
 
     this.bitsForm.set(newGroup);
     this.sortedKeys.set(newKeys);
@@ -649,7 +649,7 @@ export class SimuladorPageComponent {
 
   private buildBitsForm(map: Record<string, string>): void {
     const group: Record<string, FormControl<string>> = {};
-    const keys = Object.keys(map).sort((a, b) => Number(a) - Number(b));
+    const keys = this.sortIsoFieldKeys(Object.keys(map));
     this.sortedKeys.set(keys);
 
     for (const key of keys) {
@@ -658,6 +658,21 @@ export class SimuladorPageComponent {
 
     this.bitsForm.set(new FormGroup(group));
     this.updateAvailableBits();
+  }
+
+  private sortIsoFieldKeys(keys: string[]): string[] {
+    return [...keys].sort((a, b) => this.isoFieldKeySortValue(a) - this.isoFieldKeySortValue(b));
+  }
+
+  private isoFieldKeySortValue(key: string): number {
+    const normalized = key.trim();
+    if (normalized === '00' || normalized === '0') {
+      return -1;
+    }
+    if (/^\d+$/.test(normalized)) {
+      return Number(normalized);
+    }
+    return Number.POSITIVE_INFINITY;
   }
 
   private resetBitsForm(): void {
@@ -768,7 +783,7 @@ export class SimuladorPageComponent {
       next: (finalParsed) => {
         this.estornoLoading.set(false);
         this.estornoMti.set(finalParsed.mti || '');
-        const keys = Object.keys(finalParsed.fields).sort((a, b) => Number(a) - Number(b));
+        const keys = this.sortIsoFieldKeys(Object.keys(finalParsed.fields));
         this.estornoSortedKeys.set(keys);
         const group: Record<string, FormControl<string>> = {};
         for (const key of keys) {
