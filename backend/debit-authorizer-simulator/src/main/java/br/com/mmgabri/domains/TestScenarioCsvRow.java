@@ -3,14 +3,14 @@ package br.com.mmgabri.domains;
 import lombok.Data;
 
 @Data
-public class CenarioTesteCsv {
+public class TestScenarioCsvRow {
 
     private String id;
-    private String nomeProduto;
+    private String productName;
     private String messageModel;
-    private String bandeira;
+    private String paymentNetwork;
     private String tag;
-    private String descricao;
+    private String description;
     private String isoMessage;
-    private String dataUpdate;
+    private String updatedAt;
 }
