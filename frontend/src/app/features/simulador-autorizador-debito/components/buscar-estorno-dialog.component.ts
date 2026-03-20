@@ -27,9 +27,9 @@ import { IsoParserService, TransacaoItem } from '../services/iso-parser.service'
         @for (item of transacoes(); track item.id) {
           <div class="transacao-row" (click)="onSelecionar(item)">
             <div class="transacao-info">
-              <span class="nome">{{ item.nomeProduto }}</span>
+              <span class="nome">{{ item.productName }}</span>
               <span class="tag">{{ item.tag }}</span>
-              <span class="descricao">{{ item.descricao }}</span>
+              <span class="descricao">{{ item.description }}</span>
             </div>
             <button
               mat-icon-button

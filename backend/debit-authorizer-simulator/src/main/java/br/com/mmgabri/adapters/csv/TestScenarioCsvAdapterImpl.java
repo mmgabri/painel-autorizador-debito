@@ -1,6 +1,6 @@
 package br.com.mmgabri.adapters.csv;
 
-import br.com.mmgabri.domains.CenarioTesteCsv;
+import br.com.mmgabri.domains.TestScenarioCsvRow;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -13,44 +13,43 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class FileCenarioTesteCsvAdapter implements CenarioTesteCsvAdapter {
+public class TestScenarioCsvAdapterImpl implements TestScenarioCsvAdapter {
 
-    private static final String HEADER = "id,nome_produto,message_model,bandeira,tag,descricao,message_iso,data_update";
+    private static final String HEADER = "id,product_name,message_model,message_type,payment_network,tag,description,message,updated_at";
 
     private final Path csvPath;
 
     //Aponta para o arquivo csv em painel-autorizador-debito\local
-    public FileCenarioTesteCsvAdapter(
-            @Value("${app.csv.cenarios-file:../../local/simulador_cenarios_testes.csv}") String csvFile) {
+//    public TestScenarioCsvAdapterImpl(
+//            @Value("${app.csv.cenarios-file:../../local/simulador_cenarios_testes.csv}") String csvFile) {
+//        this.csvPath = Paths.get(csvFile);
+//        ensureFileExists();
+//    }
+
+     //Aponta para o arquivo csv em resources
+    public TestScenarioCsvAdapterImpl(
+            @Value("${app.csv.cenarios-file:src/main/resources/cenarios_testes.csv}") String csvFile) {
         this.csvPath = Paths.get(csvFile);
         ensureFileExists();
     }
 
 
-     //Aponta para o arquivo csv em resources
-//    public FileCenarioTesteCsvAdapter(
-//            @Value("${app.csv.cenarios-file:src/main/resources/cenarios_testes.csv}") String csvFile) {
-//        this.csvPath = Paths.get(csvFile);
-//        ensureFileExists();
-//    }
-
-
     @Override
-    public synchronized void append(CenarioTesteCsv cenario) {
+    public synchronized void append(TestScenarioCsvRow cenario) {
         try {
             Files.writeString(csvPath, toCsvLine(cenario) + System.lineSeparator(), StandardCharsets.UTF_8,
                     java.nio.file.StandardOpenOption.APPEND);
         } catch (IOException e) {
-            throw new IllegalStateException("Erro ao gravar no arquivo CSV: " + csvPath, e);
+            throw new IllegalStateException("Error writing to CSV file: " + csvPath, e);
         }
     }
 
     @Override
-    public synchronized void replaceAll(List<CenarioTesteCsv> cenarios) {
+    public synchronized void replaceAll(List<TestScenarioCsvRow> cenarios) {
         StringBuilder content = new StringBuilder();
         content.append(HEADER).append(System.lineSeparator());
 
-        for (CenarioTesteCsv cenario : cenarios) {
+        for (TestScenarioCsvRow cenario : cenarios) {
             content.append(toCsvLine(cenario)).append(System.lineSeparator());
         }
 
@@ -60,16 +59,16 @@ public class FileCenarioTesteCsvAdapter implements CenarioTesteCsvAdapter {
                     java.nio.file.StandardOpenOption.TRUNCATE_EXISTING,
                     java.nio.file.StandardOpenOption.WRITE);
         } catch (IOException e) {
-            throw new IllegalStateException("Erro ao regravar o arquivo CSV: " + csvPath, e);
+            throw new IllegalStateException("Error rewriting CSV file: " + csvPath, e);
         }
     }
 
     @Override
-    public synchronized List<CenarioTesteCsv> findAll() {
+    public synchronized List<TestScenarioCsvRow> findAll() {
         try {
             ensureFileExists();
             List<String> lines = Files.readAllLines(csvPath, StandardCharsets.UTF_8);
-            List<CenarioTesteCsv> result = new ArrayList<>();
+            List<TestScenarioCsvRow> result = new ArrayList<>();
 
             for (int i = 1; i < lines.size(); i++) {
                 String line = lines.get(i);
@@ -82,33 +81,45 @@ public class FileCenarioTesteCsvAdapter implements CenarioTesteCsvAdapter {
                     continue;
                 }
 
-                CenarioTesteCsv row = new CenarioTesteCsv();
+                TestScenarioCsvRow row = new TestScenarioCsvRow();
                 row.setId(values.get(0));
-                row.setNomeProduto(values.get(1));
+                row.setProductName(values.get(1));
                 row.setMessageModel(values.get(2));
-                row.setBandeira(values.get(3));
-                row.setTag(values.get(4));
-                row.setDescricao(values.get(5));
-                row.setIsoMessage(values.get(6));
-                row.setDataUpdate(values.size() >= 8 ? values.get(7) : "");
+                // Support both old (without messageType) and new CSV formats
+                if (values.size() >= 9) {
+                    row.setMessageType(values.get(3));
+                    row.setPaymentNetwork(values.get(4));
+                    row.setTag(values.get(5));
+                    row.setDescription(values.get(6));
+                    row.setMessage(values.get(7));
+                    row.setUpdatedAt(values.get(8));
+                } else {
+                    row.setMessageType("");
+                    row.setPaymentNetwork(values.get(3));
+                    row.setTag(values.get(4));
+                    row.setDescription(values.get(5));
+                    row.setMessage(values.get(6));
+                    row.setUpdatedAt(values.size() >= 8 ? values.get(7) : "");
+                }
                 result.add(row);
             }
             return result;
         } catch (IOException e) {
-            throw new IllegalStateException("Erro ao ler o arquivo CSV: " + csvPath, e);
+            throw new IllegalStateException("Error reading CSV file: " + csvPath, e);
         }
     }
 
-    private String toCsvLine(CenarioTesteCsv cenario) {
+    private String toCsvLine(TestScenarioCsvRow cenario) {
         return String.join(",",
                 escape(cenario.getId()),
-                escape(cenario.getNomeProduto()),
+                escape(cenario.getProductName()),
                 escape(cenario.getMessageModel()),
-                escape(cenario.getBandeira()),
+                escape(cenario.getMessageType()),
+                escape(cenario.getPaymentNetwork()),
                 escape(cenario.getTag()),
-                escape(cenario.getDescricao()),
-                escape(cenario.getIsoMessage()),
-                escape(cenario.getDataUpdate())
+                escape(cenario.getDescription()),
+                escape(cenario.getMessage()),
+                escape(cenario.getUpdatedAt())
         );
     }
 
@@ -127,7 +138,7 @@ public class FileCenarioTesteCsvAdapter implements CenarioTesteCsvAdapter {
                 Files.writeString(csvPath, HEADER + System.lineSeparator(), StandardCharsets.UTF_8);
             }
         } catch (IOException e) {
-            throw new IllegalStateException("Erro ao inicializar o arquivo CSV: " + csvPath, e);
+            throw new IllegalStateException("Error initializing CSV file: " + csvPath, e);
         }
     }
 

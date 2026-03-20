@@ -57,15 +57,18 @@
       @for (item of buscarTransacoes(); track item.id) {
         <div class="transacao-row">
           <div class="transacao-info">
-            <span class="nome">{{ item.nomeProduto }}</span>
+            <span class="nome">{{ item.productName }}</span>
             <span class="tag">{{ item.tag }}</span>
-            @if (item.bandeira) {
-              <span class="badge bandeira-badge">{{ item.bandeira }}</span>
+            @if (item.paymentNetwork) {
+              <span class="badge bandeira-badge">{{ item.paymentNetwork }}</span>
             }
-             @if (item.messageModel) {
+            @if (item.messageModel) {
               <span class="badge message-model">{{ item.messageModel }}</span>
             }
-            <span class="descricao">{{ item.descricao }}</span>
+            @if (item.messageType) {
+              <span class="badge message-type">{{ item.messageType }}</span>
+            }
+            <span class="descricao">{{ item.description }}</span>
           </div>
           <div class="transacao-actions">
             <button
@@ -144,6 +147,15 @@
         </mat-select>
       </mat-form-field>
 
+      <!-- Tipo Mensagem -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Tipo Mensagem</mat-label>
+        <mat-select formControlName="messageType">
+          @for (opt of messageTypeOptions; track opt) {
+            <mat-option [value]="opt">{{ opt }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
 
       <!-- Descricao -->
       <mat-form-field appearance="outline" class="full-width">
@@ -182,7 +194,7 @@
         <div class="incluir-campo-row">
           <mat-form-field appearance="outline" class="select-bit-field">
             <mat-label>Incluir campo</mat-label>
-            <mat-select (selectionChange)="onIncluirCampo($event.value)">
+            <mat-select (selectionChange)="onIncluirCampo($event.value)" [disabled]="isConciliacaoIncluir()">
               @for (bit of availableBits(); track bit) {
                 <mat-option [value]="bit">{{ bit === 0 ? 'MTI' : 'Bit ' + (bit < 10 ? '0' + bit : bit) }}</mat-option>
               }
@@ -206,6 +218,7 @@
                   (click)="onRemoverCampo(key)"
                   class="remove-btn"
                   aria-label="Remover campo"
+                  [disabled]="isConciliacaoIncluir()"
                 >
                   <mat-icon>delete</mat-icon>
                 </button>
@@ -256,19 +269,25 @@
       <!-- Nome Produto (readonly) -->
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Nome Produto</mat-label>
-        <input matInput [value]="transacao.nomeProduto" readonly />
+        <input matInput [value]="transacao.productName" readonly />
       </mat-form-field>
 
       <!-- Bandeira (readonly) -->
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Bandeira</mat-label>
-        <input matInput [value]="transacao.bandeira" readonly />
+        <input matInput [value]="transacao.paymentNetwork" readonly />
       </mat-form-field>
 
       <!-- Message Model (readonly) -->
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Message Model</mat-label>
         <input matInput [value]="transacao.messageModel" readonly />
+      </mat-form-field>
+
+      <!-- Tipo Mensagem (readonly) -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Tipo Mensagem</mat-label>
+        <input matInput [value]="transacao.messageType" readonly />
       </mat-form-field>
 
       <!-- Tag (readonly) -->
@@ -280,13 +299,13 @@
       <!-- Descricao (readonly) -->
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Descrição</mat-label>
-        <input matInput [value]="transacao.descricao" readonly />
+        <input matInput [value]="transacao.description" readonly />
       </mat-form-field>
 
       <!-- Mensagem ISO (readonly) -->
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Mensagem ISO</mat-label>
-        <input matInput [value]="transacao.isoMessage" readonly />
+        <input matInput [value]="transacao.message" readonly />
       </mat-form-field>
 
     }
@@ -359,7 +378,7 @@
     @if (estornarChecked() && estornoTransacao(); as estorno) {
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Mensagem ISO de Estorno</mat-label>
-        <input matInput [value]="estornoIsoMessage() || estorno.isoMessage" readonly />
+        <input matInput [value]="estornoIsoMessage() || estorno.message" readonly />
       </mat-form-field>
 
       @if (estornoLoading()) {
