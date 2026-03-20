@@ -48,11 +48,11 @@ export class IsoParserService {
   constructor(private readonly http: HttpClient) {}
 
   parseIso(hexIso: string, messageModel?: string, paymentNetwork?: string, messageType?: string): Observable<IsoParseResponse> {
-    const body: Record<string, string> = { isoMessage: hexIso };
+    const body: Record<string, string> = { message: hexIso };
     if (messageModel) body['messageModel'] = messageModel;
     if (paymentNetwork) body['paymentNetwork'] = paymentNetwork;
     if (messageType) body['messageType'] = messageType;
-    return this.http.post<IsoParseResponse>(`${this.baseUrl}/api/simulador/iso/parse`, body);
+    return this.http.post<IsoParseResponse>(`${this.baseUrl}/api/simulador/message/parse`, body);
   }
 
   buildIso(mti: string, fields: Record<string, string>, messageModel?: string, paymentNetwork?: string, messageType?: string): Observable<{ isoMessage: string }> {
@@ -60,7 +60,7 @@ export class IsoParserService {
     if (messageModel) body['messageModel'] = messageModel;
     if (paymentNetwork) body['paymentNetwork'] = paymentNetwork;
     if (messageType) body['messageType'] = messageType;
-    return this.http.post<{ isoMessage: string }>(`${this.baseUrl}/api/simulador/iso/build`, body);
+    return this.http.post<{ isoMessage: string }>(`${this.baseUrl}/api/simulador/message/build`, body);
   }
 
   salvarTransacao(data: SalvarTransacaoRequest): Observable<SalvarTransacaoResponse> {

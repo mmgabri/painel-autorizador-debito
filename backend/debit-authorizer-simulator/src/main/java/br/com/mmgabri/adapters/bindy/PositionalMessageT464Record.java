@@ -6,7 +6,7 @@ import org.apache.camel.dataformat.bindy.annotation.FixedLengthRecord;
 
 @Data
 @FixedLengthRecord(ignoreMissingChars = false, ignoreTrailingChars = false, paddingChar = ' ')
-public class PositionalMessageRecord {
+public class PositionalMessageT464Record {
 
     @DataField(pos = 1, length = 4, trim = true)
     private String mti;

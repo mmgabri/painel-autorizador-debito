@@ -5,14 +5,14 @@ import lombok.Data;
 import java.util.Map;
 
 @Data
-public class IsoParseResponse {
+public class MessageParseResponse {
     private String mti;
     private Map<String, String> fields;
 
-    public IsoParseResponse() {
+    public MessageParseResponse() {
     }
 
-    public IsoParseResponse(String mti, Map<String, String> fields) {
+    public MessageParseResponse(String mti, Map<String, String> fields) {
         this.mti = mti;
         this.fields = fields;
     }

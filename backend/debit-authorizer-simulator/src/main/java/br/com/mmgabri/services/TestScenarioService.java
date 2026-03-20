@@ -3,7 +3,7 @@ package br.com.mmgabri.services;
 import br.com.mmgabri.adapters.csv.TestScenarioCsvAdapter;
 import br.com.mmgabri.domains.TestScenarioCsvRow;
 import br.com.mmgabri.domains.TestScenarioCsvRequest;
-import br.com.mmgabri.domains.IsoParseRequest;
+import br.com.mmgabri.domains.MessageParseRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -80,12 +80,12 @@ public class TestScenarioService {
         csvAdapter.replaceAll(cenarios);
     }
 
-    public void executeById(IsoParseRequest request) {
+    public void executeById(MessageParseRequest request) {
 
     }
 
-    public void execute(IsoParseRequest request) {
-        if (request.getIsoMessage() == null || request.getIsoMessage().isBlank()) {
+    public void execute(MessageParseRequest request) {
+        if (request.getMessage() == null || request.getMessage().isBlank()) {
             throw new IllegalArgumentException("isoMessage cannot be blank for execution.");
         }
 

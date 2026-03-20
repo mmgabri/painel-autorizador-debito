@@ -15,12 +15,12 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-public class PositionalMessageParserBindyAdapter implements PositionalMessageParserAdapter {
+public class PositionalMessageParserBindyT464Adapter implements PositionalMessageParserAdapter {
 
     private final CamelContext camelContext = new DefaultCamelContext();
-    private final BindyFixedLengthDataFormat bindy = new BindyFixedLengthDataFormat(PositionalMessageRecord.class);
+    private final BindyFixedLengthDataFormat bindy = new BindyFixedLengthDataFormat(PositionalMessageT464Record.class);
 
-    public PositionalMessageParserBindyAdapter() {
+    public PositionalMessageParserBindyT464Adapter() {
         try {
             this.camelContext.start();
         } catch (Exception e) {
@@ -37,7 +37,7 @@ public class PositionalMessageParserBindyAdapter implements PositionalMessagePar
                     new ByteArrayInputStream(positionalMessage.getBytes(StandardCharsets.UTF_8))
             );
 
-            PositionalMessageRecord record = extractRecord(result);
+            PositionalMessageT464Record record = extractRecord(result);
             Map<String, String> fields = new LinkedHashMap<>();
             fields.put("mti", record.getMti());
             fields.put("fakeAccount", record.getFakeAccount());
@@ -53,14 +53,14 @@ public class PositionalMessageParserBindyAdapter implements PositionalMessagePar
         }
     }
 
-    private PositionalMessageRecord extractRecord(Object result) {
-        if (result instanceof PositionalMessageRecord record) {
+    private PositionalMessageT464Record extractRecord(Object result) {
+        if (result instanceof PositionalMessageT464Record record) {
             return record;
         }
 
         if (result instanceof Map<?, ?> map) {
             for (Object value : map.values()) {
-                PositionalMessageRecord nested = tryExtract(value);
+                PositionalMessageT464Record nested = tryExtract(value);
                 if (nested != null) {
                     return nested;
                 }
@@ -69,7 +69,7 @@ public class PositionalMessageParserBindyAdapter implements PositionalMessagePar
 
         if (result instanceof List<?> list) {
             for (Object item : list) {
-                PositionalMessageRecord nested = tryExtract(item);
+                PositionalMessageT464Record nested = tryExtract(item);
                 if (nested != null) {
                     return nested;
                 }
@@ -79,14 +79,14 @@ public class PositionalMessageParserBindyAdapter implements PositionalMessagePar
         throw new IllegalArgumentException("Bindy parser returned an unsupported output format.");
     }
 
-    private PositionalMessageRecord tryExtract(Object value) {
-        if (value instanceof PositionalMessageRecord record) {
+    private PositionalMessageT464Record tryExtract(Object value) {
+        if (value instanceof PositionalMessageT464Record record) {
             return record;
         }
 
         if (value instanceof Map<?, ?> nestedMap) {
             for (Object nestedValue : nestedMap.values()) {
-                if (nestedValue instanceof PositionalMessageRecord record) {
+                if (nestedValue instanceof PositionalMessageT464Record record) {
                     return record;
                 }
             }

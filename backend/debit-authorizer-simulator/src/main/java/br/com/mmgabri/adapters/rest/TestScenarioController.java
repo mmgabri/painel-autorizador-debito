@@ -1,6 +1,6 @@
 package br.com.mmgabri.adapters.rest;
 
-import br.com.mmgabri.domains.IsoParseRequest;
+import br.com.mmgabri.domains.MessageParseRequest;
 import br.com.mmgabri.domains.TestScenarioCsvRequest;
 import br.com.mmgabri.domains.TestScenarioCsvRow;
 import br.com.mmgabri.services.TestScenarioExecutionService;
@@ -34,7 +34,7 @@ public class TestScenarioController {
     }
 
     @PostMapping("/executar")
-    public ResponseEntity<Map<String, String>> execute(@Valid @RequestBody IsoParseRequest request) {
+    public ResponseEntity<Map<String, String>> execute(@Valid @RequestBody MessageParseRequest request) {
         logger.info("Request received to execute scenario with isoMessage.");
         testScenarioExecutionService.execute(request);
         logger.info("Scenario executed successfully via isoMessage.");
