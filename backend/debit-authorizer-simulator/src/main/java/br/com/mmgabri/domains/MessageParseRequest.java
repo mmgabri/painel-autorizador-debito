@@ -3,9 +3,9 @@ package br.com.mmgabri.domains;
 import lombok.Data;
 
 @Data
-public class IsoParseRequest {
+public class MessageParseRequest {
     private String messageModel;
     private String messageType;
     private String paymentNetwork;
-    private String isoMessage;
+    private String message;
 }

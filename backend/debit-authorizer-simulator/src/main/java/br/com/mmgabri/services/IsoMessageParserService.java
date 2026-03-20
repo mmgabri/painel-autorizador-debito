@@ -1,6 +1,6 @@
 package br.com.mmgabri.services;
 
-import br.com.mmgabri.domains.IsoParseResponse;
+import br.com.mmgabri.domains.MessageParseResponse;
 import org.jpos.iso.ISOMsg;
 import org.jpos.iso.ISOPackager;
 import org.jpos.iso.packager.GenericPackager;
@@ -27,7 +27,7 @@ public class IsoMessageParserService {
         }
     }
 
-    public IsoParseResponse execute(String isoMessage) throws Exception {
+    public MessageParseResponse execute(String isoMessage) throws Exception {
         byte[] messageBytes = hexToBytes(isoMessage);
 
         ISOMsg isoMsg = new ISOMsg();
@@ -52,7 +52,7 @@ public class IsoMessageParserService {
             }
         }
 
-        return new IsoParseResponse(isoMsg.getMTI(), fields);
+        return new MessageParseResponse(isoMsg.getMTI(), fields);
     }
 
     // Fails fast when message body contains bytes not consumed by the bitmap-defined fields.
