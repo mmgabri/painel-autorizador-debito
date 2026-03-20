@@ -260,7 +260,7 @@ export class SimuladorPageComponent {
     }
     newGroup.addControl(key, new FormControl('', { nonNullable: true }));
 
-    const newKeys = [...currentKeys, key].sort((a, b) => Number(a) - Number(b));
+    const newKeys = this.moveMtiKeyFirst([...currentKeys, key]);
 
     this.bitsForm.set(newGroup);
     this.sortedKeys.set(newKeys);
@@ -425,8 +425,8 @@ export class SimuladorPageComponent {
     }
 
     // Rebuild the main ISO message with updated Bit 07
-    const currentFields = this.getRequestFieldsMap();
-    const currentMti = this.mti() || '0200';
+    const { mti: mtiFromForm, fields: currentFields } = this.getBuildIsoInputFromRequestForm();
+    const currentMti = mtiFromForm || '0200';
     const txMessageModel = transacao.messageModel || '';
     const txMessageType = transacao.messageType || '';
     const txPaymentNetwork = transacao.paymentNetwork || '';
@@ -621,8 +621,11 @@ export class SimuladorPageComponent {
       next: (result) => {
         this.loading.set(false);
         this.mti.set(result.mti ?? '');
-        // Auto-populate Bit 07 with current timestamp (mmddhhmmss)
+        // Remove MTI key from fields map (shown separately as standalone MTI field)
         const fields = { ...result.fields };
+        delete fields['00'];
+        delete fields['0'];
+        // Auto-populate Bit 07 with current timestamp (mmddhhmmss)
         const bit07Key = this.findFieldKey(fields, 7);
         if (bit07Key) {
           fields[bit07Key] = this.generateBit07();
@@ -647,9 +650,17 @@ export class SimuladorPageComponent {
     return map;
   }
 
+  private getBuildIsoInputFromRequestForm(): { mti: string; fields: Record<string, string> } {
+    const fieldsMap = this.getRequestFieldsMap();
+    const mtiValue = fieldsMap['00'] ?? this.mti() ?? '';
+    const fieldsWithoutMti = { ...fieldsMap };
+    delete fieldsWithoutMti['00'];
+    return { mti: mtiValue, fields: fieldsWithoutMti };
+  }
+
   private buildBitsForm(map: Record<string, string>): void {
     const group: Record<string, FormControl<string>> = {};
-    const keys = Object.keys(map).sort((a, b) => Number(a) - Number(b));
+    const keys = this.moveMtiKeyFirst(Object.keys(map));
     this.sortedKeys.set(keys);
 
     for (const key of keys) {
@@ -658,6 +669,21 @@ export class SimuladorPageComponent {
 
     this.bitsForm.set(new FormGroup(group));
     this.updateAvailableBits();
+  }
+
+  private moveMtiKeyFirst(keys: string[]): string[] {
+    const result = [...keys];
+    const idx = result.findIndex((k) => {
+      const normalized = k.trim();
+      return normalized === '00' || normalized === '0';
+    });
+
+    if (idx > 0) {
+      const [mtiKey] = result.splice(idx, 1);
+      result.unshift(mtiKey);
+    }
+
+    return result;
   }
 
   private resetBitsForm(): void {
@@ -768,7 +794,7 @@ export class SimuladorPageComponent {
       next: (finalParsed) => {
         this.estornoLoading.set(false);
         this.estornoMti.set(finalParsed.mti || '');
-        const keys = Object.keys(finalParsed.fields).sort((a, b) => Number(a) - Number(b));
+        const keys = Object.keys(finalParsed.fields);
         this.estornoSortedKeys.set(keys);
         const group: Record<string, FormControl<string>> = {};
         for (const key of keys) {
@@ -814,8 +840,8 @@ export class SimuladorPageComponent {
     const transacao = this.selectedTransacao();
     if (!transacao) return;
 
-    const currentFields = this.getRequestFieldsMap();
-    const currentMti = this.mti() || '0200';
+    const { mti: mtiFromForm, fields: currentFields } = this.getBuildIsoInputFromRequestForm();
+    const currentMti = mtiFromForm || '0200';
     const txMessageModel = transacao.messageModel || '';
     const txMessageType = transacao.messageType || '';
     const txPaymentNetwork = transacao.paymentNetwork || '';
