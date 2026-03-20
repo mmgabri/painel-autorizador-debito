@@ -1,0 +1,310 @@
+{
+  "info": {
+    "name": "painel-débito",
+    "description": null,
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "cenarios/executar",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "http://localhost:8080/api/simulador/cenarios/executar",
+          "protocol": "http",
+          "host": [
+            "localhost:8080"
+          ],
+          "path": [
+            "api",
+            "simulador",
+            "cenarios",
+            "executar"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"messageModel\": \"SINGLE_MESSAGE\",\n  \"paymentNetwork\": \"MASTERCARD\",\n  \"messageType\": \"AUTORIZACAO\",\n  \"message\": \"F0F1F0F0F820000008C040000000000000080000F1F6F1F2F3F4F5F6F7F8F9F0F1F2F3F4F5F6F0F0F0F0F0F0F0F0F0F0F0F0F0F0F1F0F0F0F0F0F0F0F0F0F0F0F2F0F0F0F1F2F3F4F5F6E3C5D9D4F0F0F0F1F0F0F0F1E3C5D9D4F0F0F0F1D4C5D9C3C8C1D5E3F0F0F0F0F0F0F1F9F8F6F0F2F1A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "cenarios/findAll",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "http://localhost:8080/api/simulador/cenarios",
+          "protocol": "http",
+          "host": [
+            "localhost:8080"
+          ],
+          "path": [
+            "api",
+            "simulador",
+            "cenarios"
+          ],
+          "query": [],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "cenarios/findByproductName",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "http://localhost:8080/api/simulador/cenarios?productName=ESTORNO",
+          "protocol": "http",
+          "host": [
+            "localhost:8080"
+          ],
+          "path": [
+            "api",
+            "simulador",
+            "cenarios"
+          ],
+          "query": [
+            {
+              "key": "productName",
+              "value": "ESTORNO"
+            }
+          ],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "cenarios/save",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "http://localhost:8080/api/simulador/cenarios/salvar",
+          "protocol": "http",
+          "host": [
+            "localhost:8080"
+          ],
+          "path": [
+            "api",
+            "simulador",
+            "cenarios",
+            "salvar"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"productName\": \"bbbbb\",\n  \"tag\": \"marcelo\",\n  \"description\": \"teste\",\n  \"mensagemIso\": \"bbbbbbbbbbbbbbbbb\",  \n  \"messageModel\": \"SINGLE_MESSAGE\",\n  \"paymentNetwork\": \"MASTERCARD\",\n  \"messageType\": \"AUTORIZACAO\",\n  \"message\": \"F0F1F0F0F820000008C040000000000000080000F1F6F1F2F3F4F5F6F7F8F9F0F1F2F3F4F5F6F0F0F0F0F0F0F0F0F0F0F0F0F0F0F1F0F0F0F0F0F0F0F0F0F0F0F2F0F0F0F1F2F3F4F5F6E3C5D9D4F0F0F0F1F0F0F0F1E3C5D9D4F0F0F0F1D4C5D9C3C8C1D5E3F0F0F0F0F0F0F1F9F8F6F0F2F1A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "ebcdic/to-hex",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "http://localhost:8080/api/simulador/ebcdic/to-hex",
+          "protocol": "http",
+          "host": [
+            "localhost:8080"
+          ],
+          "path": [
+            "api",
+            "simulador",
+            "ebcdic",
+            "to-hex"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"text\":\"02001234567890003000000000001234986FAKE_MERCHANT_STORE1SAO_PAULO_CAPITAL_BRZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "ebcdic/to-text",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "http://localhost:8080/api/simulador/ebcdic/to-text",
+          "protocol": "http",
+          "host": [
+            "localhost:8080"
+          ],
+          "path": [
+            "api",
+            "simulador",
+            "ebcdic",
+            "to-text"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "  {\n    \"hexEbcdic\":\"F1F2F3F4F540604094819983859396409485A2A28981A24087818299898593\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "iso/build",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "http://localhost:8080/api/simulador/message/build",
+          "protocol": "http",
+          "host": [
+            "localhost:8080"
+          ],
+          "path": [
+            "api",
+            "simulador",
+            "message",
+            "build"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"messageModel\": \"SINGLE_MESSAGE\",\n  \"paymentNetwork\": \"MASTERCARD\",\n  \"messageType\": \"AUTORIZACAO\",\n  \"mti\": \"0100\",\n  \"fields\": {\n    \"2\": \"1234567890123456\",\n    \"3\": \"000000\",\n    \"4\": \"000000001000\",\n    \"5\": \"000000002000\",\n    \"11\": \"123456\",\n    \"37\": \"TERM00010001\",\n    \"41\": \"TERM0001\",\n    \"42\": \"MERCHANT0000001\",\n    \"50\": \"986\",\n    \"109\": \"xxxxxxxxxxxxxxxxxxxxx\"\n  }\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "message/parse - iso",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "http://localhost:8080/api/simulador/message/parse",
+          "protocol": "http",
+          "host": [
+            "localhost:8080"
+          ],
+          "path": [
+            "api",
+            "simulador",
+            "message",
+            "parse"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n   \"messageModel\": \"SINGLE_MESSAGE\",\n  \"paymentNetwork\": \"MASTERCARD\",\n  \"messageType\": \"AUTORIZACAO\",\n  \"message\":\"F0F1F0F0F820000008C040000000000000080000F1F6F1F2F3F4F5F6F7F8F9F0F1F2F3F4F5F6F0F0F0F0F0F0F0F0F0F0F0F0F0F0F1F0F0F0F0F0F0F0F0F0F0F0F2F0F0F0F1F2F3F4F5F6E3C5D9D4F0F0F0F1F0F0F0F1E3C5D9D4F0F0F0F1D4C5D9C3C8C1D5E3F0F0F0F0F0F0F1F9F8F6F0F2F1A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "message/parse - positional",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "http://localhost:8080/api/simulador/message/parse",
+          "protocol": "http",
+          "host": [
+            "localhost:8080"
+          ],
+          "path": [
+            "api",
+            "simulador",
+            "message",
+            "parse"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"messageModel\": \"SINGLE_MESSAGE\",\n  \"paymentNetwork\": \"VISA\",\n  \"messageType\": \"CONCILIACAO\",\n  \"message\":\"F0F2F0F0F1F2F3F4F5F6F7F8F9F0F0F0F3F0F0F0F0F0F0F0F0F0F0F0F1F2F3F4F9F8F6C6C1D2C56DD4C5D9C3C8C1D5E36DE2E3D6D9C5F1E2C1D66DD7C1E4D3D66DC3C1D7C9E3C1D36DC2D9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9E9\"  \n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "variable": []
+}
