@@ -57,15 +57,15 @@
       @for (item of buscarTransacoes(); track item.id) {
         <div class="transacao-row">
           <div class="transacao-info">
-            <span class="nome">{{ item.nomeProduto }}</span>
+            <span class="nome">{{ item.productName }}</span>
             <span class="tag">{{ item.tag }}</span>
-            @if (item.bandeira) {
-              <span class="badge bandeira-badge">{{ item.bandeira }}</span>
+            @if (item.paymentNetwork) {
+              <span class="badge bandeira-badge">{{ item.paymentNetwork }}</span>
             }
              @if (item.messageModel) {
               <span class="badge message-model">{{ item.messageModel }}</span>
             }
-            <span class="descricao">{{ item.descricao }}</span>
+            <span class="descricao">{{ item.description }}</span>
           </div>
           <div class="transacao-actions">
             <button
@@ -256,13 +256,13 @@
       <!-- Nome Produto (readonly) -->
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Nome Produto</mat-label>
-        <input matInput [value]="transacao.nomeProduto" readonly />
+        <input matInput [value]="transacao.productName" readonly />
       </mat-form-field>
 
       <!-- Bandeira (readonly) -->
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Bandeira</mat-label>
-        <input matInput [value]="transacao.bandeira" readonly />
+        <input matInput [value]="transacao.paymentNetwork" readonly />
       </mat-form-field>
 
       <!-- Message Model (readonly) -->
@@ -280,7 +280,7 @@
       <!-- Descricao (readonly) -->
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Descrição</mat-label>
-        <input matInput [value]="transacao.descricao" readonly />
+        <input matInput [value]="transacao.description" readonly />
       </mat-form-field>
 
       <!-- Mensagem ISO (readonly) -->
