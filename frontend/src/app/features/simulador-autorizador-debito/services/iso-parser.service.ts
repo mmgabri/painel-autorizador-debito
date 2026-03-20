@@ -20,6 +20,7 @@ export interface SalvarTransacaoRequest {
   description: string;
   isoMessage: string;
   messageModel: string;
+  messageType: string;
   paymentNetwork: string;
 }
 
@@ -35,6 +36,7 @@ export interface TransacaoItem {
   description: string;
   isoMessage: string;
   messageModel: string;
+  messageType: string;
   paymentNetwork: string;
   criadoEm: string;
 }
@@ -45,17 +47,19 @@ export class IsoParserService {
 
   constructor(private readonly http: HttpClient) {}
 
-  parseIso(hexIso: string, messageModel?: string, paymentNetwork?: string): Observable<IsoParseResponse> {
+  parseIso(hexIso: string, messageModel?: string, paymentNetwork?: string, messageType?: string): Observable<IsoParseResponse> {
     const body: Record<string, string> = { isoMessage: hexIso };
     if (messageModel) body['messageModel'] = messageModel;
     if (paymentNetwork) body['paymentNetwork'] = paymentNetwork;
+    if (messageType) body['messageType'] = messageType;
     return this.http.post<IsoParseResponse>(`${this.baseUrl}/api/simulador/iso/parse`, body);
   }
 
-  buildIso(mti: string, fields: Record<string, string>, messageModel?: string, paymentNetwork?: string): Observable<{ isoMessage: string }> {
+  buildIso(mti: string, fields: Record<string, string>, messageModel?: string, paymentNetwork?: string, messageType?: string): Observable<{ isoMessage: string }> {
     const body: Record<string, unknown> = { mti, fields };
     if (messageModel) body['messageModel'] = messageModel;
     if (paymentNetwork) body['paymentNetwork'] = paymentNetwork;
+    if (messageType) body['messageType'] = messageType;
     return this.http.post<{ isoMessage: string }>(`${this.baseUrl}/api/simulador/iso/build`, body);
   }
 
@@ -63,7 +67,7 @@ export class IsoParserService {
     return this.http.post<SalvarTransacaoResponse>(`${this.baseUrl}/api/simulador/cenarios/salvar`, data);
   }
 
-  consultarTransacoes(productName?: string, tag?: string, paymentNetwork?: string): Observable<TransacaoItem[]> {
+  consultarTransacoes(productName?: string, tag?: string, paymentNetwork?: string, messageType?: string): Observable<TransacaoItem[]> {
     let params = new HttpParams();
     if (productName && productName.trim() !== '') {
       params = params.set('productName', productName.trim());
@@ -74,6 +78,9 @@ export class IsoParserService {
     if (paymentNetwork && paymentNetwork.trim() !== '') {
       params = params.set('paymentNetwork', paymentNetwork.trim());
     }
+    if (messageType && messageType.trim() !== '') {
+      params = params.set('messageType', messageType.trim());
+    }
     return this.http.get<TransacaoItem[]>(`${this.baseUrl}/api/simulador/cenarios`, { params });
   }
 
@@ -81,10 +88,11 @@ export class IsoParserService {
     return this.http.delete<{ message: string }>(`${this.baseUrl}/api/simulador/cenarios/${id}`);
   }
 
-  executarTransacao(isoMessage: string, messageModel?: string, paymentNetwork?: string): Observable<{ message: string }> {
+  executarTransacao(isoMessage: string, messageModel?: string, paymentNetwork?: string, messageType?: string): Observable<{ message: string }> {
     const body: Record<string, string> = { isoMessage };
     if (messageModel) body['messageModel'] = messageModel;
     if (paymentNetwork) body['paymentNetwork'] = paymentNetwork;
+    if (messageType) body['messageType'] = messageType;
     return this.http.post<{ message: string }>(
       `${this.baseUrl}/api/simulador/cenarios/executar`,
       body,
