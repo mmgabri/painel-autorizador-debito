@@ -44,15 +44,6 @@
           }
         </mat-select>
       </mat-form-field>
-      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filter-field filter-message-type">
-        <mat-label>Filtrar por Tipo Mensagem</mat-label>
-        <mat-select [(ngModel)]="buscarFiltroMessageType">
-          <mat-option value="">Todas</mat-option>
-          @for (opt of messageTypeOptions; track opt) {
-            <mat-option [value]="opt">{{ opt }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
       <button mat-raised-button color="primary" class="filtrar-btn itau-btn" (click)="onFiltrarBusca()">
         Filtrar
       </button>

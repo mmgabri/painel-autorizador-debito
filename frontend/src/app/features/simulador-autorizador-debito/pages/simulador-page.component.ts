@@ -72,7 +72,6 @@ export class SimuladorPageComponent {
   buscarFiltro = '';
   buscarFiltroTag = '';
   buscarFiltroBandeira = '';
-  buscarFiltroMessageType = '';
   buscarLoading = signal(false);
   buscarTransacoes = signal<TransacaoItem[]>([]);
 
@@ -138,7 +137,6 @@ export class SimuladorPageComponent {
     this.buscarFiltro = '';
     this.buscarFiltroTag = '';
     this.buscarFiltroBandeira = '';
-    this.buscarFiltroMessageType = '';
     this.activeView.set('buscar');
     this.carregarTransacoesBusca();
   }
@@ -146,7 +144,7 @@ export class SimuladorPageComponent {
   // ─── Buscar view actions ───
 
   onFiltrarBusca(): void {
-    this.carregarTransacoesBusca(this.buscarFiltro, this.buscarFiltroTag, this.buscarFiltroBandeira, this.buscarFiltroMessageType);
+    this.carregarTransacoesBusca(this.buscarFiltro, this.buscarFiltroTag, this.buscarFiltroBandeira);
   }
 
   onSelecionarTransacao(item: TransacaoItem): void {
@@ -204,7 +202,7 @@ export class SimuladorPageComponent {
     this.activeView.set('buscar');
     this.showResponse.set(false);
     this.selectedTransacao.set(null);
-    this.carregarTransacoesBusca(this.buscarFiltro, this.buscarFiltroTag, this.buscarFiltroBandeira, this.buscarFiltroMessageType);
+    this.carregarTransacoesBusca(this.buscarFiltro, this.buscarFiltroTag, this.buscarFiltroBandeira);
   }
 
   // ─── Incluir view actions ───
@@ -858,9 +856,9 @@ export class SimuladorPageComponent {
     });
   }
 
-  private carregarTransacoesBusca(nomeProduto?: string, tag?: string, bandeira?: string, messageType?: string): void {
+  private carregarTransacoesBusca(nomeProduto?: string, tag?: string, bandeira?: string): void {
     this.buscarLoading.set(true);
-    this.isoParserService.consultarTransacoes(nomeProduto, tag, bandeira, messageType).subscribe({
+    this.isoParserService.consultarTransacoes(nomeProduto, tag, bandeira).subscribe({
       next: (list) => {
         this.buscarLoading.set(false);
         this.buscarTransacoes.set(list);
