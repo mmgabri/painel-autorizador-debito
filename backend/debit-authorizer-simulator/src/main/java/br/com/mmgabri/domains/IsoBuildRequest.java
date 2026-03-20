@@ -7,6 +7,7 @@ import java.util.Map;
 @Data
 public class IsoBuildRequest {
     private String messageModel;
+    private String messageType;
     private String paymentNetwork;
     private String mti;
     private Map<String, String> fields;

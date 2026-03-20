@@ -44,6 +44,15 @@
           }
         </mat-select>
       </mat-form-field>
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filter-field filter-message-type">
+        <mat-label>Filtrar por Tipo Mensagem</mat-label>
+        <mat-select [(ngModel)]="buscarFiltroMessageType">
+          <mat-option value="">Todas</mat-option>
+          @for (opt of messageTypeOptions; track opt) {
+            <mat-option [value]="opt">{{ opt }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
       <button mat-raised-button color="primary" class="filtrar-btn itau-btn" (click)="onFiltrarBusca()">
         Filtrar
       </button>
@@ -62,8 +71,11 @@
             @if (item.paymentNetwork) {
               <span class="badge bandeira-badge">{{ item.paymentNetwork }}</span>
             }
-             @if (item.messageModel) {
+            @if (item.messageModel) {
               <span class="badge message-model">{{ item.messageModel }}</span>
+            }
+            @if (item.messageType) {
+              <span class="badge message-type">{{ item.messageType }}</span>
             }
             <span class="descricao">{{ item.description }}</span>
           </div>
@@ -144,6 +156,15 @@
         </mat-select>
       </mat-form-field>
 
+      <!-- Tipo Mensagem -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Tipo Mensagem</mat-label>
+        <mat-select formControlName="messageType">
+          @for (opt of messageTypeOptions; track opt) {
+            <mat-option [value]="opt">{{ opt }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
 
       <!-- Descricao -->
       <mat-form-field appearance="outline" class="full-width">
@@ -269,6 +290,12 @@
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Message Model</mat-label>
         <input matInput [value]="transacao.messageModel" readonly />
+      </mat-form-field>
+
+      <!-- Tipo Mensagem (readonly) -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Tipo Mensagem</mat-label>
+        <input matInput [value]="transacao.messageType" readonly />
       </mat-form-field>
 
       <!-- Tag (readonly) -->
