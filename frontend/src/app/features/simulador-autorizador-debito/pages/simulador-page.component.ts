@@ -621,10 +621,10 @@ export class SimuladorPageComponent {
       next: (result) => {
         this.loading.set(false);
         this.mti.set(result.mti ?? '');
+        // Remove MTI key from fields map (shown separately as standalone MTI field)
         const fields = { ...result.fields };
-        if (result.mti) {
-          fields['00'] = result.mti;
-        }
+        delete fields['00'];
+        delete fields['0'];
         // Auto-populate Bit 07 with current timestamp (mmddhhmmss)
         const bit07Key = this.findFieldKey(fields, 7);
         if (bit07Key) {
