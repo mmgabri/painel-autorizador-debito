@@ -425,8 +425,8 @@ export class SimuladorPageComponent {
     }
 
     // Rebuild the main ISO message with updated Bit 07
-    const currentFields = this.getRequestFieldsMap();
-    const currentMti = this.mti() || '0200';
+    const { mti: mtiFromForm, fields: currentFields } = this.getBuildIsoInputFromRequestForm();
+    const currentMti = mtiFromForm || '0200';
     const txMessageModel = transacao.messageModel || '';
     const txMessageType = transacao.messageType || '';
     const txPaymentNetwork = transacao.paymentNetwork || '';
@@ -621,8 +621,11 @@ export class SimuladorPageComponent {
       next: (result) => {
         this.loading.set(false);
         this.mti.set(result.mti ?? '');
-        // Auto-populate Bit 07 with current timestamp (mmddhhmmss)
         const fields = { ...result.fields };
+        if (result.mti) {
+          fields['00'] = result.mti;
+        }
+        // Auto-populate Bit 07 with current timestamp (mmddhhmmss)
         const bit07Key = this.findFieldKey(fields, 7);
         if (bit07Key) {
           fields[bit07Key] = this.generateBit07();
@@ -645,6 +648,14 @@ export class SimuladorPageComponent {
       map[key] = form.controls[key]?.value ?? '';
     }
     return map;
+  }
+
+  private getBuildIsoInputFromRequestForm(): { mti: string; fields: Record<string, string> } {
+    const fieldsMap = this.getRequestFieldsMap();
+    const mtiValue = fieldsMap['00'] ?? this.mti() ?? '';
+    const fieldsWithoutMti = { ...fieldsMap };
+    delete fieldsWithoutMti['00'];
+    return { mti: mtiValue, fields: fieldsWithoutMti };
   }
 
   private buildBitsForm(map: Record<string, string>): void {
@@ -829,8 +840,8 @@ export class SimuladorPageComponent {
     const transacao = this.selectedTransacao();
     if (!transacao) return;
 
-    const currentFields = this.getRequestFieldsMap();
-    const currentMti = this.mti() || '0200';
+    const { mti: mtiFromForm, fields: currentFields } = this.getBuildIsoInputFromRequestForm();
+    const currentMti = mtiFromForm || '0200';
     const txMessageModel = transacao.messageModel || '';
     const txMessageType = transacao.messageType || '';
     const txPaymentNetwork = transacao.paymentNetwork || '';
