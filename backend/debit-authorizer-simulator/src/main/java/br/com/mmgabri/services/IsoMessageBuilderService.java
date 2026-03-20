@@ -1,6 +1,6 @@
 package br.com.mmgabri.services;
 
-import br.com.mmgabri.domains.IsoBuildRequest;
+import br.com.mmgabri.domains.MessageBuildRequest;
 import org.jpos.iso.ISOMsg;
 import org.jpos.iso.ISOPackager;
 import org.jpos.iso.packager.GenericPackager;
@@ -26,7 +26,7 @@ public class IsoMessageBuilderService {
         }
     }
 
-    public String execute(IsoBuildRequest request) throws Exception {
+    public String execute(MessageBuildRequest request) throws Exception {
         ISOMsg isoMsg = new ISOMsg();
         isoMsg.setPackager(packager);
         isoMsg.setMTI(request.getMti());

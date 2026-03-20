@@ -1,7 +1,7 @@
 package br.com.mmgabri.adapters.rest;
 
-import br.com.mmgabri.domains.IsoBuildRequest;
-import br.com.mmgabri.domains.IsoBuildResponse;
+import br.com.mmgabri.domains.MessageBuildRequest;
+import br.com.mmgabri.domains.MessageBuildResponse;
 import br.com.mmgabri.domains.MessageParseRequest;
 import br.com.mmgabri.domains.MessageParseResponse;
 import br.com.mmgabri.services.IsoMessageBuilderService;
@@ -48,11 +48,11 @@ public class MessageParseController {
     }
 
     @PostMapping("/build")
-    public ResponseEntity<IsoBuildResponse> build(@Valid @RequestBody IsoBuildRequest request) throws Exception {
+    public ResponseEntity<MessageBuildResponse> build(@Valid @RequestBody MessageBuildRequest request) throws Exception {
         logger.info("Request received to build ISO message.");
         var isoMessage = isoBuilder.execute(request);
         logger.info("ISO message built successfully.");
-        return ResponseEntity.ok(new IsoBuildResponse(isoMessage));
+        return ResponseEntity.ok(new MessageBuildResponse(isoMessage));
     }
 
     private boolean isPositionalMessage(MessageParseRequest request) {
