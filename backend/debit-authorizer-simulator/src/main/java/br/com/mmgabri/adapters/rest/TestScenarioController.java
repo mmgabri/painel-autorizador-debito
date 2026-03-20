@@ -110,7 +110,7 @@ public class TestScenarioController {
         return ResponseEntity.ok(resp);
     }
 
-    @DeleteMapping("/cenarios/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable String id) {
         logger.info("Request received to delete scenario with id: {}", id);
         testScenarioService.deleteById(id);
