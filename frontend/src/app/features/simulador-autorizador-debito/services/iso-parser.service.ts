@@ -18,7 +18,7 @@ export interface SalvarTransacaoRequest {
   productName: string;
   tag: string;
   description: string;
-  isoMessage: string;
+  message: string;
   messageModel: string;
   messageType: string;
   paymentNetwork: string;
@@ -26,7 +26,7 @@ export interface SalvarTransacaoRequest {
 
 export interface SalvarTransacaoResponse {
   id: string;
-  isoMessage: string;
+  message: string;
 }
 
 export interface TransacaoItem {
@@ -34,7 +34,7 @@ export interface TransacaoItem {
   productName: string;
   tag: string;
   description: string;
-  isoMessage: string;
+  message: string;
   messageModel: string;
   messageType: string;
   paymentNetwork: string;
@@ -55,12 +55,12 @@ export class IsoParserService {
     return this.http.post<IsoParseResponse>(`${this.baseUrl}/api/simulador/message/parse`, body);
   }
 
-  buildIso(mti: string, fields: Record<string, string>, messageModel?: string, paymentNetwork?: string, messageType?: string): Observable<{ isoMessage: string }> {
+  buildIso(mti: string, fields: Record<string, string>, messageModel?: string, paymentNetwork?: string, messageType?: string): Observable<{ message: string }> {
     const body: Record<string, unknown> = { mti, fields };
     if (messageModel) body['messageModel'] = messageModel;
     if (paymentNetwork) body['paymentNetwork'] = paymentNetwork;
     if (messageType) body['messageType'] = messageType;
-    return this.http.post<{ isoMessage: string }>(`${this.baseUrl}/api/simulador/message/build`, body);
+    return this.http.post<{ message: string }>(`${this.baseUrl}/api/simulador/message/build`, body);
   }
 
   salvarTransacao(data: SalvarTransacaoRequest): Observable<SalvarTransacaoResponse> {
@@ -89,7 +89,7 @@ export class IsoParserService {
   }
 
   executarTransacao(isoMessage: string, messageModel?: string, paymentNetwork?: string, messageType?: string): Observable<{ message: string }> {
-    const body: Record<string, string> = { isoMessage };
+    const body: Record<string, string> = { message: isoMessage };
     if (messageModel) body['messageModel'] = messageModel;
     if (paymentNetwork) body['paymentNetwork'] = paymentNetwork;
     if (messageType) body['messageType'] = messageType;
