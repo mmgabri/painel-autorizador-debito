@@ -25,7 +25,8 @@ public class PositionalMessageParseService {
 
         if (request.getPaymentNetwork().equals(MASTERCARD.toString())) {
             Map<String, String> fields = positionalParserT464.parse(textMessage);
-            String mti = fields.getOrDefault("mti", "POSITIONAL");
+            String mti = fields.get("mti");
+            fields.remove("mti");
             return new MessageParseResponse(mti, fields);
         } else {
             Map<String, String> fields = positionalParserTcr.parse(textMessage);
