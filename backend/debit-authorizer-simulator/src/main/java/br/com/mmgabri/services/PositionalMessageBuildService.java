@@ -30,10 +30,10 @@ public class PositionalMessageBuildService {
 
         if (request.getPaymentNetwork().equals(MASTERCARD.toString())) {
             logger.info("Routing build to T464 (Mastercard) positional layout.");
-            positionalText = builderT464.build(request.getFields());
+            positionalText = builderT464.build(request.getFields(), request.getMti());
         } else {
             logger.info("Routing build to TCR (Visa) positional layout.");
-            positionalText = builderTcr.build(request.getFields());
+            positionalText = builderTcr.build(request.getFields(), request.getMti());
         }
 
         String hexEbcdic = ebcdicConverter.textToHexEbcdic(positionalText);

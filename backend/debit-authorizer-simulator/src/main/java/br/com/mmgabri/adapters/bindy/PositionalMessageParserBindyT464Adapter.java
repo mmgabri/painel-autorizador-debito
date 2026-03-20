@@ -1,5 +1,6 @@
 package br.com.mmgabri.adapters.bindy;
 
+import br.com.mmgabri.domains.PositionalMessageT464Record;
 import jakarta.annotation.PreDestroy;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
