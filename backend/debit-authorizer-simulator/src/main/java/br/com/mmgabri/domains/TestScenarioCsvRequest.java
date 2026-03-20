@@ -4,14 +4,14 @@ import lombok.Data;
 
 
 @Data
-public class CenarioTesteCsvRequest {
+public class TestScenarioCsvRequest {
 
     private String id;
-    private String nomeProduto;
+    private String productName;
     private String messageModel;
-    private String bandeira;
+    private String paymentNetwork;
     private String tag;
-    private String descricao;
+    private String description;
     private String isoMessage;
 
 }
