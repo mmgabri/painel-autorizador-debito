@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.Map;
 
 @Data
-public class IsoBuildRequest {
+public class MessageBuildRequest {
     private String messageModel;
     private String messageType;
     private String paymentNetwork;
