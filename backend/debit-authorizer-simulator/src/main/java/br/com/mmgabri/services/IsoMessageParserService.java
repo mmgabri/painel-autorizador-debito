@@ -16,22 +16,43 @@ import java.util.Map;
 @Service
 public class IsoMessageParserService {
 
-    private final ISOPackager packager;
+    private static final String DEFAULT_PACKAGER_FILE = "iso-mastercard.xml";
+    private static final String CLEARING_PACKAGER_FILE = "iso-mastercard-clearing.xml";
+    private static final String VISA_PACKAGER_FILE = "iso-visa.xml";
+
+    private final ISOPackager defaultPackager;
+    private final ISOPackager clearingPackager;
+    private final ISOPackager visaPackager;
     private static final Logger logger = LoggerFactory.getLogger(IsoMessageParserService.class);
 
     public IsoMessageParserService() {
         try {
-            this.packager = loadPackager("iso-mastercard.xml");
+            this.defaultPackager = loadPackager(DEFAULT_PACKAGER_FILE);
+            this.clearingPackager = loadPackager(CLEARING_PACKAGER_FILE);
+            this.visaPackager = loadPackager(VISA_PACKAGER_FILE);
         } catch (Exception e) {
             throw new IllegalStateException("Failed to load ISO EBCDIC packager.", e);
         }
     }
 
     public MessageParseResponse execute(String isoMessage) throws Exception {
+        return executeWithPackager(isoMessage, defaultPackager);
+    }
+
+    public MessageParseResponse executeVisa(String isoMessage) throws Exception {
+        logger.info("Using VISA ISO packager for parsing.");
+        return executeWithPackager(isoMessage, visaPackager);
+    }
+
+    public MessageParseResponse execute(String isoMessage, boolean useClearingPackager) throws Exception {
+        return executeWithPackager(isoMessage, resolvePackager(useClearingPackager));
+    }
+
+    private MessageParseResponse executeWithPackager(String isoMessage, ISOPackager selectedPackager) throws Exception {
         byte[] messageBytes = hexToBytes(isoMessage);
 
         ISOMsg isoMsg = new ISOMsg();
-        isoMsg.setPackager(packager);
+        isoMsg.setPackager(selectedPackager);
 
         final int consumedBytes;
         try {
@@ -75,6 +96,14 @@ public class IsoMessageParserService {
         }
     }
 
+    private ISOPackager resolvePackager(boolean useClearingPackager) {
+        if (useClearingPackager) {
+            logger.info("Using Mastercard clearing ISO packager for parsing.");
+            return clearingPackager;
+        }
+
+        return defaultPackager;
+    }
 
     private ISOPackager loadPackager(String fileName) throws Exception {
         InputStream inputStream = new ClassPathResource(fileName).getInputStream();
