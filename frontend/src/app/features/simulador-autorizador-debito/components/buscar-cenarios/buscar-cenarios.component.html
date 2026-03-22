@@ -44,13 +44,13 @@
           <span class="descricao">{{ item.description }}</span>
         </div>
         <div class="transacao-actions">
-          <button mat-icon-button color="primary" (click)="onSelecionar(item)" aria-label="Executar transação">
-            <mat-icon>play_circle_outline</mat-icon>
+          <button class="action-btn action-btn--disparar" (click)="onSelecionar(item)" aria-label="Executar transação">
+            <mat-icon>send</mat-icon>
           </button>
-          <button mat-icon-button color="primary" (click)="onEditar(item)" aria-label="Editar cenário">
+          <button class="action-btn action-btn--editar" (click)="onEditar(item)" aria-label="Editar cenário">
             <mat-icon>edit</mat-icon>
           </button>
-          <button mat-icon-button color="warn" (click)="onExcluir(item)" aria-label="Excluir cenário">
+          <button class="action-btn action-btn--excluir" (click)="onExcluir(item)" aria-label="Excluir cenário">
             <mat-icon>delete_outline</mat-icon>
           </button>
         </div>

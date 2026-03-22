@@ -131,8 +131,63 @@
 
   .transacao-actions {
     display: flex;
-    gap: 4px;
+    gap: 6px;
     align-items: center;
+    flex-shrink: 0;
+    margin-left: 12px;
+  }
+
+  .action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+
+    mat-icon {
+      font-size: 17px;
+      width: 17px;
+      height: 17px;
+    }
+
+    &:hover {
+      opacity: 0.82;
+      transform: translateY(-1px);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+
+    &--disparar,
+    &--editar,
+    &--excluir {
+      background: #f0f0f0;
+      color: #555;
+      border: 1px solid #ddd;
+    }
+
+    &--disparar:hover {
+      background: #ec7000;
+      color: #fff;
+      border-color: #ec7000;
+    }
+
+    &--editar:hover {
+      background: #003159;
+      color: #fff;
+      border-color: #003159;
+    }
+
+    &--excluir:hover {
+      background: #c62828;
+      color: #fff;
+      border-color: #c62828;
+    }
   }
 
   .empty-message {
