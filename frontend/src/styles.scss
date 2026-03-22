@@ -1,5 +1,6 @@
 // Itaú Design System — Angular Material theming
 @use '@angular/material' as mat;
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&display=swap');
 
 // Itaú brand colors
 $itau-navy: #003366;
@@ -128,7 +129,37 @@ h2 {
   margin: 0 !important;
 }
 
-// Snackbar
-.mat-mdc-snack-bar-container {
-  --mdc-snackbar-container-color: #{$itau-orange};
+// Dialog Itaú — remove o padding padrão do Material para header edge-to-edge
+.itau-dialog-panel .mdc-dialog__surface {
+  padding: 0 !important;
+}
+.itau-dialog-panel mat-dialog-content,
+.itau-dialog-panel .mat-mdc-dialog-content {
+  padding: 0 !important;
+  margin: 0 !important;
+  max-height: unset !important;
+}
+.itau-dialog-panel mat-dialog-actions,
+.itau-dialog-panel .mat-mdc-dialog-actions {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+// Snackbar — transparent container + centralized on screen
+.itau-notif-panel {
+  position: fixed !important;
+  top: 50% !important;
+  bottom: unset !important;
+  left: 50% !important;
+  right: unset !important;
+  transform: translate(-50%, -50%) !important;
+  margin: 0 !important;
+
+  .mdc-snackbar__surface {
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    min-width: unset !important;
+    max-width: unset !important;
+  }
 }

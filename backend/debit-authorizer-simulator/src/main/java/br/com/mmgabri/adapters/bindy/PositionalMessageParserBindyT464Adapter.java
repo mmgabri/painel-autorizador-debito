@@ -7,6 +7,8 @@ import org.apache.camel.Exchange;
 import org.apache.camel.dataformat.bindy.fixed.BindyFixedLengthDataFormat;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.support.DefaultExchange;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayInputStream;
@@ -33,25 +35,22 @@ public class PositionalMessageParserBindyT464Adapter implements PositionalMessag
     public Map<String, String> parse(String positionalMessage) {
         try {
             Exchange exchange = new DefaultExchange(camelContext);
-            Object result = bindy.unmarshal(
-                    exchange,
-                    new ByteArrayInputStream(positionalMessage.getBytes(StandardCharsets.UTF_8))
-            );
-
-            PositionalMessageT464Record record = extractRecord(result);
-            Map<String, String> fields = new LinkedHashMap<>();
-            fields.put("mti", record.getMti());
-            fields.put("fakeAccount", record.getFakeAccount());
-            fields.put("fakeProcessingCode", record.getFakeProcessingCode());
-            fields.put("fakeAmount", record.getFakeAmount());
-            fields.put("fakeCurrency", record.getFakeCurrency());
-            fields.put("fakeMerchant", record.getFakeMerchant());
-            fields.put("fakeCity", record.getFakeCity());
-            fields.put("filler", record.getFiller());
-            return fields;
+            Object result = bindy.unmarshal(exchange, new ByteArrayInputStream(positionalMessage.getBytes(StandardCharsets.UTF_8)));
+            return toFieldsMap(extractRecord(result));
         } catch (Exception e) {
             throw new IllegalArgumentException("Failed to parse positional message with Bindy.", e);
         }
+    }
+
+    private Map<String, String> toFieldsMap(PositionalMessageT464Record record) {
+        BeanWrapper wrapper = new BeanWrapperImpl(record);
+        Map<String, String> fields = new LinkedHashMap<>();
+        fields.put("mti", emptyIfNull(record.getMti()));
+
+        for (java.lang.reflect.Field field : PositionalMessageT464Record.class.getDeclaredFields()) {
+            fields.put(field.getName(), emptyIfNull((String) wrapper.getPropertyValue(field.getName())));
+        }
+        return fields;
     }
 
     private PositionalMessageT464Record extractRecord(Object result) {
@@ -94,6 +93,10 @@ public class PositionalMessageParserBindyT464Adapter implements PositionalMessag
         }
 
         return null;
+    }
+
+    private String emptyIfNull(String value) {
+        return value == null ? "" : value;
     }
 
     @PreDestroy
