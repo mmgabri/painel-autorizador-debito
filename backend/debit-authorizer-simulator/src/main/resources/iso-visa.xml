@@ -38,5 +38,6 @@
     <isofield id="60" length="32" name="RESERVED PRIVATE" class="org.jpos.iso.IFB_LLHBINARY"/>
     <isofield id="62" length="255" name="RESERVED PRIVATE" class="org.jpos.iso.IFB_LLHBINARY"/>
     <isofield id="63" length="255" name="RESERVED PRIVATE" class="org.jpos.iso.IFB_LLHBINARY"/>
+    <isofield id="90" length="42" name="RETRIEVAL REFERENCE NUMBER" class="org.jpos.iso.IFE_CHAR"/>
     <isofield id="104" length="255" name="TRANSACTION DESCRIPTION" class="org.jpos.iso.IFB_LLHBINARY"/>
 </isopackager>

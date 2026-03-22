@@ -118,6 +118,14 @@ export class DispararTransacaoComponent implements OnInit {
               fields['07'] = this.generateBit07();
             }
           }
+          if (this.transacao.messageType === 'AUTORIZACAO') {
+            const bit11Key = this.findFieldKey(fields, 11);
+            if (bit11Key) {
+              fields[bit11Key] = this.generateBit11();
+            } else {
+              fields['11'] = this.generateBit11();
+            }
+          }
           this.buildBitsForm(fields, this.transacao.messageType === 'CONCILIACAO');
         },
         error: () => {
@@ -189,6 +197,13 @@ export class DispararTransacaoComponent implements OnInit {
     const bit07FormKey = this.findFormKey(form, 7);
     if (bit07FormKey) {
       form.controls[bit07FormKey].setValue(newBit07);
+    }
+
+    if (this.transacao.messageType === 'AUTORIZACAO') {
+      const bit11FormKey = this.findFormKey(form, 11);
+      if (bit11FormKey) {
+        form.controls[bit11FormKey].setValue(this.generateBit11());
+      }
     }
 
     if (this.estornarChecked() && this.estornoTransacao()) {
@@ -427,14 +442,24 @@ export class DispararTransacaoComponent implements OnInit {
 
   private loadEstornoFields(estornoItem: TransacaoItem): void {
     this.estornoLoading.set(true);
-    const bit90Value = this.computeBit90();
-    this.estornoBit90.set(bit90Value);
 
     this.isoParserService
       .parseIso(estornoItem.message, estornoItem.messageModel, estornoItem.paymentNetwork, estornoItem.messageType)
       .pipe(
         switchMap((parsed) => {
-          const updatedFields = { ...parsed.fields, '90': bit90Value };
+          const originalBit90Key = this.findFieldKey(parsed.fields, 90);
+          const originalBit90 = originalBit90Key ? parsed.fields[originalBit90Key] : undefined;
+          const bit90Value = this.computeBit90(originalBit90);
+          this.estornoBit90.set(bit90Value);
+
+          const mainForm = this.bitsForm();
+          const bit02Key = this.findFormKey(mainForm, 2);
+          const bit04Key = this.findFormKey(mainForm, 4);
+
+          const updatedFields: Record<string, string> = { ...parsed.fields, '90': bit90Value };
+          if (bit02Key) updatedFields['02'] = mainForm.controls[bit02Key].value;
+          if (bit04Key) updatedFields['04'] = mainForm.controls[bit04Key].value;
+
           const estornoMti = parsed.mti || '0400';
           return this.isoParserService
             .buildIso(estornoMti, updatedFields, estornoItem.messageModel, estornoItem.paymentNetwork, estornoItem.messageType)
@@ -567,23 +592,30 @@ export class DispararTransacaoComponent implements OnInit {
     this.bitsForm.set(new FormGroup(group));
   }
 
-  private computeBit90(): string {
+  private computeBit90(originalBit90?: string): string {
     const mainMti = this.mti() || '0000';
     const form = this.bitsForm();
     const bit11Key = this.findFormKey(form, 11) || '11';
     const bit07Key = this.findFormKey(form, 7) || '07';
     const bit11 = form.controls[bit11Key]?.value ?? '000000';
     const bit07 = form.controls[bit07Key]?.value ?? '0000000000';
-    return `${mainMti.padStart(4, '0').slice(-4)}${bit11.padStart(6, '0').slice(-6)}${bit07.padStart(10, '0').slice(-10)}`;
+    const suffix = (originalBit90 ?? '').slice(20).padEnd(22, '0');
+    return `${mainMti.padStart(4, '0').slice(-4)}${bit11.padStart(6, '0').slice(-6)}${bit07.padStart(10, '0').slice(-10)}${suffix}`;
   }
 
   private updateEstornoBit90WithNewBit07(_newBit07: string): void {
-    const newBit90 = this.computeBit90();
-    this.estornoBit90.set(newBit90);
     const estornoForm = this.estornoBitsForm();
+    const currentBit90Key = this.findFormKey(estornoForm, 90);
+    const currentBit90 = currentBit90Key ? estornoForm.controls[currentBit90Key].value : undefined;
+    const newBit90 = this.computeBit90(currentBit90);
+    this.estornoBit90.set(newBit90);
     if (estornoForm.controls['90']) {
       estornoForm.controls['90'].setValue(newBit90);
     }
+  }
+
+  private generateBit11(): string {
+    return String(Math.floor(Math.random() * 1000000)).padStart(6, '0');
   }
 
   private generateBit07(): string {
