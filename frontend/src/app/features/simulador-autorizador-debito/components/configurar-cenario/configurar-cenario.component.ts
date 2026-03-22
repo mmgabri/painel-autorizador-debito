@@ -6,7 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { NotificationService } from '../../../../core/services/notification.service';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { switchMap, EMPTY } from 'rxjs';
@@ -38,7 +38,7 @@ export class ConfigurarCenarioComponent implements OnInit {
   readonly disparar = output<TransacaoItem>();
 
   private readonly isoParserService = inject(IsoParserService);
-  private readonly snackBar = inject(MatSnackBar);
+  private readonly notif = inject(NotificationService);
 
   readonly messageModelOptions = ['SINGLE_MESSAGE', 'DUAL_MESSAGE'];
   readonly messageTypeOptions = ['AUTORIZACAO', 'CONCILIACAO'];
@@ -108,7 +108,7 @@ export class ConfigurarCenarioComponent implements OnInit {
   onCarregarCampos(): void {
     const message = this.incluirForm.controls.isoMessage.value ?? '';
     if (!message || message.trim().length < 4) {
-      this.snackBar.open('Informe a mensagem ISO com no mínimo 4 caracteres', 'Fechar', { duration: 3000 });
+      this.notif.warn('Informe a mensagem ISO com no mínimo 4 caracteres');
       return;
     }
 
@@ -116,9 +116,7 @@ export class ConfigurarCenarioComponent implements OnInit {
     const messageType = this.incluirForm.controls.messageType.value ?? '';
     const bandeira = this.incluirForm.controls.bandeira.value ?? '';
     if (!messageModel || !messageType || !bandeira) {
-      this.snackBar.open('Preencha os campos Message Model, Tipo Mensagem e Bandeira antes de carregar', 'Fechar', {
-        duration: 3000,
-      });
+      this.notif.warn('Preencha os campos Message Model, Tipo Mensagem e Bandeira antes de carregar');
       return;
     }
 
@@ -135,7 +133,7 @@ export class ConfigurarCenarioComponent implements OnInit {
       },
       error: () => {
         this.loading.set(false);
-        this.snackBar.open('Erro ao carregar campos', 'Fechar', { duration: 5000 });
+        this.notif.error('Erro ao carregar campos');
       },
     });
   }
@@ -179,13 +177,13 @@ export class ConfigurarCenarioComponent implements OnInit {
   onSalvarTransacao(): void {
     const fieldsMap = this.getRequestFieldsMap();
     if (Object.keys(fieldsMap).length === 0) {
-      this.snackBar.open('Adicione pelo menos um campo ISO', 'Fechar', { duration: 3000 });
+      this.notif.warn('Adicione pelo menos um campo ISO');
       return;
     }
 
     const nomeProduto = this.incluirForm.controls.nomeProduto.value ?? '';
     if (!nomeProduto.trim()) {
-      this.snackBar.open('Informe o Nome do Produto', 'Fechar', { duration: 3000 });
+      this.notif.warn('Informe o Nome do Produto');
       return;
     }
 
@@ -194,9 +192,7 @@ export class ConfigurarCenarioComponent implements OnInit {
     const bandeira = this.incluirForm.controls.bandeira.value ?? '';
     if (!messageModel || !messageType || !bandeira) {
       this.saving.set(false);
-      this.snackBar.open('Preencha os campos Message Model, Tipo Mensagem e Bandeira antes de salvar', 'Fechar', {
-        duration: 3000,
-      });
+      this.notif.warn('Preencha os campos Message Model, Tipo Mensagem e Bandeira antes de salvar');
       return;
     }
 
@@ -215,7 +211,7 @@ export class ConfigurarCenarioComponent implements OnInit {
           const tag = this.incluirForm.controls.tag.value ?? '';
           if (!tag.trim()) {
             this.saving.set(false);
-            this.snackBar.open('Informe a Tag', 'Fechar', { duration: 3000 });
+            this.notif.warn('Informe a Tag');
             return EMPTY;
           }
 
@@ -237,7 +233,7 @@ export class ConfigurarCenarioComponent implements OnInit {
           this.saving.set(false);
           this.editingTransacaoId.set(result.id);
           this.savedSuccessfully.set(true);
-          this.snackBar.open('Transação salva com sucesso', 'Fechar', { duration: 5000 });
+          this.notif.success('Transação salva com sucesso');
 
           const saved: TransacaoItem = {
             id: result.id,
@@ -254,7 +250,7 @@ export class ConfigurarCenarioComponent implements OnInit {
         },
         error: () => {
           this.saving.set(false);
-          this.snackBar.open('Erro ao salvar transação', 'Fechar', { duration: 5000 });
+          this.notif.error('Erro ao salvar transação');
         },
       });
   }

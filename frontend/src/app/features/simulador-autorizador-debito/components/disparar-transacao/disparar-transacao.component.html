@@ -85,7 +85,7 @@
           <input
             matInput
             type="number"
-            min="5"
+            min="1"
             [value]="estornoDelay()"
             (input)="estornoDelay.set(+$any($event.target).value)"
           />
@@ -133,23 +133,56 @@
       [class.conciliacao-section-estorno]="estornarChecked()"
       [class.conciliacao-section-normal]="!estornarChecked()"
     >
-      <mat-checkbox [checked]="conciliarChecked()" color="primary" disabled>
-        Conciliar transação ? (em construção)
+      <mat-checkbox [checked]="conciliarChecked()" (change)="onToggleConciliar($event.checked)" color="primary">
+        Conciliar transação ?
       </mat-checkbox>
 
-      @if (conciliarChecked()) {
+      @if (conciliarChecked() && conciliacaoTransacao()) {
         <mat-form-field appearance="outline" class="estorno-delay-field" subscriptSizing="dynamic">
           <mat-label>Conciliar após (seg)</mat-label>
           <input
             matInput
             type="number"
-            min="5"
-            [value]="estornoDelay()"
-            (input)="estornoDelay.set(+$any($event.target).value)"
+            min="1"
+            [value]="conciliacaoDelay()"
+            (input)="conciliacaoDelay.set(+$any($event.target).value)"
           />
         </mat-form-field>
       }
     </div>
+  }
+
+  @if (conciliarChecked() && conciliacaoTransacao(); as conciliacao) {
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Mensagem hex de Conciliação</mat-label>
+      <input matInput [value]="conciliacaoIsoMessage() || conciliacao.message" readonly />
+    </mat-form-field>
+
+    @if (conciliacaoLoading()) {
+      <mat-progress-bar mode="indeterminate" class="loading-bar"></mat-progress-bar>
+    }
+
+    @if (conciliacaoSortedKeys().length > 0) {
+      <mat-card class="bits-card outlined-card conciliacao-fields-card">
+        <span class="card-legend">Campos Conciliação</span>
+        <mat-card-content>
+          @if (conciliacaoMti()) {
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>MTI</mat-label>
+              <input matInput [value]="conciliacaoMti()" readonly />
+            </mat-form-field>
+          }
+          <form [formGroup]="conciliacaoBitsForm()" class="bits-vertical">
+            @for (key of conciliacaoSortedKeys(); track key) {
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>{{ key }}</mat-label>
+                <input matInput [formControlName]="key" (blur)="onConciliacaoFieldChanged()" />
+              </mat-form-field>
+            }
+          </form>
+        </mat-card-content>
+      </mat-card>
+    }
   }
 
   <!-- Interim overlay -->
@@ -173,7 +206,7 @@
                 cx="24"
                 cy="24"
                 r="20"
-                [style.stroke-dashoffset]="125.6 - (125.6 * interimCountdownSeconds() / (estornoDelay() || 1))"
+                [style.stroke-dashoffset]="125.6 - (125.6 * interimCountdownSeconds() / (interimTotalSeconds() || 1))"
               />
             </svg>
             <span class="countdown-number">{{ interimCountdownSeconds() }}</span>

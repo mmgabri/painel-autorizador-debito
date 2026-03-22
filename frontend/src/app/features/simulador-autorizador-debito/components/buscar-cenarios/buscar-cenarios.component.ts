@@ -7,7 +7,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { NotificationService } from '../../../../core/services/notification.service';
 import { IsoParserService, TransacaoItem } from '../../services/iso-parser.service';
 
 @Component({
@@ -29,7 +29,7 @@ import { IsoParserService, TransacaoItem } from '../../services/iso-parser.servi
 })
 export class BuscarCenariosComponent implements OnInit {
   private readonly isoParserService = inject(IsoParserService);
-  private readonly snackBar = inject(MatSnackBar);
+  private readonly notif = inject(NotificationService);
 
   readonly selecionou = output<TransacaoItem>();
   readonly editou = output<TransacaoItem>();
@@ -61,11 +61,11 @@ export class BuscarCenariosComponent implements OnInit {
   onExcluir(item: TransacaoItem): void {
     this.isoParserService.excluirTransacao(item.id).subscribe({
       next: (result) => {
-        this.snackBar.open(result?.message ?? 'Cenário excluído com sucesso', 'Fechar', { duration: 5000 });
+        this.notif.success(result?.message ?? 'Cenário excluído com sucesso');
         this.transacoes.set(this.transacoes().filter((t) => t.id !== item.id));
       },
       error: () => {
-        this.snackBar.open('Erro ao excluir cenário', 'Fechar', { duration: 5000 });
+        this.notif.error('Erro ao excluir cenário');
       },
     });
   }
