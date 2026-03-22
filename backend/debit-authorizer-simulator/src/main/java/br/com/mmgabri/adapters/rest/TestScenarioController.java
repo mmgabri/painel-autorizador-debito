@@ -26,7 +26,7 @@ public class TestScenarioController {
     private final TestScenarioExecutionService testScenarioExecutionService;
 
     @PostMapping("/salvar")
-    public ResponseEntity<TestScenarioCsvRow> save(@Valid @RequestBody TestScenarioCsvRequest request) {
+    public ResponseEntity<TestScenarioCsvRow> save(@RequestBody TestScenarioCsvRequest request) {
         logger.info("Request received to save test scenario.");
         var saved = testScenarioService.save(request);
         logger.info("Test scenario saved successfully.");
@@ -38,7 +38,7 @@ public class TestScenarioController {
     }
 
     @PostMapping("/executar")
-    public ResponseEntity<Map<String, String>> execute(@Valid @RequestBody MessageParseRequest request) {
+    public ResponseEntity<Map<String, String>> execute(@RequestBody MessageParseRequest request) {
         logger.info("Request received to execute scenario with isoMessage {}", request.getMessage());
         testScenarioExecutionService.execute(request);
         logger.info("Scenario executed successfully via isoMessage.");

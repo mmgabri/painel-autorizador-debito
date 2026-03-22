@@ -1,0 +1,64 @@
+<div class="buscar-panel">
+  <div class="filter-row">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filter-field filter-nome">
+      <mat-label>Filtrar por Nome Produto</mat-label>
+      <input matInput [(ngModel)]="filtroNome" maxlength="15" (keyup.enter)="onFiltrar()" />
+    </mat-form-field>
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filter-field filter-tag">
+      <mat-label>Filtrar por Tag</mat-label>
+      <input matInput [(ngModel)]="filtroTag" maxlength="15" (keyup.enter)="onFiltrar()" />
+    </mat-form-field>
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filter-field filter-bandeira">
+      <mat-label>Filtrar por Bandeira</mat-label>
+      <mat-select [(ngModel)]="filtroBandeira">
+        <mat-option value="">Todas</mat-option>
+        @for (opt of bandeiraOptions; track opt) {
+          <mat-option [value]="opt">{{ opt }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <button mat-raised-button color="primary" class="filtrar-btn itau-btn" (click)="onFiltrar()">
+      Filtrar
+    </button>
+  </div>
+
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  }
+
+  <div class="transacao-list">
+    @for (item of transacoes(); track item.id) {
+      <div class="transacao-row">
+        <div class="transacao-info">
+          <span class="nome">{{ item.productName }}</span>
+          <span class="tag">{{ item.tag }}</span>
+          @if (item.paymentNetwork) {
+            <span class="badge bandeira-badge">{{ item.paymentNetwork }}</span>
+          }
+          @if (item.messageModel) {
+            <span class="badge message-model">{{ item.messageModel }}</span>
+          }
+          @if (item.messageType) {
+            <span class="badge message-type">{{ item.messageType }}</span>
+          }
+          <span class="descricao">{{ item.description }}</span>
+        </div>
+        <div class="transacao-actions">
+          <button mat-icon-button color="primary" (click)="onSelecionar(item)" aria-label="Executar transação">
+            <mat-icon>play_circle_outline</mat-icon>
+          </button>
+          <button mat-icon-button color="primary" (click)="onEditar(item)" aria-label="Editar cenário">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="onExcluir(item)" aria-label="Excluir cenário">
+            <mat-icon>delete_outline</mat-icon>
+          </button>
+        </div>
+      </div>
+    } @empty {
+      @if (!loading()) {
+        <p class="empty-message">Nenhuma transação encontrada</p>
+      }
+    }
+  </div>
+</div>

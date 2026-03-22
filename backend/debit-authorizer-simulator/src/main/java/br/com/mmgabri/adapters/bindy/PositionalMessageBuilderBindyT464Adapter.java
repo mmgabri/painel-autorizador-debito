@@ -7,6 +7,8 @@ import org.apache.camel.Exchange;
 import org.apache.camel.dataformat.bindy.fixed.BindyFixedLengthDataFormat;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.support.DefaultExchange;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayOutputStream;
@@ -35,7 +37,7 @@ public class PositionalMessageBuilderBindyT464Adapter implements PositionalMessa
             ByteArrayOutputStream output = new ByteArrayOutputStream();
             bindy.marshal(exchange, record, output);
 
-            return output.toString();
+            return normalizeMessage(output.toString());
         } catch (Exception e) {
             throw new IllegalArgumentException("Failed to build positional T464 message with Bindy.", e);
         }
@@ -43,19 +45,29 @@ public class PositionalMessageBuilderBindyT464Adapter implements PositionalMessa
 
     private PositionalMessageT464Record mapToRecord(Map<String, String> fields, String mti) {
         PositionalMessageT464Record record = new PositionalMessageT464Record();
-        record.setMti(mti);
-        record.setFakeAccount(getOrEmpty(fields, "fakeAccount"));
-        record.setFakeProcessingCode(getOrEmpty(fields, "fakeProcessingCode"));
-        record.setFakeAmount(getOrEmpty(fields, "fakeAmount"));
-        record.setFakeCurrency(getOrEmpty(fields, "fakeCurrency"));
-        record.setFakeMerchant(getOrEmpty(fields, "fakeMerchant"));
-        record.setFakeCity(getOrEmpty(fields, "fakeCity"));
-        record.setFiller(getOrEmpty(fields, "filler"));
+        BeanWrapper wrapper = new BeanWrapperImpl(record);
+
+        wrapper.setPropertyValue("mti", emptyIfNull(mti));
+
+        if (fields == null || fields.isEmpty()) {
+            return record;
+        }
+
+        fields.forEach((key, value) -> {
+            if (wrapper.isWritableProperty(key)) {
+                wrapper.setPropertyValue(key, emptyIfNull(value));
+            }
+        });
+
         return record;
     }
 
-    private String getOrEmpty(Map<String, String> fields, String key) {
-        return fields.getOrDefault(key, "");
+    private String emptyIfNull(String value) {
+        return value == null ? "" : value;
+    }
+
+    private String normalizeMessage(String message) {
+        return message.replaceFirst("(\\r\\n|\\n|\\r)$", "");
     }
 
     @PreDestroy
@@ -67,4 +79,3 @@ public class PositionalMessageBuilderBindyT464Adapter implements PositionalMessa
         }
     }
 }
-

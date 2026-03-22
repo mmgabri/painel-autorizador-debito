@@ -1,0 +1,116 @@
+:host {
+  display: block;
+}
+
+.itau-btn {
+  background-color: #ec7000 !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  padding: 0 28px !important;
+  height: 40px !important;
+  letter-spacing: 0.2px;
+  box-shadow: none !important;
+  transition: background-color 0.2s !important;
+
+  &:hover {
+    background-color: #d56500 !important;
+  }
+
+  &:disabled {
+    background-color: #ccc !important;
+    color: #fff !important;
+  }
+}
+
+.full-width {
+  width: 100%;
+}
+
+.loading-bar {
+  margin-top: 8px;
+}
+
+.incluir-panel {
+  .panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+
+    h2 {
+      margin: 0;
+    }
+  }
+}
+
+.iso-input-row {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+
+  .iso-input-field {
+    flex: 1;
+  }
+
+  .carregar-btn {
+    white-space: nowrap;
+  }
+}
+
+.outlined-card {
+  position: relative;
+  overflow: visible;
+  margin-top: 16px;
+  padding-top: 24px;
+
+  .card-legend {
+    position: absolute;
+    top: -12px;
+    left: 12px;
+    padding: 0 6px;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 24px;
+    color: #003366;
+    background: var(--mat-sys-surface, #fff);
+  }
+}
+
+.incluir-campo-row {
+  margin-bottom: 8px;
+
+  .select-bit-field {
+    width: 250px;
+  }
+}
+
+.bit-field-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+
+  .bit-field-input {
+    flex: 1;
+  }
+
+  .remove-btn {
+    margin-top: 8px;
+  }
+}
+
+.bits-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.save-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+}
