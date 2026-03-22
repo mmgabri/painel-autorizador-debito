@@ -9,6 +9,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { switchMap, EMPTY } from 'rxjs';
 import { IsoParserService, TransacaoItem, SalvarTransacaoRequest } from '../../services/iso-parser.service';
 
@@ -27,6 +28,7 @@ import { IsoParserService, TransacaoItem, SalvarTransacaoRequest } from '../../s
     MatProgressBarModule,
     MatIconModule,
     MatSelectModule,
+    MatButtonToggleModule,
   ],
   templateUrl: './configurar-cenario.component.html',
   styleUrl: './configurar-cenario.component.scss',
