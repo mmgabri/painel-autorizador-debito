@@ -30,9 +30,59 @@
 }
 
 .cenario-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 10px;
+}
+
+.toggle-group-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.toggle-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: #888;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.itau-toggle-group {
+  &.mat-button-toggle-group {
+    background: #efefef !important;
+    border: none !important;
+    border-radius: 10px !important;
+    box-shadow: none !important;
+    padding: 3px !important;
+    height: 36px;
+    gap: 2px;
+  }
+
+  .mat-button-toggle {
+    border: none !important;
+    border-radius: 8px !important;
+    font-size: 12px;
+    font-weight: 500;
+    color: #777;
+    flex: 1;
+    background: transparent !important;
+    transition: color 0.2s;
+
+    .mat-button-toggle-button {
+      height: 30px;
+      padding: 0 12px;
+      border-radius: 8px !important;
+    }
+  }
+
+  .mat-button-toggle-checked {
+    background: #fff !important;
+    color: #003159 !important;
+    font-weight: 600 !important;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12) !important;
+  }
 }
 
 .loading-bar {

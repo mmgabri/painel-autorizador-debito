@@ -28,32 +28,32 @@
           <input matInput formControlName="tag" maxlength="60" />
         </mat-form-field>
 
-        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
-          <mat-label>Bandeira</mat-label>
-          <mat-select formControlName="bandeira">
+        <div class="toggle-group-field">
+          <span class="toggle-label">Bandeira</span>
+          <mat-button-toggle-group formControlName="bandeira" class="itau-toggle-group">
             @for (opt of bandeiraOptions; track opt) {
-              <mat-option [value]="opt">{{ opt }}</mat-option>
+              <mat-button-toggle [value]="opt">{{ opt }}</mat-button-toggle>
             }
-          </mat-select>
-        </mat-form-field>
+          </mat-button-toggle-group>
+        </div>
 
-        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
-          <mat-label>Message Model</mat-label>
-          <mat-select formControlName="messageModel">
+        <div class="toggle-group-field">
+          <span class="toggle-label">Message Model</span>
+          <mat-button-toggle-group formControlName="messageModel" class="itau-toggle-group">
             @for (opt of messageModelOptions; track opt) {
-              <mat-option [value]="opt">{{ opt }}</mat-option>
+              <mat-button-toggle [value]="opt">{{ opt }}</mat-button-toggle>
             }
-          </mat-select>
-        </mat-form-field>
+          </mat-button-toggle-group>
+        </div>
 
-        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
-          <mat-label>Tipo Mensagem</mat-label>
-          <mat-select formControlName="messageType">
+        <div class="toggle-group-field">
+          <span class="toggle-label">Tipo Mensagem</span>
+          <mat-button-toggle-group formControlName="messageType" class="itau-toggle-group">
             @for (opt of messageTypeOptions; track opt) {
-              <mat-option [value]="opt">{{ opt }}</mat-option>
+              <mat-button-toggle [value]="opt">{{ opt }}</mat-button-toggle>
             }
-          </mat-select>
-        </mat-form-field>
+          </mat-button-toggle-group>
+        </div>
 
         <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
           <mat-label>Descrição</mat-label>
