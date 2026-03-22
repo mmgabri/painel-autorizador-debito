@@ -1,240 +1,55 @@
-<h1>Simulador Autorizador Debito</h1>
+<div class="page-hero">
+  <div class="page-hero-left">
+    <div class="page-hero-icon">
+      <mat-icon>payment</mat-icon>
+    </div>
+    <div>
+      <h1 class="page-hero-title">Simulador Autorizador Débito</h1>
+      <span class="page-hero-subtitle">Crie, configure e dispare transações</span>
+    </div>
+  </div>
+</div>
 
-<!-- Fixed top action buttons (always visible) -->
-<div class="fixed-top-actions">
-  <button mat-flat-button class="top-action-btn disparar-btn" (click)="onDispararTransacao()">
-    <mat-icon>play_circle</mat-icon>
-    Disparar transação
+<div class="itau-tabs">
+  <button
+    class="itau-tab"
+    [class.active]="activeView() === 'buscar' || activeView() === 'disparar'"
+    (click)="onIrParaBuscar()"
+  >
+    <mat-icon>search</mat-icon>
+    Pesquisar Cenários
   </button>
-  <button mat-flat-button class="top-action-btn incluir-btn" (click)="onIncluirTransacao()">
-    <mat-icon>add_circle</mat-icon>
-    Incluir transação
-  </button>
-  <button mat-flat-button class="top-action-btn excluir-btn" disabled>
-    <mat-icon>remove_circle</mat-icon>
-    Excluir transação
+  <button
+    class="itau-tab"
+    [class.active]="activeView() === 'incluir'"
+    (click)="onIrParaIncluir()"
+  >
+    <mat-icon>settings</mat-icon>
+    Configurar Cenário
   </button>
 </div>
 
-<!-- Incluir transacao view -->
-@if (activeView() === 'incluir') {
-  <div class="incluir-panel">
-    <div class="panel-header">
-      <h2>Incluir transação</h2>
-    </div>
+<div class="itau-tab-content">
+  @if (activeView() === 'buscar') {
+    <app-buscar-cenarios
+      (selecionou)="onSelecionouCenario($event)"
+      (editou)="onEditouCenario($event)"
+    />
+  }
 
-    <form [formGroup]="incluirForm">
-      <!-- Nome Produto -->
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Nome Produto</mat-label>
-        <input matInput formControlName="nomeProduto" />
-      </mat-form-field>
+  @if (activeView() === 'incluir') {
+    <app-configurar-cenario
+      [cenario]="cenarioParaEditar()"
+      (disparar)="onDispararFromConfigurar($event)"
+    />
+  }
 
-      <!-- Tag -->
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Tag</mat-label>
-        <input matInput formControlName="tag" maxlength="15" />
-      </mat-form-field>
-
-      <!-- Descricao -->
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Descrição</mat-label>
-        <input matInput formControlName="descricao" />
-      </mat-form-field>
-
-      <!-- Mensagem ISO + Carregar campos button inline -->
-      <div class="iso-input-row">
-        <mat-form-field appearance="outline" class="iso-input-field">
-          <mat-label>Mensagem ISO 8583 (hex)</mat-label>
-          <input matInput formControlName="message" placeholder="Ex: 30313030..." />
-        </mat-form-field>
-        <button
-          mat-raised-button
-          color="primary"
-          type="button"
-          class="carregar-btn"
-          [disabled]="loading()"
-          (click)="onCarregarCampos()"
-        >
-          Carregar campos da ISO
-        </button>
-      </div>
-    </form>
-
-    @if (loading()) {
-      <mat-progress-bar mode="indeterminate" class="loading-bar"></mat-progress-bar>
-    }
-
-    <!-- Campos ISO Request -->
-    <mat-card class="bits-card outlined-card">
-      <span class="card-legend">Campos ISO Request</span>
-      <mat-card-content>
-        <!-- Incluir campo -->
-        <div class="incluir-campo-row">
-          <mat-form-field appearance="outline" class="select-bit-field">
-            <mat-label>Incluir campo</mat-label>
-            <mat-select (selectionChange)="onIncluirCampo($event.value)">
-              @for (bit of availableBits(); track bit) {
-                <mat-option [value]="bit">Bit {{ bit < 10 ? '0' + bit : bit }}</mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-        </div>
-
-        <!-- Dynamic bit fields -->
-        @if (sortedKeys().length > 0) {
-          <form [formGroup]="bitsForm()" class="bits-vertical">
-            @for (key of sortedKeys(); track key) {
-              <div class="bit-field-row">
-                <mat-form-field appearance="outline" class="bit-field-input">
-                  <mat-label>Bit {{ key }}</mat-label>
-                  <input matInput [formControlName]="key" />
-                </mat-form-field>
-                <button
-                  mat-icon-button
-                  color="warn"
-                  type="button"
-                  (click)="onRemoverCampo(key)"
-                  class="remove-btn"
-                  aria-label="Remover campo"
-                >
-                  <mat-icon>delete</mat-icon>
-                </button>
-              </div>
-            }
-          </form>
-        }
-      </mat-card-content>
-    </mat-card>
-
-    <!-- Salvar transacao -->
-    <div class="save-actions">
-      <button
-        mat-raised-button
-        color="primary"
-        [disabled]="saving() || sortedKeys().length === 0"
-        (click)="onSalvarTransacao()"
-      >
-        Salvar transação
-      </button>
-    </div>
-
-    @if (saving()) {
-      <mat-progress-bar mode="indeterminate" class="loading-bar"></mat-progress-bar>
-    }
-  </div>
-}
-
-<!-- Disparar transacao view -->
-@if (activeView() === 'disparar') {
-  <div class="disparar-panel">
-    <div class="panel-header">
-      <h2>Disparar transação</h2>
-    </div>
-
-    @if (selectedTransacao(); as transacao) {
-      <!-- Nome Produto (readonly) -->
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Nome Produto</mat-label>
-        <input matInput [value]="transacao.nomeProduto" readonly />
-      </mat-form-field>
-
-      <!-- Tag (readonly) -->
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Tag</mat-label>
-        <input matInput [value]="transacao.tag" readonly />
-      </mat-form-field>
-
-      <!-- Descricao (readonly) -->
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Descrição</mat-label>
-        <input matInput [value]="transacao.descricao" readonly />
-      </mat-form-field>
-
-      <!-- Mensagem ISO (readonly) -->
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Mensagem ISO 8583 (hex)</mat-label>
-        <input matInput [value]="transacao.mensagemIso" readonly />
-      </mat-form-field>
-    }
-
-    @if (loading()) {
-      <mat-progress-bar mode="indeterminate" class="loading-bar"></mat-progress-bar>
-    }
-
-    <!-- Side-by-side cards -->
-    <div class="cards-row">
-      <!-- Campos ISO Request -->
-      <mat-card class="bits-card outlined-card flex-card">
-        <span class="card-legend">Campos ISO Request</span>
-        <mat-card-content>
-          @if (sortedKeys().length > 0) {
-            <form [formGroup]="bitsForm()" class="bits-vertical">
-              @for (key of sortedKeys(); track key) {
-                <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>Bit {{ key }}</mat-label>
-                  <input matInput [formControlName]="key" readonly />
-                </mat-form-field>
-              }
-            </form>
-          } @else {
-            @if (!loading()) {
-              <p class="empty-text">Nenhum campo carregado</p>
-            }
-          }
-        </mat-card-content>
-      </mat-card>
-
-      <!-- Campos ISO Response (after executing) -->
-      @if (showResponse()) {
-        <mat-card class="bits-card outlined-card flex-card">
-          <span class="card-legend">Campos ISO Response</span>
-          <mat-card-content>
-            <div class="bits-vertical">
-              @for (key of responseSortedKeys(); track key) {
-                <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>Bit {{ key }}</mat-label>
-                  <input matInput [value]="responseFields()[key]" readonly />
-                </mat-form-field>
-              }
-            </div>
-            <!-- Message field -->
-            <mat-form-field appearance="outline" class="full-width message-field">
-              <mat-label>Message</mat-label>
-              <input matInput [value]="responseMessage()" readonly />
-            </mat-form-field>
-          </mat-card-content>
-        </mat-card>
-      }
-    </div>
-
-    @if (executing()) {
-      <mat-progress-bar mode="indeterminate" class="loading-bar"></mat-progress-bar>
-    }
-
-    <!-- Action buttons -->
-    <div class="disparar-actions">
-      <button
-        mat-raised-button
-        color="primary"
-        [disabled]="executing() || sortedKeys().length === 0"
-        (click)="onExecutarTransacao()"
-      >
-        Disparar transação
-      </button>
-      <button
-        mat-raised-button
-        (click)="onEditarTransacao()"
-      >
-        Editar transação
-      </button>
-      <button
-        mat-raised-button
-        color="warn"
-        (click)="onExcluirTransacao()"
-      >
-        Excluir transação
-      </button>
-    </div>
-  </div>
-}
+  @if (activeView() === 'disparar') {
+    <app-disparar-transacao
+      [transacao]="cenarioSelecionado()!"
+      (voltou)="onVoltouDoDisparar()"
+      (editou)="onEditouCenario($event)"
+      (excluiu)="onExcluiuDoDisparar()"
+    />
+  }
+</div>

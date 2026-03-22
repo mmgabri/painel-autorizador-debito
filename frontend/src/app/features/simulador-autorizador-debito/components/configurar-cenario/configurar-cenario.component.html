@@ -1,0 +1,162 @@
+<div class="incluir-panel">
+  <div class="page-header">
+    <div class="page-header-icon">
+      <mat-icon>{{ cenario ? 'tune' : 'post_add' }}</mat-icon>
+    </div>
+    <div class="page-header-text">
+      <h1 class="page-title">{{ cenario ? 'Editar cenário' : 'Criar cenário' }}</h1>
+      <span class="page-subtitle">{{ cenario ? 'Edite os dados e campos ISO do cenário' : 'Configure os dados e campos do novo cenário' }}</span>
+    </div>
+  </div>
+
+  <div class="campos-section">
+    <div class="campos-header">
+      <div class="campos-title">
+        <mat-icon class="campos-icon">receipt_long</mat-icon>
+        <span>Dados do Cenário</span>
+      </div>
+    </div>
+    <form [formGroup]="incluirForm" class="campos-list">
+      <div class="cenario-grid">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
+          <mat-label>Nome Produto</mat-label>
+          <input matInput formControlName="nomeProduto" />
+        </mat-form-field>
+
+        <div class="inline-row">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input campo-tag">
+            <mat-label>Tag</mat-label>
+            <input matInput formControlName="tag" maxlength="60" />
+          </mat-form-field>
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
+            <mat-label>Descrição</mat-label>
+            <input matInput formControlName="descricao" placeholder="Ex: Compra débito à vista aprovada" />
+          </mat-form-field>
+        </div>
+
+        <div class="toggles-row">
+          <div class="toggle-group-field">
+            <span class="toggle-label">Bandeira</span>
+            <mat-button-toggle-group formControlName="bandeira" class="itau-toggle-group">
+              @for (opt of bandeiraOptions; track opt) {
+                <mat-button-toggle [value]="opt">{{ opt }}</mat-button-toggle>
+              }
+            </mat-button-toggle-group>
+          </div>
+
+          <div class="toggle-group-field">
+            <span class="toggle-label">Message Model</span>
+            <mat-button-toggle-group formControlName="messageModel" class="itau-toggle-group">
+              @for (opt of messageModelOptions; track opt) {
+                <mat-button-toggle [value]="opt">{{ opt }}</mat-button-toggle>
+              }
+            </mat-button-toggle-group>
+          </div>
+
+          <div class="toggle-group-field">
+            <span class="toggle-label">Tipo Mensagem</span>
+            <mat-button-toggle-group formControlName="messageType" class="itau-toggle-group">
+              @for (opt of messageTypeOptions; track opt) {
+                <mat-button-toggle [value]="opt">{{ opt }}</mat-button-toggle>
+              }
+            </mat-button-toggle-group>
+          </div>
+        </div>
+      </div>
+
+      <div class="iso-input-row">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="iso-input-field">
+          <mat-label>Mensagem Hex</mat-label>
+          <input matInput formControlName="isoMessage" placeholder="Ex: 30313030..." />
+        </mat-form-field>
+        <button
+          mat-raised-button
+          color="primary"
+          type="button"
+          class="carregar-btn itau-btn"
+          [disabled]="loading()"
+          (click)="onCarregarCampos()"
+        >
+          Carregar campos da ISO
+        </button>
+      </div>
+    </form>
+  </div>
+
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate" class="loading-bar"></mat-progress-bar>
+  }
+
+  <div class="campos-section">
+    <div class="campos-header">
+      <div class="campos-title">
+        <mat-icon class="campos-icon">data_object</mat-icon>
+        <span>Campos ISO Request</span>
+        @if (sortedKeys().length > 0) {
+          <span class="campos-count">{{ sortedKeys().length }}</span>
+        }
+      </div>
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="add-campo-field">
+        <mat-label>Incluir campo</mat-label>
+        <mat-select (selectionChange)="onIncluirCampo($event.value)" [disabled]="isConciliacaoIncluir()">
+          @for (bit of availableBits(); track bit) {
+            <mat-option [value]="bit">{{ bit === 0 ? 'MTI' : 'Bit ' + (bit < 10 ? '0' + bit : bit) }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    @if (sortedKeys().length === 0) {
+      <div class="campos-empty">
+        <mat-icon>inbox</mat-icon>
+        <span>Nenhum campo adicionado.<br>Carregue uma ISO ou inclua campos manualmente.</span>
+      </div>
+    } @else {
+      <form [formGroup]="bitsForm()" class="campos-list">
+        @for (key of sortedKeys(); track key) {
+          <div class="campo-row">
+            <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
+              <mat-label>{{ key === '00' ? 'MTI' : 'Bit ' + key }}</mat-label>
+              <input matInput [formControlName]="key" />
+            </mat-form-field>
+            <button
+              mat-icon-button
+              type="button"
+              (click)="onRemoverCampo(key)"
+              class="campo-remove-btn"
+              aria-label="Remover campo"
+              [disabled]="isConciliacaoIncluir()"
+            >
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+        }
+      </form>
+    }
+  </div>
+
+  <div class="save-actions">
+    <button
+      mat-raised-button
+      color="primary"
+      class="itau-btn"
+      [disabled]="saving() || sortedKeys().length === 0"
+      (click)="onSalvarTransacao()"
+    >
+      Salvar
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      class="itau-btn"
+      [disabled]="!savedSuccessfully()"
+      (click)="onDispararFromIncluir()"
+    >
+      Disparar
+    </button>
+  </div>
+
+  @if (saving()) {
+    <mat-progress-bar mode="indeterminate" class="loading-bar"></mat-progress-bar>
+  }
+</div>

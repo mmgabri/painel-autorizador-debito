@@ -1,0 +1,467 @@
+:host {
+  display: block;
+}
+
+.itau-btn {
+  background-color: #ec7000 !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  padding: 0 28px !important;
+  height: 40px !important;
+  letter-spacing: 0.2px;
+  box-shadow: none !important;
+  transition: background-color 0.2s !important;
+
+  &:hover {
+    background-color: #d56500 !important;
+  }
+
+  &:disabled {
+    background-color: #ccc !important;
+    color: #fff !important;
+  }
+}
+
+
+.cenario-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.inline-row {
+  display: flex;
+  gap: 10px;
+
+  .campo-tag {
+    width: 180px;
+    flex-shrink: 0;
+  }
+}
+
+.toggles-row {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-top: 8px;
+
+  .toggle-group-field {
+    flex: 1;
+  }
+}
+
+.toggle-group-field {
+  position: relative;
+  border: 1px solid #666;
+  border-radius: 8px;
+  padding: 10px 10px 8px;
+}
+
+.toggle-label {
+  position: absolute;
+  top: -9px;
+  left: 10px;
+  padding: 0 4px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #666;
+  background: #fff;
+  letter-spacing: 0.2px;
+}
+
+.itau-toggle-group {
+  &.mat-button-toggle-group {
+    background: #efefef !important;
+    border: none !important;
+    border-radius: 9px !important;
+    box-shadow: none !important;
+    padding: 3px !important;
+    height: 32px;
+    gap: 2px;
+    width: 100%;
+  }
+
+  .mat-button-toggle {
+    border: none !important;
+    border-radius: 7px !important;
+    font-size: 11px;
+    font-weight: 500;
+    color: #777;
+    flex: 1;
+    background: transparent !important;
+    transition: color 0.2s;
+
+    .mat-button-toggle-button {
+      height: 26px;
+      padding: 0 10px;
+      border-radius: 7px !important;
+    }
+  }
+
+  .mat-button-toggle-checked {
+    background: #fff !important;
+    color: #003159 !important;
+    font-weight: 600 !important;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12) !important;
+  }
+
+  &.mat-button-toggle-group-appearance-standard.mat-button-toggle-disabled,
+  .mat-button-toggle-disabled {
+    opacity: 0.7;
+  }
+}
+
+.iso-readonly {
+  margin-top: 8px;
+
+  .campo-input input {
+    font-family: 'Courier New', Courier, monospace !important;
+    font-size: 12px !important;
+    letter-spacing: 0.5px;
+  }
+}
+
+.full-width {
+  width: 100%;
+}
+
+.loading-bar {
+  margin-top: 8px;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.page-header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.page-title {
+  font-family: 'Plus Jakarta Sans', 'Segoe UI', sans-serif !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  color: #003159 !important;
+  margin: 0 !important;
+  letter-spacing: -0.3px;
+  line-height: 1.2;
+}
+
+.page-subtitle {
+  font-size: 12px;
+  color: #888;
+  line-height: 1.4;
+}
+
+.page-header-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #ec7000 0%, #ff9800 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(236, 112, 0, 0.3);
+
+  mat-icon {
+    color: #fff;
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.campos-section {
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-top: 16px;
+}
+
+.campos-section-sub {
+  margin-top: 12px;
+  margin-bottom: 12px;
+}
+
+.campos-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: #f5f5f5;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.campos-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 13px;
+  color: #003159;
+
+  .campos-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: #ec7000;
+  }
+
+  .campos-count {
+    background: #ec7000;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 1px 7px;
+    border-radius: 10px;
+    line-height: 18px;
+    min-width: 20px;
+    text-align: center;
+  }
+}
+
+.campos-list {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 12px;
+  gap: 10px;
+}
+
+.campo-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.campo-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.campo-input {
+  flex: 1;
+  width: 100%;
+}
+
+
+.campos-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 24px 16px;
+  color: rgba(0, 0, 0, 0.38);
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.5;
+
+  mat-icon {
+    font-size: 36px;
+    width: 36px;
+    height: 36px;
+    opacity: 0.5;
+  }
+}
+
+.estorno-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 28px 0 24px;
+}
+
+.conciliacao-section-estorno {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 10px 0 24px;
+}
+
+.conciliacao-section-normal {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: -20px 0 24px;
+}
+
+.estorno-delay-field {
+  width: 250px;
+}
+
+.estorno-fields-card {
+  margin-top: 12px;
+  margin-bottom: 12px;
+}
+
+.disparar-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+
+  .voltar-btn {
+    border-radius: 8px;
+    height: 40px;
+    padding: 0 18px;
+    font-size: 13px;
+    font-weight: 600;
+    border-color: #003366;
+    color: #003366;
+  }
+}
+
+// Success overlay
+.success-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.success-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background: #fff;
+  border-radius: 16px;
+  padding: 24px 30px 18px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  max-width: 350px;
+  width: 100%;
+}
+
+.success-icon-circle {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #00a650 0%, #00c853 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  animation: scaleIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.1s both;
+  box-shadow: 0 4px 16px rgba(0, 166, 80, 0.3);
+}
+
+.success-check-icon {
+  color: #fff;
+  font-size: 36px;
+  width: 36px;
+  height: 36px;
+}
+
+.success-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #333;
+  margin: 0 0 8px;
+  letter-spacing: -0.3px;
+}
+
+.success-message {
+  font-size: 18px;
+  color: #666;
+  margin: 0 0 10px;
+  line-height: 1.5;
+}
+
+.countdown-container {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 20px;
+}
+
+.countdown-ring {
+  width: 48px;
+  height: 48px;
+  transform: rotate(-90deg);
+}
+
+.countdown-ring-bg {
+  fill: none;
+  stroke: #e0e0e0;
+  stroke-width: 3;
+}
+
+.countdown-ring-progress {
+  fill: none;
+  stroke: #ec7000;
+  stroke-width: 3;
+  stroke-dasharray: 125.6;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.3s ease;
+}
+
+.countdown-number {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 16px;
+  font-weight: 700;
+  color: #ec7000;
+}
+
+.success-close-x {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  color: #999 !important;
+  transition: color 0.2s;
+
+  &:hover {
+    color: #333 !important;
+  }
+}
+
+.interim-icon-circle {
+  background: linear-gradient(135deg, #ec7000 0%, #ff9800 100%) !important;
+  box-shadow: 0 4px 16px rgba(236, 112, 0, 0.3) !important;
+}
+
+.interim-ring-progress {
+  stroke: #ec7000 !important;
+}

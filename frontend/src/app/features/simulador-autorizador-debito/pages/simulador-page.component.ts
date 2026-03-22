@@ -1,362 +1,64 @@
-import { Component, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { Component, ViewChild, signal, ChangeDetectionStrategy } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
-import { MatSelectModule } from '@angular/material/select';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { switchMap, EMPTY } from 'rxjs';
-import { IsoParserService, TransacaoItem } from '../services/iso-parser.service';
-import { BuscarTransacaoDialogComponent } from '../components/buscar-transacao-dialog.component';
+import { TransacaoItem } from '../services/iso-parser.service';
+import { BuscarCenariosComponent } from '../components/buscar-cenarios/buscar-cenarios.component';
+import { ConfigurarCenarioComponent } from '../components/configurar-cenario/configurar-cenario.component';
+import { DispararTransacaoComponent } from '../components/disparar-transacao/disparar-transacao.component';
 
 @Component({
   selector: 'app-simulador-page',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    MatCardModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatProgressBarModule,
-    MatSnackBarModule,
     MatIconModule,
-    MatSelectModule,
-    MatDialogModule,
+    BuscarCenariosComponent,
+    ConfigurarCenarioComponent,
+    DispararTransacaoComponent,
   ],
   templateUrl: './simulador-page.component.html',
   styleUrl: './simulador-page.component.scss',
 })
 export class SimuladorPageComponent {
-  // Active view: 'main' | 'incluir' | 'disparar'
-  activeView = signal<'main' | 'incluir' | 'disparar'>('main');
+  @ViewChild(BuscarCenariosComponent) private buscarRef?: BuscarCenariosComponent;
 
-  // ─── Incluir transacao ───
-  incluirForm = new FormGroup({
-    nomeProduto: new FormControl('', [Validators.required]),
-    tag: new FormControl('', [Validators.required]),
-    descricao: new FormControl(''),
-    message: new FormControl('', [Validators.required, Validators.minLength(4)]),
-  });
+  activeView = signal<'buscar' | 'incluir' | 'disparar'>('buscar');
+  cenarioSelecionado = signal<TransacaoItem | null>(null);
+  cenarioParaEditar = signal<TransacaoItem | null>(null);
 
-  // Request fields (shared between incluir and disparar views)
-  bitsForm = signal(new FormGroup<Record<string, FormControl<string>>>({}));
-  sortedKeys = signal<string[]>([]);
-  loading = signal(false);
+  onIrParaBuscar(): void {
+    const wasAlreadyOnBuscar = this.activeView() === 'buscar';
+    this.cenarioParaEditar.set(null);
+    this.activeView.set('buscar');
+    if (wasAlreadyOnBuscar) {
+      this.buscarRef?.carregar();
+    }
+  }
 
-  // Save state
-  saving = signal(false);
-  editingTransacaoId = signal<string | null>(null);
-
-  // Available bits for "Incluir campo" (2-128, excluding already added)
-  availableBits = signal<number[]>([]);
-
-  // ─── Disparar transacao ───
-  selectedTransacao = signal<TransacaoItem | null>(null);
-  executing = signal(false);
-
-  // Response fields
-  responseFields = signal<Record<string, string>>({});
-  responseSortedKeys = signal<string[]>([]);
-  responseMessage = signal('');
-  showResponse = signal(false);
-
-  constructor(
-    private readonly isoParserService: IsoParserService,
-    private readonly snackBar: MatSnackBar,
-    private readonly dialog: MatDialog,
-  ) {}
-
-  // ─── Main view actions ───
-
-  onIncluirTransacao(): void {
+  onIrParaIncluir(): void {
+    this.cenarioParaEditar.set(null);
     this.activeView.set('incluir');
-    this.incluirForm.reset();
-    this.resetBitsForm();
-    this.editingTransacaoId.set(null);
   }
 
-  onDispararTransacao(): void {
-    // Clear current view before opening modal so it doesn't overlay content
-    this.activeView.set('main');
-    this.resetBitsForm();
-    this.showResponse.set(false);
-    this.selectedTransacao.set(null);
-    this.incluirForm.reset();
-
-    const dialogRef = this.dialog.open(BuscarTransacaoDialogComponent, {
-      width: '560px',
-      maxWidth: '95vw',
-      maxHeight: '80vh',
-    });
-
-    dialogRef.afterClosed().subscribe((selected: TransacaoItem | undefined) => {
-      if (selected) {
-        this.openDispararView(selected);
-      }
-    });
-  }
-
-  onVoltarMain(): void {
-    this.activeView.set('main');
-    this.showResponse.set(false);
-    this.selectedTransacao.set(null);
-  }
-
-  // ─── Incluir view actions ───
-
-  onCarregarCampos(): void {
-    const message = this.incluirForm.controls.message.value ?? '';
-    if (!message || message.trim().length < 4) {
-      this.snackBar.open('Informe a mensagem ISO com no mínimo 4 caracteres', 'Fechar', {
-        duration: 3000,
-      });
-      return;
-    }
-
-    this.loading.set(true);
-
-    this.isoParserService.parseIso(message).subscribe({
-      next: (result) => {
-        this.loading.set(false);
-        this.buildBitsForm(result);
-      },
-      error: () => {
-        this.loading.set(false);
-        this.snackBar.open('Erro ao carregar campos', 'Fechar', { duration: 5000 });
-      },
-    });
-  }
-
-  onIncluirCampo(bitNumber: number): void {
-    const key = String(bitNumber).padStart(2, '0');
-    const currentForm = this.bitsForm();
-    const currentKeys = this.sortedKeys();
-
-    if (currentKeys.includes(key)) {
-      return;
-    }
-
-    const newGroup = new FormGroup<Record<string, FormControl<string>>>({});
-    for (const existingKey of currentKeys) {
-      newGroup.addControl(existingKey, currentForm.controls[existingKey]);
-    }
-    newGroup.addControl(key, new FormControl('', { nonNullable: true }));
-
-    const newKeys = [...currentKeys, key].sort((a, b) => Number(a) - Number(b));
-
-    this.bitsForm.set(newGroup);
-    this.sortedKeys.set(newKeys);
-    this.updateAvailableBits();
-  }
-
-  onRemoverCampo(key: string): void {
-    const currentForm = this.bitsForm();
-    const currentKeys = this.sortedKeys();
-
-    const newGroup = new FormGroup<Record<string, FormControl<string>>>({});
-    for (const existingKey of currentKeys) {
-      if (existingKey !== key) {
-        newGroup.addControl(existingKey, currentForm.controls[existingKey]);
-      }
-    }
-
-    const newKeys = currentKeys.filter((k) => k !== key);
-    this.bitsForm.set(newGroup);
-    this.sortedKeys.set(newKeys);
-    this.updateAvailableBits();
-  }
-
-  onSalvarTransacao(): void {
-    const fieldsMap = this.getRequestFieldsMap();
-    if (Object.keys(fieldsMap).length === 0) {
-      this.snackBar.open('Adicione pelo menos um campo ISO', 'Fechar', { duration: 3000 });
-      return;
-    }
-
-    const nomeProduto = this.incluirForm.controls.nomeProduto.value ?? '';
-    if (!nomeProduto.trim()) {
-      this.snackBar.open('Informe o Nome do Produto', 'Fechar', { duration: 3000 });
-      return;
-    }
-
-    this.saving.set(true);
-
-    this.isoParserService
-      .buildIso(fieldsMap)
-      .pipe(
-        switchMap((buildResult) => {
-          this.incluirForm.controls.message.setValue(buildResult.message);
-
-          const tag = this.incluirForm.controls.tag.value ?? '';
-          if (!tag.trim()) {
-            this.saving.set(false);
-            this.snackBar.open('Informe a Tag', 'Fechar', { duration: 3000 });
-            return EMPTY;
-          }
-
-          const payload: import('../services/iso-parser.service').SalvarTransacaoRequest = {
-            nomeProduto: nomeProduto.trim(),
-            tag: tag.trim(),
-            descricao: (this.incluirForm.controls.descricao.value ?? '').trim(),
-            mensagemIso: buildResult.message,
-          };
-          const currentId = this.editingTransacaoId();
-          if (currentId) {
-            payload.id = currentId;
-          }
-          return this.isoParserService.salvarTransacao(payload);
-        }),
-      )
-      .subscribe({
-        next: (result) => {
-          this.saving.set(false);
-          this.editingTransacaoId.set(result.id);
-          this.snackBar.open(result.message, 'Fechar', { duration: 5000 });
-        },
-        error: () => {
-          this.saving.set(false);
-          this.snackBar.open('Erro ao salvar transação', 'Fechar', { duration: 5000 });
-        },
-      });
-  }
-
-  // ─── Disparar view actions ───
-
-  onExecutarTransacao(): void {
-    const transacao = this.selectedTransacao();
-    if (!transacao) return;
-
-    this.executing.set(true);
-    this.showResponse.set(false);
-
-    this.isoParserService.executarTransacao(transacao.mensagemIso).subscribe({
-      next: (result) => {
-        this.executing.set(false);
-        this.responseFields.set(result.fields);
-        const keys = Object.keys(result.fields).sort((a, b) => Number(a) - Number(b));
-        this.responseSortedKeys.set(keys);
-        this.responseMessage.set(result.message);
-        this.showResponse.set(true);
-      },
-      error: () => {
-        this.executing.set(false);
-        this.snackBar.open('Erro ao executar transação', 'Fechar', { duration: 5000 });
-      },
-    });
-  }
-
-  onEditarTransacao(): void {
-    const transacao = this.selectedTransacao();
-    if (!transacao) return;
-
-    // Switch to incluir view and populate fields from the selected transaction
-    this.activeView.set('incluir');
-    this.showResponse.set(false);
-    this.editingTransacaoId.set(transacao.id);
-
-    this.incluirForm.patchValue({
-      nomeProduto: transacao.nomeProduto,
-      tag: transacao.tag ?? '',
-      descricao: transacao.descricao,
-      message: transacao.mensagemIso,
-    });
-
-    // Load ISO fields from the message
-    if (transacao.mensagemIso && transacao.mensagemIso.trim().length >= 4) {
-      this.loading.set(true);
-      this.isoParserService.parseIso(transacao.mensagemIso).subscribe({
-        next: (result) => {
-          this.loading.set(false);
-          this.buildBitsForm(result);
-        },
-        error: () => {
-          this.loading.set(false);
-        },
-      });
-    }
-  }
-
-  onExcluirTransacao(): void {
-    const transacao = this.selectedTransacao();
-    if (!transacao) return;
-
-    this.isoParserService.excluirTransacao(transacao.id).subscribe({
-      next: (result) => {
-        this.snackBar.open(result.message, 'Fechar', { duration: 5000 });
-        this.activeView.set('main');
-        this.showResponse.set(false);
-        this.selectedTransacao.set(null);
-      },
-      error: () => {
-        this.snackBar.open('Erro ao excluir transação', 'Fechar', { duration: 5000 });
-      },
-    });
-  }
-
-  // ─── Private helpers ───
-
-  private openDispararView(transacao: TransacaoItem): void {
-    this.selectedTransacao.set(transacao);
+  onSelecionouCenario(cenario: TransacaoItem): void {
+    this.cenarioSelecionado.set(cenario);
     this.activeView.set('disparar');
-    this.showResponse.set(false);
-
-    // Load ISO request fields from the stored message
-    this.loading.set(true);
-    this.isoParserService.parseIso(transacao.mensagemIso).subscribe({
-      next: (result) => {
-        this.loading.set(false);
-        this.buildBitsForm(result);
-      },
-      error: () => {
-        this.loading.set(false);
-        this.snackBar.open('Erro ao carregar campos da transação', 'Fechar', { duration: 5000 });
-      },
-    });
   }
 
-  private getRequestFieldsMap(): Record<string, string> {
-    const form = this.bitsForm();
-    const map: Record<string, string> = {};
-    for (const key of this.sortedKeys()) {
-      map[key] = form.controls[key]?.value ?? '';
-    }
-    return map;
+  onEditouCenario(cenario: TransacaoItem): void {
+    this.cenarioParaEditar.set(cenario);
+    this.activeView.set('incluir');
   }
 
-  private buildBitsForm(map: Record<string, string>): void {
-    const group: Record<string, FormControl<string>> = {};
-    const keys = Object.keys(map).sort((a, b) => Number(a) - Number(b));
-    this.sortedKeys.set(keys);
-
-    for (const key of keys) {
-      group[key] = new FormControl(map[key], { nonNullable: true });
-    }
-
-    this.bitsForm.set(new FormGroup(group));
-    this.updateAvailableBits();
+  onDispararFromConfigurar(cenario: TransacaoItem): void {
+    this.cenarioSelecionado.set(cenario);
+    this.activeView.set('disparar');
   }
 
-  private resetBitsForm(): void {
-    this.bitsForm.set(new FormGroup<Record<string, FormControl<string>>>({}));
-    this.sortedKeys.set([]);
-    this.updateAvailableBits();
+  onVoltouDoDisparar(): void {
+    this.activeView.set('buscar');
   }
 
-  private updateAvailableBits(): void {
-    const usedKeys = new Set(this.sortedKeys().map((k) => Number(k)));
-    const available: number[] = [];
-    for (let i = 2; i <= 128; i++) {
-      if (!usedKeys.has(i)) {
-        available.push(i);
-      }
-    }
-    this.availableBits.set(available);
+  onExcluiuDoDisparar(): void {
+    this.activeView.set('buscar');
   }
 }
