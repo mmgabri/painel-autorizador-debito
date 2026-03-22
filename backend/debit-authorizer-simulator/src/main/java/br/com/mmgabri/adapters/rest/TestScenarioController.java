@@ -30,12 +30,16 @@ public class TestScenarioController {
         logger.info("Request received to save test scenario.");
         var saved = testScenarioService.save(request);
         logger.info("Test scenario saved successfully.");
-        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+        if (request.getId() != null) {
+            return ResponseEntity.status(HttpStatus.OK).body(saved);
+        } else {
+            return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+        }
     }
 
     @PostMapping("/executar")
     public ResponseEntity<Map<String, String>> execute(@Valid @RequestBody MessageParseRequest request) {
-        logger.info("Request received to execute scenario with isoMessage.");
+        logger.info("Request received to execute scenario with isoMessage {}", request.getMessage());
         testScenarioExecutionService.execute(request);
         logger.info("Scenario executed successfully via isoMessage.");
         return ResponseEntity.ok(Map.of("message", "success"));

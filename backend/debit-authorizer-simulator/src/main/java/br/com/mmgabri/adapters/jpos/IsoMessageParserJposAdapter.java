@@ -1,6 +1,8 @@
-package br.com.mmgabri.services;
+package br.com.mmgabri.adapters.jpos;
 
 import br.com.mmgabri.domains.MessageParseResponse;
+import br.com.mmgabri.domains.enuns.MessageParseTypeEnum;
+import lombok.SneakyThrows;
 import org.jpos.iso.ISOMsg;
 import org.jpos.iso.ISOPackager;
 import org.jpos.iso.packager.GenericPackager;
@@ -14,7 +16,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Service
-public class IsoMessageParserService {
+public class IsoMessageParserJposAdapter implements IsoMessageParserAdapter {
+    private static final Logger logger = LoggerFactory.getLogger(IsoMessageParserJposAdapter.class);
 
     private static final String DEFAULT_PACKAGER_FILE = "iso-mastercard.xml";
     private static final String CLEARING_PACKAGER_FILE = "iso-mastercard-clearing.xml";
@@ -23,9 +26,8 @@ public class IsoMessageParserService {
     private final ISOPackager defaultPackager;
     private final ISOPackager clearingPackager;
     private final ISOPackager visaPackager;
-    private static final Logger logger = LoggerFactory.getLogger(IsoMessageParserService.class);
 
-    public IsoMessageParserService() {
+    public IsoMessageParserJposAdapter() {
         try {
             this.defaultPackager = loadPackager(DEFAULT_PACKAGER_FILE);
             this.clearingPackager = loadPackager(CLEARING_PACKAGER_FILE);
@@ -35,17 +37,21 @@ public class IsoMessageParserService {
         }
     }
 
-    public MessageParseResponse execute(String isoMessage) throws Exception {
-        return executeWithPackager(isoMessage, defaultPackager);
-    }
 
-    public MessageParseResponse executeVisa(String isoMessage) throws Exception {
-        logger.info("Using VISA ISO packager for parsing.");
-        return executeWithPackager(isoMessage, visaPackager);
-    }
-
-    public MessageParseResponse execute(String isoMessage, boolean useClearingPackager) throws Exception {
-        return executeWithPackager(isoMessage, resolvePackager(useClearingPackager));
+    @SneakyThrows
+    @Override
+    public MessageParseResponse execute(String isoMessage, MessageParseTypeEnum parseType) {
+        switch (parseType) {
+            case PARSE_ISO_VISA -> {
+                return executeWithPackager(isoMessage, visaPackager);
+            }
+            case PARSE_ISO_CLEARING -> {
+                return executeWithPackager(isoMessage, clearingPackager);
+            }
+            default -> {
+                return executeWithPackager(isoMessage, defaultPackager);
+            }
+        }
     }
 
     private MessageParseResponse executeWithPackager(String isoMessage, ISOPackager selectedPackager) throws Exception {
@@ -94,15 +100,6 @@ public class IsoMessageParserService {
                             + "Possible payload misalignment due to an incorrect bitmap."
             );
         }
-    }
-
-    private ISOPackager resolvePackager(boolean useClearingPackager) {
-        if (useClearingPackager) {
-            logger.info("Using Mastercard clearing ISO packager for parsing.");
-            return clearingPackager;
-        }
-
-        return defaultPackager;
     }
 
     private ISOPackager loadPackager(String fileName) throws Exception {

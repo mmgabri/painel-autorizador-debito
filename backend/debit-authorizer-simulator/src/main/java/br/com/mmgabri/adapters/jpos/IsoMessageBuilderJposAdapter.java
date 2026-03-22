@@ -1,6 +1,9 @@
-package br.com.mmgabri.services;
+package br.com.mmgabri.adapters.jpos;
 
 import br.com.mmgabri.domains.MessageBuildRequest;
+import br.com.mmgabri.domains.enuns.MessageParseTypeEnum;
+import br.com.mmgabri.services.EbcdicConverterService;
+import lombok.SneakyThrows;
 import org.jpos.iso.ISOBasePackager;
 import org.jpos.iso.ISOFieldPackager;
 import org.jpos.iso.ISOMsg;
@@ -16,7 +19,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 @Service
-public class IsoMessageBuilderService {
+public class IsoMessageBuilderJposAdapter implements IsoMessageBuilderAdapter {
 
     private static final String DEFAULT_PACKAGER_FILE = "iso-mastercard.xml";
     private static final String CLEARING_PACKAGER_FILE = "iso-mastercard-clearing.xml";
@@ -27,9 +30,9 @@ public class IsoMessageBuilderService {
     private final ISOPackager clearingPackager;
     private final ISOPackager visaPackager;
     private final EbcdicConverterService ebcdicConverter = new EbcdicConverterService();
-    private static final Logger logger = LoggerFactory.getLogger(IsoMessageBuilderService.class);
+    private static final Logger logger = LoggerFactory.getLogger(IsoMessageBuilderJposAdapter.class);
 
-    public IsoMessageBuilderService() {
+    public IsoMessageBuilderJposAdapter() {
         try {
             this.defaultPackager = loadPackager(DEFAULT_PACKAGER_FILE);
             this.clearingPackager = loadPackager(CLEARING_PACKAGER_FILE);
@@ -39,17 +42,20 @@ public class IsoMessageBuilderService {
         }
     }
 
-    public String execute(MessageBuildRequest request) throws Exception {
-        return executeWithPackager(request, defaultPackager);
-    }
-
-    public String executeVisa(MessageBuildRequest request) throws Exception {
-        logger.info("Using VISA ISO packager for building.");
-        return executeWithPackager(request, visaPackager);
-    }
-
-    public String execute(MessageBuildRequest request, boolean useClearingPackager) throws Exception {
-        return executeWithPackager(request, resolvePackager(useClearingPackager));
+    @SneakyThrows
+    @Override
+    public String execute(MessageBuildRequest request, MessageParseTypeEnum parseType) {
+        switch (parseType) {
+            case PARSE_ISO_VISA -> {
+                return executeWithPackager(request, visaPackager);
+            }
+            case PARSE_ISO_CLEARING -> {
+                return executeWithPackager(request, clearingPackager);
+            }
+            default -> {
+                return executeWithPackager(request, defaultPackager);
+            }
+        }
     }
 
     private String executeWithPackager(MessageBuildRequest request, ISOPackager selectedPackager) throws Exception {
@@ -119,15 +125,6 @@ public class IsoMessageBuilderService {
         }
 
         return data;
-    }
-
-    private ISOPackager resolvePackager(boolean useClearingPackager) {
-        if (useClearingPackager) {
-            logger.info("Using Mastercard clearing ISO packager for building.");
-            return clearingPackager;
-        }
-
-        return defaultPackager;
     }
 
     private ISOPackager loadPackager(String fileName) throws Exception {
