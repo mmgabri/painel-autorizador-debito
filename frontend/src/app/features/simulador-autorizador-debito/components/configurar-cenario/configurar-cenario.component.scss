@@ -32,7 +32,7 @@
 .cenario-grid {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 16px;
 }
 
 .inline-row {
@@ -58,7 +58,7 @@
 
 .toggle-group-field {
   position: relative;
-  border: 1px solid #c0c0c0;
+  border: 1px solid #666;
   border-radius: 8px;
   padding: 10px 10px 8px;
 }
@@ -170,6 +170,7 @@
   display: flex;
   gap: 0;
   align-items: center;
+  margin-top: 8px;
 
   .iso-input-field {
     flex: 1;

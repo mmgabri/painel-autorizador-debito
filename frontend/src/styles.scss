@@ -16,6 +16,10 @@ html {
     typography: Roboto,
     density: 0,
   ));
+
+  --mdc-outlined-text-field-outline-color: #666;
+  --mdc-outlined-text-field-hover-outline-color: #444;
+  --mdc-outlined-text-field-disabled-outline-color: #ccc;
 }
 
 body {

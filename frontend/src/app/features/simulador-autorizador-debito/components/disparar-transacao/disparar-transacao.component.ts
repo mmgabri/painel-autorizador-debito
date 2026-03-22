@@ -9,6 +9,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatDialog } from '@angular/material/dialog';
 import { switchMap, delay, of, tap, Observable } from 'rxjs';
 import { IsoParserService, TransacaoItem } from '../../services/iso-parser.service';
@@ -30,6 +31,7 @@ import { ConfirmarExclusaoDialogComponent } from '../buscar-cenarios/confirmar-e
     MatProgressBarModule,
     MatIconModule,
     MatCheckboxModule,
+    MatButtonToggleModule,
   ],
   templateUrl: './disparar-transacao.component.html',
   styleUrl: './disparar-transacao.component.scss',
