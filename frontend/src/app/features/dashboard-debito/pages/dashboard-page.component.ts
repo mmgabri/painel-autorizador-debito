@@ -1,4 +1,4 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -9,7 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { NotificationService } from '../../../core/services/notification.service';
 import {
   DashboardService,
   AcumuladoDia,
@@ -32,7 +32,6 @@ import {
     MatDatepickerModule,
     MatNativeDateModule,
     MatProgressBarModule,
-    MatSnackBarModule,
   ],
   templateUrl: './dashboard-page.component.html',
   styleUrl: './dashboard-page.component.scss',
@@ -69,10 +68,9 @@ export class DashboardPageComponent {
     return ((dia.faturamento - a1.faturamento) / a1.faturamento) * 100;
   });
 
-  constructor(
-    private readonly dashboardService: DashboardService,
-    private readonly snackBar: MatSnackBar,
-  ) {}
+  private readonly notif = inject(NotificationService);
+
+  constructor(private readonly dashboardService: DashboardService) {}
 
   // ─── Load actions ───
 
@@ -89,7 +87,7 @@ export class DashboardPageComponent {
       },
       error: () => {
         this.loadingDia.set(false);
-        this.snackBar.open('Erro ao carregar Acumulado do Dia', 'Fechar', { duration: 5000 });
+        this.notif.error('Erro ao carregar Acumulado do Dia');
       },
     });
   }
@@ -107,7 +105,7 @@ export class DashboardPageComponent {
       },
       error: () => {
         this.loadingA1.set(false);
-        this.snackBar.open('Erro ao carregar Acumulado A-1', 'Fechar', { duration: 5000 });
+        this.notif.error('Erro ao carregar Acumulado A-1');
       },
     });
   }
@@ -121,7 +119,7 @@ export class DashboardPageComponent {
       },
       error: () => {
         this.loadingRecorde.set(false);
-        this.snackBar.open('Erro ao carregar Recordes', 'Fechar', { duration: 5000 });
+        this.notif.error('Erro ao carregar Recordes');
       },
     });
   }
@@ -138,7 +136,7 @@ export class DashboardPageComponent {
       },
       error: () => {
         this.loadingSemana.set(false);
-        this.snackBar.open('Erro ao carregar Acumulado da Semana', 'Fechar', { duration: 5000 });
+        this.notif.error('Erro ao carregar Acumulado da Semana');
       },
     });
   }

@@ -6,13 +6,14 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { NotificationService } from '../../../../core/services/notification.service';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialog } from '@angular/material/dialog';
 import { switchMap, delay, of, tap, Observable } from 'rxjs';
 import { IsoParserService, TransacaoItem } from '../../services/iso-parser.service';
-import { BuscarEstornoDialogComponent } from '../buscar-estorno-dialog.component';
+import { BuscarEstornoDialogComponent, BuscarDialogFiltro } from '../buscar-estorno-dialog.component';
+import { BuscarConciliacaoDialogComponent } from '../buscar-conciliacao-dialog.component';
 
 @Component({
   selector: 'app-disparar-transacao',
@@ -40,7 +41,7 @@ export class DispararTransacaoComponent implements OnInit {
   readonly excluiu = output<void>();
 
   private readonly isoParserService = inject(IsoParserService);
-  private readonly snackBar = inject(MatSnackBar);
+  private readonly notif = inject(NotificationService);
   private readonly dialog = inject(MatDialog);
 
   selectedTransacao = signal<TransacaoItem | null>(null);
@@ -57,7 +58,6 @@ export class DispararTransacaoComponent implements OnInit {
 
   // Estorno
   estornarChecked = signal(false);
-  conciliarChecked = signal(false);
   estornoTransacao = signal<TransacaoItem | null>(null);
   estornoDelay = signal(5);
   estornoBit90 = signal('');
@@ -66,6 +66,16 @@ export class DispararTransacaoComponent implements OnInit {
   estornoBitsForm = signal(new FormGroup<Record<string, FormControl<string>>>({}));
   estornoIsoMessage = signal('');
   estornoLoading = signal(false);
+
+  // Conciliacao
+  conciliarChecked = signal(false);
+  conciliacaoTransacao = signal<TransacaoItem | null>(null);
+  conciliacaoDelay = signal(10);
+  conciliacaoMti = signal('');
+  conciliacaoSortedKeys = signal<string[]>([]);
+  conciliacaoBitsForm = signal(new FormGroup<Record<string, FormControl<string>>>({}));
+  conciliacaoIsoMessage = signal('');
+  conciliacaoLoading = signal(false);
 
   // Success overlay
   showSuccessOverlay = signal(false);
@@ -77,6 +87,7 @@ export class DispararTransacaoComponent implements OnInit {
   // Interim overlay
   showInterimOverlay = signal(false);
   interimCountdownSeconds = signal(5);
+  interimTotalSeconds = signal(5);
   interimMessageText = signal('');
   private interimTimer: ReturnType<typeof setTimeout> | null = null;
   private interimCountdownInterval: ReturnType<typeof setInterval> | null = null;
@@ -108,7 +119,7 @@ export class DispararTransacaoComponent implements OnInit {
         },
         error: () => {
           this.loading.set(false);
-          this.snackBar.open('Erro ao carregar campos da transação', 'Fechar', { duration: 5000 });
+          this.notif.error('Erro ao carregar campos da transação');
         },
       });
   }
@@ -116,7 +127,8 @@ export class DispararTransacaoComponent implements OnInit {
   onToggleEstornar(checked: boolean): void {
     this.estornarChecked.set(checked);
     if (checked) {
-      const dialogRef = this.dialog.open(BuscarEstornoDialogComponent, { width: '560px' });
+      const filtro: BuscarDialogFiltro = { paymentNetwork: this.transacao.paymentNetwork, messageModel: this.transacao.messageModel };
+      const dialogRef = this.dialog.open(BuscarEstornoDialogComponent, { width: '520px', data: filtro, panelClass: 'itau-dialog-panel' });
       dialogRef.afterClosed().subscribe((result: TransacaoItem | undefined) => {
         if (result) {
           this.estornoTransacao.set(result);
@@ -132,12 +144,37 @@ export class DispararTransacaoComponent implements OnInit {
     }
   }
 
+  onToggleConciliar(checked: boolean): void {
+    this.conciliarChecked.set(checked);
+    if (checked) {
+      const filtroConciliacao: BuscarDialogFiltro = { paymentNetwork: this.transacao.paymentNetwork, messageModel: this.transacao.messageModel };
+      const dialogRef = this.dialog.open(BuscarConciliacaoDialogComponent, { width: '520px', data: filtroConciliacao, panelClass: 'itau-dialog-panel' });
+      dialogRef.afterClosed().subscribe((result: TransacaoItem | undefined) => {
+        if (result) {
+          this.conciliacaoTransacao.set(result);
+          this.loadConciliacaoFields(result);
+        } else {
+          this.conciliarChecked.set(false);
+          this.conciliacaoTransacao.set(null);
+        }
+      });
+    } else {
+      this.conciliacaoTransacao.set(null);
+      this.resetConciliacaoFields();
+    }
+  }
+
   onExecutarTransacao(): void {
     const transacao = this.selectedTransacao();
     if (!transacao) return;
 
     if (this.estornarChecked() && this.estornoTransacao() && this.estornoDelay() < 0) {
-      this.snackBar.open('Informe um tempo de espera válido', 'Fechar', { duration: 3000 });
+      this.notif.warn('Informe um tempo de espera válido para o estorno');
+      return;
+    }
+
+    if (this.conciliarChecked() && this.conciliacaoTransacao() && this.conciliacaoDelay() < 0) {
+      this.notif.warn('Informe um tempo de espera válido para a conciliação');
       return;
     }
 
@@ -169,7 +206,9 @@ export class DispararTransacaoComponent implements OnInit {
           return this.isoParserService.executarTransacao(built.message, txMessageModel, txPaymentNetwork, txMessageType);
         }),
         switchMap(() => this.rebuildEstornoIsoIfNeeded()),
-        switchMap(() => this.afterMainTransactionExecuted(transacao)),
+        switchMap(() => this.rebuildConciliacaoIsoIfNeeded()),
+        switchMap(() => this.dispatchEstornoIfNeeded()),
+        switchMap(() => this.dispatchConciliacaoIfNeeded()),
       )
       .subscribe({
         next: () => this.onTransactionSuccess(),
@@ -177,7 +216,7 @@ export class DispararTransacaoComponent implements OnInit {
           console.error('Erro ao executar transação:', err);
           this.executing.set(false);
           this.onFecharInterimOverlay();
-          this.snackBar.open('Erro ao executar transação', 'Fechar', { duration: 5000 });
+          this.notif.error('Erro ao executar transação');
         },
       });
   }
@@ -214,6 +253,26 @@ export class DispararTransacaoComponent implements OnInit {
       .subscribe({
         next: (built) => {
           this.estornoIsoMessage.set(built.message);
+        },
+        error: () => {},
+      });
+  }
+
+  onConciliacaoFieldChanged(): void {
+    const conciliacao = this.conciliacaoTransacao();
+    if (!conciliacao || this.conciliacaoSortedKeys().length === 0) return;
+
+    const conciliacaoForm = this.conciliacaoBitsForm();
+    const conciliacaoFields: Record<string, string> = {};
+    for (const key of this.conciliacaoSortedKeys()) {
+      conciliacaoFields[key] = conciliacaoForm.controls[key]?.value ?? '';
+    }
+
+    this.isoParserService
+      .buildIso(this.conciliacaoMti() || 'FREC', conciliacaoFields, conciliacao.messageModel, conciliacao.paymentNetwork, conciliacao.messageType)
+      .subscribe({
+        next: (built) => {
+          this.conciliacaoIsoMessage.set(built.message);
         },
         error: () => {},
       });
@@ -259,58 +318,88 @@ export class DispararTransacaoComponent implements OnInit {
 
     this.isoParserService.excluirTransacao(transacao.id).subscribe({
       next: (result) => {
-        this.snackBar.open(result?.message ?? 'Cenário excluído com sucesso', 'Fechar', { duration: 5000 });
+        this.notif.success(result?.message ?? 'Cenário excluído com sucesso');
         this.excluiu.emit();
       },
       error: () => {
-        this.snackBar.open('Erro ao excluir transação', 'Fechar', { duration: 5000 });
+        this.notif.error('Erro ao excluir transação');
       },
     });
   }
 
-  private afterMainTransactionExecuted(_transacao: TransacaoItem): Observable<unknown> {
+  private dispatchEstornoIfNeeded(): Observable<unknown> {
     const estorno = this.estornoTransacao();
-    if (this.estornarChecked() && estorno) {
-      const delaySeconds = this.estornoDelay() || 0;
-      this.interimMessageText.set('Transação financeira enviada, aguardando para enviar o estorno.');
-      this.interimCountdownSeconds.set(delaySeconds);
-      this.showInterimOverlay.set(true);
+    if (!this.estornarChecked() || !estorno) return of(null);
 
-      if (this.interimCountdownInterval) clearInterval(this.interimCountdownInterval);
-      if (delaySeconds > 0) {
-        this.interimCountdownInterval = setInterval(() => {
-          const current = this.interimCountdownSeconds();
-          if (current <= 1) {
-            if (this.interimCountdownInterval) {
-              clearInterval(this.interimCountdownInterval);
-              this.interimCountdownInterval = null;
-            }
-            this.interimCountdownSeconds.set(0);
-          } else {
-            this.interimCountdownSeconds.set(current - 1);
+    const delaySeconds = this.estornoDelay() || 0;
+    this.startInterimCountdown('Transação financeira enviada, aguardando para enviar o estorno.', delaySeconds);
+
+    return of(null).pipe(
+      delay(delaySeconds * 1000),
+      tap(() => this.onFecharInterimOverlay()),
+      switchMap(() => {
+        const estornoIso = this.estornoIsoMessage() || estorno.message;
+        return this.isoParserService.executarTransacao(estornoIso, estorno.messageModel, estorno.paymentNetwork, estorno.messageType);
+      }),
+    );
+  }
+
+  private dispatchConciliacaoIfNeeded(): Observable<unknown> {
+    const conciliacao = this.conciliacaoTransacao();
+    if (!this.conciliarChecked() || !conciliacao) return of(null);
+
+    const delaySeconds = this.conciliacaoDelay() || 0;
+    const prevMsg = this.estornarChecked() && this.estornoTransacao()
+      ? 'Estorno enviado, aguardando para enviar a conciliação.'
+      : 'Transação enviada, aguardando para enviar a conciliação.';
+    this.startInterimCountdown(prevMsg, delaySeconds);
+
+    return of(null).pipe(
+      delay(delaySeconds * 1000),
+      tap(() => this.onFecharInterimOverlay()),
+      switchMap(() => {
+        const conciliacaoIso = this.conciliacaoIsoMessage() || conciliacao.message;
+        return this.isoParserService.executarTransacao(conciliacaoIso, conciliacao.messageModel, conciliacao.paymentNetwork, conciliacao.messageType);
+      }),
+    );
+  }
+
+  private startInterimCountdown(message: string, delaySeconds: number): void {
+    this.interimMessageText.set(message);
+    this.interimCountdownSeconds.set(delaySeconds);
+    this.interimTotalSeconds.set(delaySeconds);
+    this.showInterimOverlay.set(true);
+
+    if (this.interimCountdownInterval) clearInterval(this.interimCountdownInterval);
+    if (delaySeconds > 0) {
+      this.interimCountdownInterval = setInterval(() => {
+        const current = this.interimCountdownSeconds();
+        if (current <= 1) {
+          if (this.interimCountdownInterval) {
+            clearInterval(this.interimCountdownInterval);
+            this.interimCountdownInterval = null;
           }
-        }, 1000);
-      }
-
-      return of(null).pipe(
-        delay(delaySeconds * 1000),
-        tap(() => this.onFecharInterimOverlay()),
-        switchMap(() => {
-          const estornoIso = this.estornoIsoMessage() || estorno.message;
-          return this.isoParserService.executarTransacao(estornoIso, estorno.messageModel, estorno.paymentNetwork, estorno.messageType);
-        }),
-      );
+          this.interimCountdownSeconds.set(0);
+        } else {
+          this.interimCountdownSeconds.set(current - 1);
+        }
+      }, 1000);
     }
-    return of(null);
   }
 
   private onTransactionSuccess(): void {
     this.executing.set(false);
-    this.successMessageText.set(
-      this.estornarChecked() && this.estornoTransacao()
-        ? 'Transação e estorno disparados com sucesso. Verificar logs'
-        : 'A transação foi disparada com sucesso. Verificar logs',
-    );
+    const hasEstorno = this.estornarChecked() && this.estornoTransacao();
+    const hasConciliacao = this.conciliarChecked() && this.conciliacaoTransacao();
+    let msg = 'A transação foi disparada com sucesso. Verificar logs';
+    if (hasEstorno && hasConciliacao) {
+      msg = 'Transação, estorno e conciliação disparados com sucesso. Verificar logs';
+    } else if (hasEstorno) {
+      msg = 'Transação e estorno disparados com sucesso. Verificar logs';
+    } else if (hasConciliacao) {
+      msg = 'Transação e conciliação disparadas com sucesso. Verificar logs';
+    }
+    this.successMessageText.set(msg);
     this.countdownSeconds.set(3);
     this.showSuccessOverlay.set(true);
 
@@ -365,7 +454,31 @@ export class DispararTransacaoComponent implements OnInit {
         },
         error: () => {
           this.estornoLoading.set(false);
-          this.snackBar.open('Erro ao carregar campos do estorno', 'Fechar', { duration: 5000 });
+          this.notif.error('Erro ao carregar campos do estorno');
+        },
+      });
+  }
+
+  private loadConciliacaoFields(item: TransacaoItem): void {
+    this.conciliacaoLoading.set(true);
+    this.isoParserService
+      .parseIso(item.message, item.messageModel, item.paymentNetwork, item.messageType)
+      .subscribe({
+        next: (parsed) => {
+          this.conciliacaoLoading.set(false);
+          this.conciliacaoMti.set(parsed.mti || '');
+          this.conciliacaoIsoMessage.set(item.message);
+          const keys = Object.keys(parsed.fields); // preserve order — CONCILIACAO always has named fields
+          this.conciliacaoSortedKeys.set(keys);
+          const group: Record<string, FormControl<string>> = {};
+          for (const key of keys) {
+            group[key] = new FormControl(parsed.fields[key], { nonNullable: true });
+          }
+          this.conciliacaoBitsForm.set(new FormGroup(group));
+        },
+        error: () => {
+          this.conciliacaoLoading.set(false);
+          this.notif.error('Erro ao carregar campos da conciliação');
         },
       });
   }
@@ -376,6 +489,13 @@ export class DispararTransacaoComponent implements OnInit {
     this.estornoBitsForm.set(new FormGroup<Record<string, FormControl<string>>>({}));
     this.estornoIsoMessage.set('');
     this.estornoBit90.set('');
+  }
+
+  private resetConciliacaoFields(): void {
+    this.conciliacaoMti.set('');
+    this.conciliacaoSortedKeys.set([]);
+    this.conciliacaoBitsForm.set(new FormGroup<Record<string, FormControl<string>>>({}));
+    this.conciliacaoIsoMessage.set('');
   }
 
   private rebuildEstornoIsoIfNeeded(): Observable<unknown> {
@@ -395,6 +515,23 @@ export class DispararTransacaoComponent implements OnInit {
       .pipe(tap((built) => this.estornoIsoMessage.set(built.message)));
   }
 
+  private rebuildConciliacaoIsoIfNeeded(): Observable<unknown> {
+    const conciliacao = this.conciliacaoTransacao();
+    if (!this.conciliarChecked() || !conciliacao || this.conciliacaoSortedKeys().length === 0) {
+      return of(null);
+    }
+
+    const conciliacaoForm = this.conciliacaoBitsForm();
+    const conciliacaoFields: Record<string, string> = {};
+    for (const key of this.conciliacaoSortedKeys()) {
+      conciliacaoFields[key] = conciliacaoForm.controls[key]?.value ?? '';
+    }
+
+    return this.isoParserService
+      .buildIso(this.conciliacaoMti() || 'FREC', conciliacaoFields, conciliacao.messageModel, conciliacao.paymentNetwork, conciliacao.messageType)
+      .pipe(tap((built) => this.conciliacaoIsoMessage.set(built.message)));
+  }
+
   private getBuildIsoInputFromRequestForm(): { mti: string; fields: Record<string, string> } {
     const form = this.bitsForm();
     const map: Record<string, string> = {};
@@ -408,7 +545,9 @@ export class DispararTransacaoComponent implements OnInit {
   }
 
   private buildBitsForm(map: Record<string, string>, preserveOrder = false): void {
-    const keys = preserveOrder ? Object.keys(map) : Object.keys(map).sort();
+    const keys = preserveOrder
+      ? Object.keys(map)
+      : Object.keys(map).sort((a, b) => Number(a) - Number(b));
     this.sortedKeys.set(keys);
     const group: Record<string, FormControl<string>> = {};
     for (const key of keys) {

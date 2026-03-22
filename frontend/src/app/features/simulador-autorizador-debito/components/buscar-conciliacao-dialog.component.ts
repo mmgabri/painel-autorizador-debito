@@ -8,9 +8,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { IsoParserService, TransacaoItem } from '../services/iso-parser.service';
+import { BuscarDialogFiltro } from './buscar-estorno-dialog.component';
 
 @Component({
-  selector: 'app-buscar-estorno-dialog',
+  selector: 'app-buscar-conciliacao-dialog',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
@@ -27,11 +28,11 @@ import { IsoParserService, TransacaoItem } from '../services/iso-parser.service'
     <!-- Header -->
     <div class="dialog-header">
       <div class="header-icon-wrap">
-        <mat-icon class="header-icon">undo</mat-icon>
+        <mat-icon class="header-icon">compare_arrows</mat-icon>
       </div>
       <div class="header-text">
-        <span class="header-title">Cenário de Estorno</span>
-        <span class="header-sub">Selecione o produto para desfazimento</span>
+        <span class="header-title">Cenário de Conciliação</span>
+        <span class="header-sub">Selecione o produto para conciliação</span>
       </div>
       <button mat-icon-button class="header-close" (click)="dialogRef.close()" aria-label="Fechar">
         <mat-icon>close</mat-icon>
@@ -86,7 +87,7 @@ import { IsoParserService, TransacaoItem } from '../services/iso-parser.service'
           <div class="empty-state">
             <mat-icon class="empty-icon">search_off</mat-icon>
             <span class="empty-title">Nenhum cenário encontrado</span>
-            <span class="empty-sub">Não há modelos de estorno cadastrados</span>
+            <span class="empty-sub">Não há cenários de conciliação cadastrados</span>
           </div>
         }
       }
@@ -159,7 +160,7 @@ import { IsoParserService, TransacaoItem } from '../services/iso-parser.service'
     }
     .item-card:hover {
       border-color: #ec7000;
-      box-shadow: 0 2px 10px rgba(236,112,0,.12);
+      box-shadow: 0 2px 10px rgba(26,122,74,.12);
     }
 
     .item-accent {
@@ -188,7 +189,7 @@ import { IsoParserService, TransacaoItem } from '../services/iso-parser.service'
       font-size: 11px; color: #555;
       background: #f0f0f0; border-radius: 4px; padding: 1px 7px;
     }
-    .item-badge-model { color: #ec7000; background: rgba(236,112,0,.08); }
+    .item-badge-model { color: #ec7000; background: rgba(26,122,74,.08); }
 
     .item-descricao {
       font-size: 11px; color: #888; font-style: italic;
@@ -215,8 +216,8 @@ import { IsoParserService, TransacaoItem } from '../services/iso-parser.service'
     }
   `],
 })
-export class BuscarEstornoDialogComponent implements OnInit {
-  readonly dialogRef = inject(MatDialogRef<BuscarEstornoDialogComponent>);
+export class BuscarConciliacaoDialogComponent implements OnInit {
+  readonly dialogRef = inject(MatDialogRef<BuscarConciliacaoDialogComponent>);
   private readonly isoParserService = inject(IsoParserService);
   private readonly filtroOrigem = inject<BuscarDialogFiltro>(MAT_DIALOG_DATA, { optional: true });
 
@@ -228,17 +229,17 @@ export class BuscarEstornoDialogComponent implements OnInit {
     const q = this.filtro.trim().toLowerCase();
     return this.transacoes().filter(
       (t) =>
-        !q ||
-        t.productName.toLowerCase().includes(q) ||
-        (t.tag ?? '').toLowerCase().includes(q) ||
-        (t.description ?? '').toLowerCase().includes(q),
+        (!q ||
+          t.productName.toLowerCase().includes(q) ||
+          (t.tag ?? '').toLowerCase().includes(q) ||
+          (t.description ?? '').toLowerCase().includes(q)),
     );
   }
 
   ngOnInit(): void {
     this.loading.set(true);
     const paymentNetwork = this.filtroOrigem?.paymentNetwork;
-    this.isoParserService.consultarTransacoes('ESTORNO', undefined, paymentNetwork).subscribe({
+    this.isoParserService.consultarTransacoes('CONCILIACAO', undefined, paymentNetwork).subscribe({
       next: (list) => {
         this.loading.set(false);
         const messageModel = this.filtroOrigem?.messageModel;
@@ -254,9 +255,4 @@ export class BuscarEstornoDialogComponent implements OnInit {
   onSelecionar(item: TransacaoItem): void {
     this.dialogRef.close(item);
   }
-}
-
-export interface BuscarDialogFiltro {
-  paymentNetwork: string;
-  messageModel: string;
 }

@@ -12,7 +12,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { NotificationService } from '../../../core/services/notification.service';
 import { ConsultaService, ConsultaResultItem, ConsultaFiltro } from '../services/consulta.service';
 import { IsoMessageDialogComponent, IsoMessageDialogData } from '../components/iso-message-dialog.component';
 import { DetalhesTransacaoDialogComponent, DetalhesTransacaoDialogData } from '../components/detalhes-transacao-dialog.component';
@@ -40,7 +40,7 @@ import { DetalhesTransacaoDialogComponent, DetalhesTransacaoDialogData } from '.
 export class ConsultaPageComponent {
   private readonly consultaService = inject(ConsultaService);
   private readonly dialog = inject(MatDialog);
-  private readonly snackBar = inject(MatSnackBar);
+  private readonly notif = inject(NotificationService);
 
   // Filter controls
   cartaoControl = new FormControl('', { validators: [Validators.required] });
@@ -98,7 +98,7 @@ export class ConsultaPageComponent {
       },
       error: () => {
         this.loading.set(false);
-        this.snackBar.open('Erro ao buscar transacoes', 'Fechar', { duration: 5000 });
+        this.notif.error('Erro ao buscar transacoes');
       },
     });
   }
@@ -112,7 +112,7 @@ export class ConsultaPageComponent {
         });
       },
       error: () => {
-        this.snackBar.open('Erro ao parsear mensagem ISO', 'Fechar', { duration: 5000 });
+        this.notif.error('Erro ao parsear mensagem ISO');
       },
     });
   }
@@ -126,7 +126,7 @@ export class ConsultaPageComponent {
         });
       },
       error: () => {
-        this.snackBar.open('Erro ao buscar detalhes da transacao', 'Fechar', { duration: 5000 });
+        this.notif.error('Erro ao buscar detalhes da transacao');
       },
     });
   }
