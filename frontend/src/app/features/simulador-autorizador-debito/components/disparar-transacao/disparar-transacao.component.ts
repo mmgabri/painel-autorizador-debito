@@ -53,6 +53,10 @@ export class DispararTransacaoComponent implements OnInit {
     if (!t) return true;
     return t.messageType !== 'CONCILIACAO';
   });
+
+  showConciliacaoBitLabel = computed(
+    () => this.transacao.paymentNetwork === 'MASTERCARD' && this.transacao.messageModel === 'DUAL_MESSAGE',
+  );
   mti = signal('');
   bitsForm = signal(new FormGroup<Record<string, FormControl<string>>>({}));
   sortedKeys = signal<string[]>([]);
@@ -214,6 +218,23 @@ export class DispararTransacaoComponent implements OnInit {
           const conciliacaoForm = this.conciliacaoBitsForm();
           if (conciliacaoForm.controls['traceNumber']) {
             conciliacaoForm.controls['traceNumber'].setValue(newBit11);
+          }
+        }
+
+        if (
+          this.transacao.paymentNetwork === 'MASTERCARD' &&
+          this.transacao.messageModel === 'DUAL_MESSAGE' &&
+          this.conciliarChecked() &&
+          this.conciliacaoTransacao()
+        ) {
+          const conciliacaoForm = this.conciliacaoBitsForm();
+          const bit38Key = this.findFormKey(conciliacaoForm, 38);
+          if (bit38Key) {
+            const bit2Key = this.findFormKey(form, 2);
+            const bit2Val = bit2Key ? form.controls[bit2Key].value : '';
+            conciliacaoForm.controls[bit38Key].setValue(
+              this.computeBit38(this.mti(), bit2Val, newBit11, newBit07),
+            );
           }
         }
       }
@@ -538,6 +559,23 @@ export class DispararTransacaoComponent implements OnInit {
             fields['switchSerialNumber'] = getVal(63).slice(3);
           }
 
+          if (this.transacao.paymentNetwork === 'MASTERCARD' && this.transacao.messageModel === 'DUAL_MESSAGE') {
+            const mainForm = this.bitsForm();
+            const getVal = (bit: number): string => {
+              const key = this.findFormKey(mainForm, bit);
+              return key ? mainForm.controls[key].value : '';
+            };
+            const setField = (bit: number, value: string): void => {
+              const key = this.findFieldKey(fields, bit) ?? String(bit).padStart(2, '0');
+              fields[key] = value;
+            };
+
+            setField(2, getVal(2));
+            setField(4, getVal(4));
+            setField(63, getVal(63).slice(3, 12));
+            setField(38, this.computeBit38(this.mti(), getVal(2), getVal(11), getVal(7)));
+          }
+
           const keys = Object.keys(fields); // preserve order — CONCILIACAO always has named fields
           this.conciliacaoSortedKeys.set(keys);
           const group: Record<string, FormControl<string>> = {};
@@ -650,6 +688,27 @@ export class DispararTransacaoComponent implements OnInit {
 
   private generateBit11(): string {
     return String(Math.floor(Math.random() * 1000000)).padStart(6, '0');
+  }
+
+  private computeBit38(mti: string, bit2: string, bit11: string, bit7: string): string {
+    const digits = 6;
+    const modulus = 1_000_000;
+
+    if (!mti?.trim() || !bit2?.trim() || !bit11?.trim() || !bit7?.trim()) {
+      return String(Math.floor(Math.random() * modulus)).padStart(digits, '0');
+    }
+
+    const parts = [mti, '|', bit2, '|', bit11, '|', bit7];
+    let hash = 0x811c9dc5 | 0; // FNV_32_OFFSET_BASIS as signed 32-bit
+    for (const part of parts) {
+      for (let i = 0; i < part.length; i++) {
+        hash = (hash ^ part.charCodeAt(i)) | 0;
+        hash = Math.imul(hash, 0x01000193);
+      }
+    }
+
+    const number = ((hash % modulus) + modulus) % modulus;
+    return String(number).padStart(digits, '0');
   }
 
   private generateBit07(): string {
