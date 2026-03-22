@@ -1,0 +1,232 @@
+<div class="disparar-panel">
+  <div class="panel-header">
+    <h2>Disparar transação</h2>
+  </div>
+
+  @if (selectedTransacao(); as transacao) {
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Nome Produto</mat-label>
+      <input matInput [value]="transacao.productName" readonly />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Bandeira</mat-label>
+      <input matInput [value]="transacao.paymentNetwork" readonly />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Message Model</mat-label>
+      <input matInput [value]="transacao.messageModel" readonly />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Tipo Mensagem</mat-label>
+      <input matInput [value]="transacao.messageType" readonly />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Tag</mat-label>
+      <input matInput [value]="transacao.tag" readonly />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Descrição</mat-label>
+      <input matInput [value]="transacao.description" readonly />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Mensagem ISO</mat-label>
+      <input matInput [value]="transacao.message" readonly />
+    </mat-form-field>
+  }
+
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate" class="loading-bar"></mat-progress-bar>
+  }
+
+  <div class="cards-row">
+    <mat-card class="bits-card outlined-card flex-card">
+      <span class="card-legend">Campos ISO Request</span>
+      <mat-card-content>
+        @if (mti()) {
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>MTI</mat-label>
+            <input matInput [value]="mti()" readonly />
+          </mat-form-field>
+        }
+
+        @if (sortedKeys().length > 0) {
+          <form [formGroup]="bitsForm()" class="bits-vertical">
+            @for (key of sortedKeys(); track key) {
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>{{ showBitLabel() ? 'Bit ' + key : key }}</mat-label>
+                <input matInput [formControlName]="key" (blur)="onFieldChanged()" />
+              </mat-form-field>
+            }
+          </form>
+        } @else {
+          @if (!loading()) {
+            <p class="empty-text">Nenhum campo carregado</p>
+          }
+        }
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  @if (selectedTransacao()) {
+    <div class="estorno-section">
+      <mat-checkbox [checked]="estornarChecked()" (change)="onToggleEstornar($event.checked)" color="primary">
+        Estornar transação ?
+      </mat-checkbox>
+
+      @if (estornarChecked() && estornoTransacao()) {
+        <mat-form-field appearance="outline" class="estorno-delay-field" subscriptSizing="dynamic">
+          <mat-label>Estornar após (seg)</mat-label>
+          <input
+            matInput
+            type="number"
+            min="5"
+            [value]="estornoDelay()"
+            (input)="estornoDelay.set(+$any($event.target).value)"
+          />
+        </mat-form-field>
+      }
+    </div>
+  }
+
+  @if (estornarChecked() && estornoTransacao(); as estorno) {
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Mensagem ISO de Estorno</mat-label>
+      <input matInput [value]="estornoIsoMessage() || estorno.message" readonly />
+    </mat-form-field>
+
+    @if (estornoLoading()) {
+      <mat-progress-bar mode="indeterminate" class="loading-bar"></mat-progress-bar>
+    }
+
+    @if (estornoSortedKeys().length > 0) {
+      <mat-card class="bits-card outlined-card estorno-fields-card">
+        <span class="card-legend">Campos ISO Estorno</span>
+        <mat-card-content>
+          @if (estornoMti()) {
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>MTI</mat-label>
+              <input matInput [value]="estornoMti()" readonly />
+            </mat-form-field>
+          }
+          <form [formGroup]="estornoBitsForm()" class="bits-vertical">
+            @for (key of estornoSortedKeys(); track key) {
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>{{ showBitLabel() ? 'Bit ' + key : key }}</mat-label>
+                <input matInput [formControlName]="key" (blur)="onEstornoFieldChanged()" />
+              </mat-form-field>
+            }
+          </form>
+        </mat-card-content>
+      </mat-card>
+    }
+  }
+
+  @if (selectedTransacao()) {
+    <div
+      class="conciliacao-section"
+      [class.conciliacao-section-estorno]="estornarChecked()"
+      [class.conciliacao-section-normal]="!estornarChecked()"
+    >
+      <mat-checkbox [checked]="conciliarChecked()" color="primary" disabled>
+        Conciliar transação ? (em construção)
+      </mat-checkbox>
+
+      @if (conciliarChecked()) {
+        <mat-form-field appearance="outline" class="estorno-delay-field" subscriptSizing="dynamic">
+          <mat-label>Conciliar após (seg)</mat-label>
+          <input
+            matInput
+            type="number"
+            min="5"
+            [value]="estornoDelay()"
+            (input)="estornoDelay.set(+$any($event.target).value)"
+          />
+        </mat-form-field>
+      }
+    </div>
+  }
+
+  <!-- Interim overlay -->
+  @if (showInterimOverlay()) {
+    <div class="success-overlay interim-overlay">
+      <div class="success-card">
+        <button mat-icon-button class="success-close-x" (click)="onFecharInterimOverlay()" aria-label="Fechar">
+          <mat-icon>close</mat-icon>
+        </button>
+        <div class="success-icon-circle interim-icon-circle">
+          <mat-icon class="success-check-icon">schedule</mat-icon>
+        </div>
+        <h3 class="success-title">Aguardando...</h3>
+        <p class="success-message">{{ interimMessageText() }}</p>
+        @if (interimCountdownSeconds() > 0) {
+          <div class="countdown-container">
+            <svg class="countdown-ring" viewBox="0 0 48 48">
+              <circle class="countdown-ring-bg" cx="24" cy="24" r="20" />
+              <circle
+                class="countdown-ring-progress interim-ring-progress"
+                cx="24"
+                cy="24"
+                r="20"
+                [style.stroke-dashoffset]="125.6 - (125.6 * interimCountdownSeconds() / (estornoDelay() || 1))"
+              />
+            </svg>
+            <span class="countdown-number">{{ interimCountdownSeconds() }}</span>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- Success overlay -->
+  @if (showSuccessOverlay()) {
+    <div class="success-overlay">
+      <div class="success-card">
+        <button mat-icon-button class="success-close-x" (click)="onFecharSuccessOverlay()" aria-label="Fechar">
+          <mat-icon>close</mat-icon>
+        </button>
+        <div class="success-icon-circle">
+          <mat-icon class="success-check-icon">check</mat-icon>
+        </div>
+        <p class="success-message">{{ successMessageText() }}</p>
+        <div class="countdown-container">
+          <svg class="countdown-ring" viewBox="0 0 48 48">
+            <circle class="countdown-ring-bg" cx="24" cy="24" r="20" />
+            <circle
+              class="countdown-ring-progress"
+              cx="24"
+              cy="24"
+              r="20"
+              [style.stroke-dashoffset]="125.6 - (125.6 * countdownSeconds() / 3)"
+            />
+          </svg>
+          <span class="countdown-number">{{ countdownSeconds() }}</span>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (executing()) {
+    <mat-progress-bar mode="indeterminate" class="loading-bar"></mat-progress-bar>
+  }
+
+  <div class="disparar-actions">
+    <button mat-stroked-button type="button" class="voltar-btn" (click)="onVoltar()">Voltar</button>
+    <button
+      mat-raised-button
+      color="primary"
+      class="itau-btn"
+      [disabled]="executing() || sortedKeys().length === 0"
+      (click)="onExecutarTransacao()"
+    >
+      Disparar
+    </button>
+    <button mat-raised-button color="primary" class="itau-btn" (click)="onEditar()">Editar</button>
+    <button mat-raised-button color="warn" class="itau-btn-warn" (click)="onExcluir()">Excluir</button>
+  </div>
+</div>

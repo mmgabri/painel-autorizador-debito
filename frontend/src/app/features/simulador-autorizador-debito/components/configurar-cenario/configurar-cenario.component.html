@@ -1,0 +1,135 @@
+<div class="incluir-panel">
+  <div class="panel-header">
+    <h2>{{ cenario ? 'Editar cenário' : 'Criar cenário' }}</h2>
+  </div>
+
+  <form [formGroup]="incluirForm">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Nome Produto</mat-label>
+      <input matInput formControlName="nomeProduto" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Tag</mat-label>
+      <input matInput formControlName="tag" maxlength="60" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Bandeira</mat-label>
+      <mat-select formControlName="bandeira">
+        @for (opt of bandeiraOptions; track opt) {
+          <mat-option [value]="opt">{{ opt }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Message Model</mat-label>
+      <mat-select formControlName="messageModel">
+        @for (opt of messageModelOptions; track opt) {
+          <mat-option [value]="opt">{{ opt }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Tipo Mensagem</mat-label>
+      <mat-select formControlName="messageType">
+        @for (opt of messageTypeOptions; track opt) {
+          <mat-option [value]="opt">{{ opt }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Descrição</mat-label>
+      <input matInput formControlName="descricao" />
+    </mat-form-field>
+
+    <div class="iso-input-row">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="iso-input-field">
+        <mat-label>Mensagem ISO</mat-label>
+        <input matInput formControlName="isoMessage" placeholder="Ex: 30313030..." />
+      </mat-form-field>
+      <button
+        mat-raised-button
+        color="primary"
+        type="button"
+        class="carregar-btn itau-btn"
+        [disabled]="loading()"
+        (click)="onCarregarCampos()"
+      >
+        Carregar campos da ISO
+      </button>
+    </div>
+  </form>
+
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate" class="loading-bar"></mat-progress-bar>
+  }
+
+  <mat-card class="bits-card outlined-card">
+    <span class="card-legend">Campos ISO Request</span>
+    <mat-card-content>
+      <div class="incluir-campo-row">
+        <mat-form-field appearance="outline" class="select-bit-field">
+          <mat-label>Incluir campo</mat-label>
+          <mat-select (selectionChange)="onIncluirCampo($event.value)" [disabled]="isConciliacaoIncluir()">
+            @for (bit of availableBits(); track bit) {
+              <mat-option [value]="bit">{{ bit === 0 ? 'MTI' : 'Bit ' + (bit < 10 ? '0' + bit : bit) }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      @if (sortedKeys().length > 0) {
+        <form [formGroup]="bitsForm()" class="bits-vertical">
+          @for (key of sortedKeys(); track key) {
+            <div class="bit-field-row">
+              <mat-form-field appearance="outline" class="bit-field-input">
+                <mat-label>{{ key === '00' ? 'MTI' : 'Bit ' + key }}</mat-label>
+                <input matInput [formControlName]="key" />
+              </mat-form-field>
+              <button
+                mat-icon-button
+                color="warn"
+                type="button"
+                (click)="onRemoverCampo(key)"
+                class="remove-btn"
+                aria-label="Remover campo"
+                [disabled]="isConciliacaoIncluir()"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          }
+        </form>
+      }
+    </mat-card-content>
+  </mat-card>
+
+  <div class="save-actions">
+    <button
+      mat-raised-button
+      color="primary"
+      class="itau-btn"
+      [disabled]="saving() || sortedKeys().length === 0"
+      (click)="onSalvarTransacao()"
+    >
+      Salvar
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      class="itau-btn"
+      [disabled]="!savedSuccessfully()"
+      (click)="onDispararFromIncluir()"
+    >
+      Disparar
+    </button>
+  </div>
+
+  @if (saving()) {
+    <mat-progress-bar mode="indeterminate" class="loading-bar"></mat-progress-bar>
+  }
+</div>
