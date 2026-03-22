@@ -60,51 +60,118 @@
   }
 }
 
-.outlined-card {
-  position: relative;
-  overflow: visible;
+.campos-section {
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  overflow: hidden;
   margin-top: 16px;
-  padding-top: 24px;
-
-  .card-legend {
-    position: absolute;
-    top: -12px;
-    left: 12px;
-    padding: 0 6px;
-    font-size: 13px;
-    font-weight: 500;
-    line-height: 24px;
-    color: #003366;
-    background: var(--mat-sys-surface, #fff);
-  }
 }
 
-.incluir-campo-row {
-  margin-bottom: 8px;
-
-  .select-bit-field {
-    width: 250px;
-  }
-}
-
-.bit-field-row {
+.campos-header {
   display: flex;
-  align-items: flex-start;
-  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: #f5f5f5;
+  border-bottom: 1px solid #e0e0e0;
+  gap: 12px;
+}
 
-  .bit-field-input {
-    flex: 1;
+.campos-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 13px;
+  color: #003159;
+
+  .campos-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: #ec7000;
   }
 
-  .remove-btn {
-    margin-top: 8px;
+  .campos-count {
+    background: #ec7000;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 1px 7px;
+    border-radius: 10px;
+    line-height: 18px;
+    min-width: 20px;
+    text-align: center;
   }
 }
 
-.bits-vertical {
+.add-campo-field {
+  width: 200px;
+}
+
+.campos-list {
   display: flex;
   flex-direction: column;
-  gap: 0;
+  padding: 10px 12px;
+  gap: 10px;
+}
+
+.campo-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.campo-badge {
+  min-width: 44px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: #ec7000;
+  background: rgba(236, 112, 0, 0.08);
+  border: 1px solid rgba(236, 112, 0, 0.3);
+  border-radius: 6px;
+  padding: 3px 6px;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.campo-input {
+  flex: 1;
+}
+
+.campo-remove-btn {
+  color: #bbb !important;
+  transition: color 0.2s;
+  flex-shrink: 0;
+
+  &:hover:not([disabled]) {
+    color: #c62828 !important;
+  }
+
+  &[disabled] {
+    opacity: 0.35;
+  }
+}
+
+.campos-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 32px 16px;
+  color: rgba(0, 0, 0, 0.38);
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.5;
+
+  mat-icon {
+    font-size: 36px;
+    width: 36px;
+    height: 36px;
+    opacity: 0.5;
+  }
 }
 
 .save-actions {
