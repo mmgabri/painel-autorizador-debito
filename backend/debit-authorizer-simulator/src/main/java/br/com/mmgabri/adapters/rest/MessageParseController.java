@@ -25,14 +25,14 @@ public class MessageParseController {
 
 
     @PostMapping("/parse")
-    public ResponseEntity<MessageParseResponse> parse(@Valid @RequestBody MessageParseRequest request) throws Exception {
+    public ResponseEntity<MessageParseResponse> parse(@RequestBody MessageParseRequest request) throws Exception {
         var response = processMessage.parse(request);
         logger.info("Message parse successfully.");
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/build")
-    public ResponseEntity<MessageBuildResponse> build(@Valid @RequestBody MessageBuildRequest request) throws Exception {
+    public ResponseEntity<MessageBuildResponse> build(@RequestBody MessageBuildRequest request) throws Exception {
         var response = processMessage.build(request);
         logger.info("Message built successfully.");
         return ResponseEntity.ok(response);
