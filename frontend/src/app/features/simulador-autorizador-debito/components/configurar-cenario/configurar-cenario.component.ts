@@ -153,7 +153,10 @@ export class ConfigurarCenarioComponent implements OnInit {
     newGroup.addControl(key, new FormControl('', { nonNullable: true }));
 
     this.bitsForm.set(newGroup);
-    this.sortedKeys.set(this.moveMtiKeyFirst([...currentKeys, key]));
+    const allKeys = [...currentKeys, key];
+    const sorted = allKeys.filter(k => k !== '00').sort((a, b) => Number(a) - Number(b));
+    if (allKeys.includes('00')) sorted.unshift('00');
+    this.sortedKeys.set(sorted);
     this.updateAvailableBits();
   }
 
