@@ -35,35 +35,62 @@
   gap: 10px;
 }
 
-.toggle-group-field {
+.inline-row {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  gap: 10px;
+
+  .campo-tag {
+    width: 180px;
+    flex-shrink: 0;
+  }
+}
+
+.toggles-row {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-top: 8px;
+
+  .toggle-group-field {
+    flex: 1;
+  }
+}
+
+.toggle-group-field {
+  position: relative;
+  border: 1px solid #c0c0c0;
+  border-radius: 8px;
+  padding: 10px 10px 8px;
 }
 
 .toggle-label {
+  position: absolute;
+  top: -9px;
+  left: 10px;
+  padding: 0 4px;
   font-size: 11px;
   font-weight: 500;
-  color: #888;
-  letter-spacing: 0.3px;
-  text-transform: uppercase;
+  color: #666;
+  background: #fff;
+  letter-spacing: 0.2px;
 }
 
 .itau-toggle-group {
   &.mat-button-toggle-group {
     background: #efefef !important;
     border: none !important;
-    border-radius: 10px !important;
+    border-radius: 9px !important;
     box-shadow: none !important;
     padding: 3px !important;
-    height: 36px;
+    height: 32px;
     gap: 2px;
+    width: 100%;
   }
 
   .mat-button-toggle {
     border: none !important;
-    border-radius: 8px !important;
-    font-size: 12px;
+    border-radius: 7px !important;
+    font-size: 11px;
     font-weight: 500;
     color: #777;
     flex: 1;
@@ -71,9 +98,9 @@
     transition: color 0.2s;
 
     .mat-button-toggle-button {
-      height: 30px;
-      padding: 0 12px;
-      border-radius: 8px !important;
+      height: 26px;
+      padding: 0 10px;
+      border-radius: 7px !important;
     }
   }
 
@@ -141,15 +168,28 @@
 
 .iso-input-row {
   display: flex;
-  gap: 16px;
+  gap: 0;
   align-items: center;
 
   .iso-input-field {
     flex: 1;
+
+    input {
+      font-family: 'Courier New', Courier, monospace !important;
+      font-size: 12px !important;
+      letter-spacing: 0.5px;
+    }
+
+    .mdc-notched-outline__trailing {
+      border-radius: 0 !important;
+    }
   }
 
   .carregar-btn {
     white-space: nowrap;
+    border-radius: 0 8px 8px 0 !important;
+    height: 38px !important;
+    margin-left: -1px;
   }
 }
 
