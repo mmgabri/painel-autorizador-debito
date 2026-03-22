@@ -9,6 +9,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatDialog } from '@angular/material/dialog';
 import { switchMap, delay, of, tap, Observable } from 'rxjs';
 import { IsoParserService, TransacaoItem } from '../../services/iso-parser.service';
@@ -30,6 +31,7 @@ import { ConfirmarExclusaoDialogComponent } from '../buscar-cenarios/confirmar-e
     MatProgressBarModule,
     MatIconModule,
     MatCheckboxModule,
+    MatButtonToggleModule,
   ],
   templateUrl: './disparar-transacao.component.html',
   styleUrl: './disparar-transacao.component.scss',
@@ -51,6 +53,10 @@ export class DispararTransacaoComponent implements OnInit {
     if (!t) return true;
     return t.messageType !== 'CONCILIACAO';
   });
+
+  showConciliacaoBitLabel = computed(
+    () => this.transacao.paymentNetwork === 'MASTERCARD' && this.transacao.messageModel === 'DUAL_MESSAGE',
+  );
   mti = signal('');
   bitsForm = signal(new FormGroup<Record<string, FormControl<string>>>({}));
   sortedKeys = signal<string[]>([]);
@@ -114,6 +120,14 @@ export class DispararTransacaoComponent implements OnInit {
               fields[bit07Key] = this.generateBit07();
             } else {
               fields['07'] = this.generateBit07();
+            }
+          }
+          if (this.transacao.messageType === 'AUTORIZACAO') {
+            const bit11Key = this.findFieldKey(fields, 11);
+            if (bit11Key) {
+              fields[bit11Key] = this.generateBit11();
+            } else {
+              fields['11'] = this.generateBit11();
             }
           }
           this.buildBitsForm(fields, this.transacao.messageType === 'CONCILIACAO');
@@ -187,6 +201,43 @@ export class DispararTransacaoComponent implements OnInit {
     const bit07FormKey = this.findFormKey(form, 7);
     if (bit07FormKey) {
       form.controls[bit07FormKey].setValue(newBit07);
+    }
+
+    if (this.transacao.messageType === 'AUTORIZACAO') {
+      const bit11FormKey = this.findFormKey(form, 11);
+      if (bit11FormKey) {
+        const newBit11 = this.generateBit11();
+        form.controls[bit11FormKey].setValue(newBit11);
+
+        if (
+          this.transacao.paymentNetwork === 'MASTERCARD' &&
+          this.transacao.messageModel === 'SINGLE_MESSAGE' &&
+          this.conciliarChecked() &&
+          this.conciliacaoTransacao()
+        ) {
+          const conciliacaoForm = this.conciliacaoBitsForm();
+          if (conciliacaoForm.controls['traceNumber']) {
+            conciliacaoForm.controls['traceNumber'].setValue(newBit11);
+          }
+        }
+
+        if (
+          this.transacao.paymentNetwork === 'MASTERCARD' &&
+          this.transacao.messageModel === 'DUAL_MESSAGE' &&
+          this.conciliarChecked() &&
+          this.conciliacaoTransacao()
+        ) {
+          const conciliacaoForm = this.conciliacaoBitsForm();
+          const bit38Key = this.findFormKey(conciliacaoForm, 38);
+          if (bit38Key) {
+            const bit2Key = this.findFormKey(form, 2);
+            const bit2Val = bit2Key ? form.controls[bit2Key].value : '';
+            conciliacaoForm.controls[bit38Key].setValue(
+              this.computeBit38(this.mti(), bit2Val, newBit11, newBit07),
+            );
+          }
+        }
+      }
     }
 
     if (this.estornarChecked() && this.estornoTransacao()) {
@@ -425,14 +476,24 @@ export class DispararTransacaoComponent implements OnInit {
 
   private loadEstornoFields(estornoItem: TransacaoItem): void {
     this.estornoLoading.set(true);
-    const bit90Value = this.computeBit90();
-    this.estornoBit90.set(bit90Value);
 
     this.isoParserService
       .parseIso(estornoItem.message, estornoItem.messageModel, estornoItem.paymentNetwork, estornoItem.messageType)
       .pipe(
         switchMap((parsed) => {
-          const updatedFields = { ...parsed.fields, '90': bit90Value };
+          const originalBit90Key = this.findFieldKey(parsed.fields, 90);
+          const originalBit90 = originalBit90Key ? parsed.fields[originalBit90Key] : undefined;
+          const bit90Value = this.computeBit90(originalBit90);
+          this.estornoBit90.set(bit90Value);
+
+          const mainForm = this.bitsForm();
+          const bit02Key = this.findFormKey(mainForm, 2);
+          const bit04Key = this.findFormKey(mainForm, 4);
+
+          const updatedFields: Record<string, string> = { ...parsed.fields, '90': bit90Value };
+          if (bit02Key) updatedFields['02'] = mainForm.controls[bit02Key].value;
+          if (bit04Key) updatedFields['04'] = mainForm.controls[bit04Key].value;
+
           const estornoMti = parsed.mti || '0400';
           return this.isoParserService
             .buildIso(estornoMti, updatedFields, estornoItem.messageModel, estornoItem.paymentNetwork, estornoItem.messageType)
@@ -477,11 +538,49 @@ export class DispararTransacaoComponent implements OnInit {
           this.conciliacaoLoading.set(false);
           this.conciliacaoMti.set(parsed.mti || '');
           this.conciliacaoIsoMessage.set(item.message);
-          const keys = Object.keys(parsed.fields); // preserve order — CONCILIACAO always has named fields
+
+          const fields: Record<string, string> = { ...parsed.fields };
+
+          if (this.transacao.paymentNetwork === 'MASTERCARD' && this.transacao.messageModel === 'SINGLE_MESSAGE') {
+            const mainForm = this.bitsForm();
+            const getVal = (bit: number): string => {
+              const key = this.findFormKey(mainForm, bit);
+              return key ? mainForm.controls[key].value : '';
+            };
+
+            fields['pan'] = getVal(2);
+            fields['completedAmountTransaction'] = getVal(4);
+            fields['traceNumber'] = getVal(11);
+            fields['acquirerInstitutionId'] = '9' + getVal(32);
+            fields['processorId'] = '9' + getVal(33).slice(7);
+            const originalTerminalLen = (fields['terminalId'] ?? '').length;
+            const trimmedTerminal = getVal(41).trim().substring(0, 8);
+            fields['terminalId'] = trimmedTerminal.padEnd(Math.max(8, originalTerminalLen), ' ');
+            fields['switchSerialNumber'] = getVal(63).slice(3);
+          }
+
+          if (this.transacao.paymentNetwork === 'MASTERCARD' && this.transacao.messageModel === 'DUAL_MESSAGE') {
+            const mainForm = this.bitsForm();
+            const getVal = (bit: number): string => {
+              const key = this.findFormKey(mainForm, bit);
+              return key ? mainForm.controls[key].value : '';
+            };
+            const setField = (bit: number, value: string): void => {
+              const key = this.findFieldKey(fields, bit) ?? String(bit).padStart(2, '0');
+              fields[key] = value;
+            };
+
+            setField(2, getVal(2));
+            setField(4, getVal(4));
+            setField(63, getVal(63).slice(3, 12));
+            setField(38, this.computeBit38(this.mti(), getVal(2), getVal(11), getVal(7)));
+          }
+
+          const keys = Object.keys(fields); // preserve order — CONCILIACAO always has named fields
           this.conciliacaoSortedKeys.set(keys);
           const group: Record<string, FormControl<string>> = {};
           for (const key of keys) {
-            group[key] = new FormControl(parsed.fields[key], { nonNullable: true });
+            group[key] = new FormControl(fields[key], { nonNullable: true });
           }
           this.conciliacaoBitsForm.set(new FormGroup(group));
         },
@@ -565,23 +664,51 @@ export class DispararTransacaoComponent implements OnInit {
     this.bitsForm.set(new FormGroup(group));
   }
 
-  private computeBit90(): string {
+  private computeBit90(originalBit90?: string): string {
     const mainMti = this.mti() || '0000';
     const form = this.bitsForm();
     const bit11Key = this.findFormKey(form, 11) || '11';
     const bit07Key = this.findFormKey(form, 7) || '07';
     const bit11 = form.controls[bit11Key]?.value ?? '000000';
     const bit07 = form.controls[bit07Key]?.value ?? '0000000000';
-    return `${mainMti.padStart(4, '0').slice(-4)}${bit11.padStart(6, '0').slice(-6)}${bit07.padStart(10, '0').slice(-10)}`;
+    const suffix = (originalBit90 ?? '').slice(20).padEnd(22, '0');
+    return `${mainMti.padStart(4, '0').slice(-4)}${bit11.padStart(6, '0').slice(-6)}${bit07.padStart(10, '0').slice(-10)}${suffix}`;
   }
 
   private updateEstornoBit90WithNewBit07(_newBit07: string): void {
-    const newBit90 = this.computeBit90();
-    this.estornoBit90.set(newBit90);
     const estornoForm = this.estornoBitsForm();
+    const currentBit90Key = this.findFormKey(estornoForm, 90);
+    const currentBit90 = currentBit90Key ? estornoForm.controls[currentBit90Key].value : undefined;
+    const newBit90 = this.computeBit90(currentBit90);
+    this.estornoBit90.set(newBit90);
     if (estornoForm.controls['90']) {
       estornoForm.controls['90'].setValue(newBit90);
     }
+  }
+
+  private generateBit11(): string {
+    return String(Math.floor(Math.random() * 1000000)).padStart(6, '0');
+  }
+
+  private computeBit38(mti: string, bit2: string, bit11: string, bit7: string): string {
+    const digits = 6;
+    const modulus = 1_000_000;
+
+    if (!mti?.trim() || !bit2?.trim() || !bit11?.trim() || !bit7?.trim()) {
+      return String(Math.floor(Math.random() * modulus)).padStart(digits, '0');
+    }
+
+    const parts = [mti, '|', bit2, '|', bit11, '|', bit7];
+    let hash = 0x811c9dc5 | 0; // FNV_32_OFFSET_BASIS as signed 32-bit
+    for (const part of parts) {
+      for (let i = 0; i < part.length; i++) {
+        hash = (hash ^ part.charCodeAt(i)) | 0;
+        hash = Math.imul(hash, 0x01000193);
+      }
+    }
+
+    const number = ((hash % modulus) + modulus) % modulus;
+    return String(number).padStart(digits, '0');
   }
 
   private generateBit07(): string {

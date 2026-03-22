@@ -23,31 +23,48 @@
             <mat-label>Nome Produto</mat-label>
             <input matInput [value]="transacao.productName" readonly />
           </mat-form-field>
-          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
-            <mat-label>Bandeira</mat-label>
-            <input matInput [value]="transacao.paymentNetwork" readonly />
-          </mat-form-field>
-          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
-            <mat-label>Message Model</mat-label>
-            <input matInput [value]="transacao.messageModel" readonly />
-          </mat-form-field>
-          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
-            <mat-label>Tipo Mensagem</mat-label>
-            <input matInput [value]="transacao.messageType" readonly />
-          </mat-form-field>
-          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
-            <mat-label>Tag</mat-label>
-            <input matInput [value]="transacao.tag" readonly />
-          </mat-form-field>
-          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
-            <mat-label>Descrição</mat-label>
-            <input matInput [value]="transacao.description" readonly />
+
+          <div class="inline-row">
+            <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input campo-tag">
+              <mat-label>Tag</mat-label>
+              <input matInput [value]="transacao.tag" readonly />
+            </mat-form-field>
+            <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
+              <mat-label>Descrição</mat-label>
+              <input matInput [value]="transacao.description" readonly placeholder="—" />
+            </mat-form-field>
+          </div>
+
+          <div class="toggles-row">
+            <div class="toggle-group-field">
+              <span class="toggle-label">Bandeira</span>
+              <mat-button-toggle-group [value]="transacao.paymentNetwork" class="itau-toggle-group" disabled>
+                <mat-button-toggle value="MASTERCARD">MASTERCARD</mat-button-toggle>
+                <mat-button-toggle value="VISA">VISA</mat-button-toggle>
+              </mat-button-toggle-group>
+            </div>
+            <div class="toggle-group-field">
+              <span class="toggle-label">Message Model</span>
+              <mat-button-toggle-group [value]="transacao.messageModel" class="itau-toggle-group" disabled>
+                <mat-button-toggle value="SINGLE_MESSAGE">SINGLE_MESSAGE</mat-button-toggle>
+                <mat-button-toggle value="DUAL_MESSAGE">DUAL_MESSAGE</mat-button-toggle>
+              </mat-button-toggle-group>
+            </div>
+            <div class="toggle-group-field">
+              <span class="toggle-label">Tipo Mensagem</span>
+              <mat-button-toggle-group [value]="transacao.messageType" class="itau-toggle-group" disabled>
+                <mat-button-toggle value="AUTORIZACAO">AUTORIZACAO</mat-button-toggle>
+                <mat-button-toggle value="CONCILIACAO">CONCILIACAO</mat-button-toggle>
+              </mat-button-toggle-group>
+            </div>
+          </div>
+        </div>
+        <div class="iso-input-row iso-readonly">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input iso-input-field">
+            <mat-label>Mensagem Hex</mat-label>
+            <input matInput [value]="transacao.message" readonly />
           </mat-form-field>
         </div>
-        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
-          <mat-label>Mensagem Hex</mat-label>
-          <input matInput [value]="transacao.message" readonly />
-        </mat-form-field>
       </div>
     </div>
   }
@@ -219,7 +236,7 @@
             @for (key of conciliacaoSortedKeys(); track key) {
               <div class="campo-row">
                 <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
-                  <mat-label>{{ key }}</mat-label>
+                  <mat-label>{{ showConciliacaoBitLabel() ? 'Bit ' + key : key }}</mat-label>
                   <input matInput [formControlName]="key" (blur)="onConciliacaoFieldChanged()" />
                 </mat-form-field>
               </div>
