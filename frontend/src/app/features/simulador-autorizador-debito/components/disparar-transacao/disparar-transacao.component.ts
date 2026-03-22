@@ -202,7 +202,20 @@ export class DispararTransacaoComponent implements OnInit {
     if (this.transacao.messageType === 'AUTORIZACAO') {
       const bit11FormKey = this.findFormKey(form, 11);
       if (bit11FormKey) {
-        form.controls[bit11FormKey].setValue(this.generateBit11());
+        const newBit11 = this.generateBit11();
+        form.controls[bit11FormKey].setValue(newBit11);
+
+        if (
+          this.transacao.paymentNetwork === 'MASTERCARD' &&
+          this.transacao.messageModel === 'SINGLE_MESSAGE' &&
+          this.conciliarChecked() &&
+          this.conciliacaoTransacao()
+        ) {
+          const conciliacaoForm = this.conciliacaoBitsForm();
+          if (conciliacaoForm.controls['traceNumber']) {
+            conciliacaoForm.controls['traceNumber'].setValue(newBit11);
+          }
+        }
       }
     }
 
@@ -504,11 +517,32 @@ export class DispararTransacaoComponent implements OnInit {
           this.conciliacaoLoading.set(false);
           this.conciliacaoMti.set(parsed.mti || '');
           this.conciliacaoIsoMessage.set(item.message);
-          const keys = Object.keys(parsed.fields); // preserve order — CONCILIACAO always has named fields
+
+          const fields: Record<string, string> = { ...parsed.fields };
+
+          if (this.transacao.paymentNetwork === 'MASTERCARD' && this.transacao.messageModel === 'SINGLE_MESSAGE') {
+            const mainForm = this.bitsForm();
+            const getVal = (bit: number): string => {
+              const key = this.findFormKey(mainForm, bit);
+              return key ? mainForm.controls[key].value : '';
+            };
+
+            fields['pan'] = getVal(2);
+            fields['completedAmountTransaction'] = getVal(4);
+            fields['traceNumber'] = getVal(11);
+            fields['acquirerInstitutionId'] = '9' + getVal(32);
+            fields['processorId'] = '9' + getVal(33).slice(7);
+            const originalTerminalLen = (fields['terminalId'] ?? '').length;
+            const trimmedTerminal = getVal(41).trim().substring(0, 8);
+            fields['terminalId'] = trimmedTerminal.padEnd(Math.max(8, originalTerminalLen), ' ');
+            fields['switchSerialNumber'] = getVal(63).slice(3);
+          }
+
+          const keys = Object.keys(fields); // preserve order — CONCILIACAO always has named fields
           this.conciliacaoSortedKeys.set(keys);
           const group: Record<string, FormControl<string>> = {};
           for (const key of keys) {
-            group[key] = new FormControl(parsed.fields[key], { nonNullable: true });
+            group[key] = new FormControl(fields[key], { nonNullable: true });
           }
           this.conciliacaoBitsForm.set(new FormGroup(group));
         },
