@@ -2,8 +2,54 @@
   display: block;
 }
 
-h1 {
-  margin-bottom: 12px;
+.page-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 18px;
+  border-bottom: 2px solid #ec7000;
+}
+
+.page-hero-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.page-hero-icon {
+  width: 45px;
+  height: 45px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #ec7000 0%, #ff9800 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 3px 10px rgba(236, 112, 0, 0.35);
+
+  mat-icon {
+    color: #fff;
+    font-size: 21px;
+    width: 21px;
+    height: 21px;
+  }
+}
+
+.page-hero-title {
+  font-family: 'Plus Jakarta Sans', 'Segoe UI', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  color: #003159;
+  margin: 0 0 3px;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+}
+
+.page-hero-subtitle {
+  font-size: 12px;
+  color: #888;
+  line-height: 1.4;
 }
 
 .itau-tabs {
@@ -25,34 +71,42 @@ h1 {
   font-size: 13px;
   letter-spacing: 0.2px;
   padding: 10px 24px;
-  background: #fff;
-  color: #003366;
+  background: #f0f0f0;
+  color: #888;
   border: 1px solid #d0d0d0;
   border-bottom: 1px solid #d0d0d0;
   border-radius: 8px 8px 0 0;
   cursor: pointer;
-  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  transition: background 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
   margin-right: -1px;
   position: relative;
 
-  &:hover {
-    background: #f5f5f5;
+  &:hover:not(.active) {
+    background: #e8e8e8;
+    color: #555;
   }
 
   &.active {
     background: #fff;
-    color: #003366;
-    font-weight: 600;
+    color: #003159;
+    font-weight: 700;
+    border-color: #d0d0d0;
     border-bottom-color: #fff;
-    border-top: 2px solid #ec7000;
+    border-top: 3px solid #ec7000;
     z-index: 1;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06);
+
+    mat-icon {
+      color: #ec7000;
+    }
   }
 
   mat-icon {
     font-size: 18px;
     width: 18px;
     height: 18px;
-    color: #003366;
+    color: #aaa;
+    transition: color 0.2s;
   }
 }
 

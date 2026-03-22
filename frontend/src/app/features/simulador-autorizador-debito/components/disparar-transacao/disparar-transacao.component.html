@@ -1,76 +1,101 @@
 <div class="disparar-panel">
-  <div class="panel-header">
-    <h2>Disparar transação</h2>
+  <div class="page-header">
+    <div class="page-header-icon">
+      <mat-icon>send</mat-icon>
+    </div>
+    <div class="page-header-text">
+      <h1 class="page-title">Disparar transação</h1>
+      <span class="page-subtitle">Revise os campos e envie a transação para o autorizador</span>
+    </div>
   </div>
 
   @if (selectedTransacao(); as transacao) {
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Nome Produto</mat-label>
-      <input matInput [value]="transacao.productName" readonly />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Bandeira</mat-label>
-      <input matInput [value]="transacao.paymentNetwork" readonly />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Message Model</mat-label>
-      <input matInput [value]="transacao.messageModel" readonly />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Tipo Mensagem</mat-label>
-      <input matInput [value]="transacao.messageType" readonly />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Tag</mat-label>
-      <input matInput [value]="transacao.tag" readonly />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Descrição</mat-label>
-      <input matInput [value]="transacao.description" readonly />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Mensagem ISO</mat-label>
-      <input matInput [value]="transacao.message" readonly />
-    </mat-form-field>
+    <div class="campos-section">
+      <div class="campos-header">
+        <div class="campos-title">
+          <mat-icon class="campos-icon">receipt_long</mat-icon>
+          <span>Dados do Cenário</span>
+        </div>
+      </div>
+      <div class="campos-list">
+        <div class="cenario-grid">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
+            <mat-label>Nome Produto</mat-label>
+            <input matInput [value]="transacao.productName" readonly />
+          </mat-form-field>
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
+            <mat-label>Bandeira</mat-label>
+            <input matInput [value]="transacao.paymentNetwork" readonly />
+          </mat-form-field>
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
+            <mat-label>Message Model</mat-label>
+            <input matInput [value]="transacao.messageModel" readonly />
+          </mat-form-field>
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
+            <mat-label>Tipo Mensagem</mat-label>
+            <input matInput [value]="transacao.messageType" readonly />
+          </mat-form-field>
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
+            <mat-label>Tag</mat-label>
+            <input matInput [value]="transacao.tag" readonly />
+          </mat-form-field>
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
+            <mat-label>Descrição</mat-label>
+            <input matInput [value]="transacao.description" readonly />
+          </mat-form-field>
+        </div>
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
+          <mat-label>Mensagem Hex</mat-label>
+          <input matInput [value]="transacao.message" readonly />
+        </mat-form-field>
+      </div>
+    </div>
   }
 
   @if (loading()) {
     <mat-progress-bar mode="indeterminate" class="loading-bar"></mat-progress-bar>
   }
 
-  <div class="cards-row">
-    <mat-card class="bits-card outlined-card flex-card">
-      <span class="card-legend">Campos ISO Request</span>
-      <mat-card-content>
-        @if (mti()) {
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>MTI</mat-label>
-            <input matInput [value]="mti()" readonly />
-          </mat-form-field>
+  <div class="campos-section">
+    <div class="campos-header">
+      <div class="campos-title">
+        <mat-icon class="campos-icon">data_object</mat-icon>
+        <span>Campos ISO Request</span>
+        @if (sortedKeys().length > 0 || mti()) {
+          <span class="campos-count">{{ sortedKeys().length + (mti() ? 1 : 0) }}</span>
         }
+      </div>
+    </div>
 
+    @if (!loading() && sortedKeys().length === 0 && !mti()) {
+      <div class="campos-empty">
+        <mat-icon>inbox</mat-icon>
+        <span>Nenhum campo carregado</span>
+      </div>
+    } @else {
+      <div class="campos-list">
+        @if (mti()) {
+          <div class="campo-row">
+            <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
+              <mat-label>MTI</mat-label>
+              <input matInput [value]="mti()" readonly />
+            </mat-form-field>
+          </div>
+        }
         @if (sortedKeys().length > 0) {
-          <form [formGroup]="bitsForm()" class="bits-vertical">
+          <form [formGroup]="bitsForm()" class="campo-rows">
             @for (key of sortedKeys(); track key) {
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>{{ showBitLabel() ? 'Bit ' + key : key }}</mat-label>
-                <input matInput [formControlName]="key" (blur)="onFieldChanged()" />
-              </mat-form-field>
+              <div class="campo-row">
+                <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
+                  <mat-label>{{ showBitLabel() ? 'Bit ' + key : key }}</mat-label>
+                  <input matInput [formControlName]="key" (blur)="onFieldChanged()" />
+                </mat-form-field>
+              </div>
             }
           </form>
-        } @else {
-          @if (!loading()) {
-            <p class="empty-text">Nenhum campo carregado</p>
-          }
         }
-      </mat-card-content>
-    </mat-card>
+      </div>
+    }
   </div>
 
   @if (selectedTransacao()) {
@@ -96,7 +121,7 @@
 
   @if (estornarChecked() && estornoTransacao(); as estorno) {
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Mensagem ISO de Estorno</mat-label>
+      <mat-label>Mensagem Hex de Estorno</mat-label>
       <input matInput [value]="estornoIsoMessage() || estorno.message" readonly />
     </mat-form-field>
 
@@ -105,25 +130,35 @@
     }
 
     @if (estornoSortedKeys().length > 0) {
-      <mat-card class="bits-card outlined-card estorno-fields-card">
-        <span class="card-legend">Campos ISO Estorno</span>
-        <mat-card-content>
+      <div class="campos-section campos-section-sub">
+        <div class="campos-header">
+          <div class="campos-title">
+            <mat-icon class="campos-icon">swap_horiz</mat-icon>
+            <span>Campos ISO Estorno</span>
+            <span class="campos-count">{{ estornoSortedKeys().length + (estornoMti() ? 1 : 0) }}</span>
+          </div>
+        </div>
+        <div class="campos-list">
           @if (estornoMti()) {
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>MTI</mat-label>
-              <input matInput [value]="estornoMti()" readonly />
-            </mat-form-field>
-          }
-          <form [formGroup]="estornoBitsForm()" class="bits-vertical">
-            @for (key of estornoSortedKeys(); track key) {
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>{{ showBitLabel() ? 'Bit ' + key : key }}</mat-label>
-                <input matInput [formControlName]="key" (blur)="onEstornoFieldChanged()" />
+            <div class="campo-row">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
+                <mat-label>MTI</mat-label>
+                <input matInput [value]="estornoMti()" readonly />
               </mat-form-field>
+            </div>
+          }
+          <form [formGroup]="estornoBitsForm()" class="campo-rows">
+            @for (key of estornoSortedKeys(); track key) {
+              <div class="campo-row">
+                <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
+                  <mat-label>{{ showBitLabel() ? 'Bit ' + key : key }}</mat-label>
+                  <input matInput [formControlName]="key" (blur)="onEstornoFieldChanged()" />
+                </mat-form-field>
+              </div>
             }
           </form>
-        </mat-card-content>
-      </mat-card>
+        </div>
+      </div>
     }
   }
 
@@ -154,7 +189,7 @@
 
   @if (conciliarChecked() && conciliacaoTransacao(); as conciliacao) {
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Mensagem hex de Conciliação</mat-label>
+      <mat-label>Mensagem Hex de Conciliação</mat-label>
       <input matInput [value]="conciliacaoIsoMessage() || conciliacao.message" readonly />
     </mat-form-field>
 
@@ -163,25 +198,35 @@
     }
 
     @if (conciliacaoSortedKeys().length > 0) {
-      <mat-card class="bits-card outlined-card conciliacao-fields-card">
-        <span class="card-legend">Campos Conciliação</span>
-        <mat-card-content>
+      <div class="campos-section campos-section-sub">
+        <div class="campos-header">
+          <div class="campos-title">
+            <mat-icon class="campos-icon">compare_arrows</mat-icon>
+            <span>Campos Conciliação</span>
+            <span class="campos-count">{{ conciliacaoSortedKeys().length + (conciliacaoMti() ? 1 : 0) }}</span>
+          </div>
+        </div>
+        <div class="campos-list">
           @if (conciliacaoMti()) {
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>MTI</mat-label>
-              <input matInput [value]="conciliacaoMti()" readonly />
-            </mat-form-field>
-          }
-          <form [formGroup]="conciliacaoBitsForm()" class="bits-vertical">
-            @for (key of conciliacaoSortedKeys(); track key) {
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>{{ key }}</mat-label>
-                <input matInput [formControlName]="key" (blur)="onConciliacaoFieldChanged()" />
+            <div class="campo-row">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
+                <mat-label>MTI</mat-label>
+                <input matInput [value]="conciliacaoMti()" readonly />
               </mat-form-field>
+            </div>
+          }
+          <form [formGroup]="conciliacaoBitsForm()" class="campo-rows">
+            @for (key of conciliacaoSortedKeys(); track key) {
+              <div class="campo-row">
+                <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
+                  <mat-label>{{ key }}</mat-label>
+                  <input matInput [formControlName]="key" (blur)="onConciliacaoFieldChanged()" />
+                </mat-form-field>
+              </div>
             }
           </form>
-        </mat-card-content>
-      </mat-card>
+        </div>
+      </div>
     }
   }
 
@@ -260,6 +305,6 @@
       Disparar
     </button>
     <button mat-raised-button color="primary" class="itau-btn" (click)="onEditar()">Editar</button>
-    <button mat-raised-button color="warn" class="itau-btn-warn" (click)="onExcluir()">Excluir</button>
+    <button mat-raised-button color="primary" class="itau-btn" (click)="onExcluir()">Excluir</button>
   </div>
 </div>

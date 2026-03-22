@@ -14,6 +14,7 @@ import { switchMap, delay, of, tap, Observable } from 'rxjs';
 import { IsoParserService, TransacaoItem } from '../../services/iso-parser.service';
 import { BuscarEstornoDialogComponent, BuscarDialogFiltro } from '../buscar-estorno-dialog.component';
 import { BuscarConciliacaoDialogComponent } from '../buscar-conciliacao-dialog.component';
+import { ConfirmarExclusaoDialogComponent } from '../buscar-cenarios/confirmar-exclusao-dialog.component';
 
 @Component({
   selector: 'app-disparar-transacao',
@@ -316,14 +317,22 @@ export class DispararTransacaoComponent implements OnInit {
     const transacao = this.selectedTransacao();
     if (!transacao) return;
 
-    this.isoParserService.excluirTransacao(transacao.id).subscribe({
-      next: (result) => {
-        this.notif.success(result?.message ?? 'Cenário excluído com sucesso');
-        this.excluiu.emit();
-      },
-      error: () => {
-        this.notif.error('Erro ao excluir transação');
-      },
+    const ref = this.dialog.open(ConfirmarExclusaoDialogComponent, {
+      width: '360px',
+      panelClass: 'itau-dialog-panel',
+    });
+
+    ref.afterClosed().subscribe((confirmado: boolean) => {
+      if (!confirmado) return;
+      this.isoParserService.excluirTransacao(transacao.id).subscribe({
+        next: (result) => {
+          this.notif.success(result?.message ?? 'Cenário excluído com sucesso');
+          this.excluiu.emit();
+        },
+        error: () => {
+          this.notif.error('Erro ao excluir transação');
+        },
+      });
     });
   }
 

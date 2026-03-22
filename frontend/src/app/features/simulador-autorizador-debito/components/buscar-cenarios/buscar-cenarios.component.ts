@@ -7,8 +7,10 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatDialog } from '@angular/material/dialog';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { IsoParserService, TransacaoItem } from '../../services/iso-parser.service';
+import { ConfirmarExclusaoDialogComponent } from './confirmar-exclusao-dialog.component';
 
 @Component({
   selector: 'app-buscar-cenarios',
@@ -30,6 +32,7 @@ import { IsoParserService, TransacaoItem } from '../../services/iso-parser.servi
 export class BuscarCenariosComponent implements OnInit {
   private readonly isoParserService = inject(IsoParserService);
   private readonly notif = inject(NotificationService);
+  private readonly dialog = inject(MatDialog);
 
   readonly selecionou = output<TransacaoItem>();
   readonly editou = output<TransacaoItem>();
@@ -59,14 +62,22 @@ export class BuscarCenariosComponent implements OnInit {
   }
 
   onExcluir(item: TransacaoItem): void {
-    this.isoParserService.excluirTransacao(item.id).subscribe({
-      next: (result) => {
-        this.notif.success(result?.message ?? 'Cenário excluído com sucesso');
-        this.transacoes.set(this.transacoes().filter((t) => t.id !== item.id));
-      },
-      error: () => {
-        this.notif.error('Erro ao excluir cenário');
-      },
+    const ref = this.dialog.open(ConfirmarExclusaoDialogComponent, {
+      width: '360px',
+      panelClass: 'itau-dialog-panel',
+    });
+
+    ref.afterClosed().subscribe((confirmado: boolean) => {
+      if (!confirmado) return;
+      this.isoParserService.excluirTransacao(item.id).subscribe({
+        next: (result) => {
+          this.notif.success(result?.message ?? 'Cenário excluído com sucesso');
+          this.transacoes.set(this.transacoes().filter((t) => t.id !== item.id));
+        },
+        error: () => {
+          this.notif.error('Erro ao excluir cenário');
+        },
+      });
     });
   }
 
