@@ -19,14 +19,6 @@ public class TestScenarioCsvAdapterImpl implements TestScenarioCsvAdapter {
 
     private final Path csvPath;
 
-    //Aponta para o arquivo csv em painel-autorizador-debito\local
-//    public TestScenarioCsvAdapterImpl(
-//            @Value("${app.csv.cenarios-file:../../local/simulador_cenarios_testes.csv}") String csvFile) {
-//        this.csvPath = Paths.get(csvFile);
-//        ensureFileExists();
-//    }
-
-     //Aponta para o arquivo csv em resources
     public TestScenarioCsvAdapterImpl(
             @Value("${app.csv.cenarios-file:src/main/resources/cenarios_testes.csv}") String csvFile) {
         this.csvPath = Paths.get(csvFile);

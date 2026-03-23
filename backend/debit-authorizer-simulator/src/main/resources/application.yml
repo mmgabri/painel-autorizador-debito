@@ -1,11 +1,41 @@
 spring:
   threads:
     virtual:
-      enabled=true:
+      enabled: true
 
 server:
-  port: 8080
+  port: 8081
 
 logging:
   level:
     br.com.mmgabri: info
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+server:
+  port: 8081
+
+logging:
+  level:
+    br.com.mmgabri: debug
+    org.springframework.web: debug
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: hom
+
+server:
+  port: 8081
+
+logging:
+  level:
+    br.com.mmgabri: info
+    org.springframework.web: warn
