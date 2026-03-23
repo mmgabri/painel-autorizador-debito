@@ -1,0 +1,423 @@
+opencollection: 1.0.0
+info:
+  name: painel-débito
+config:
+  proxy:
+    inherit: true
+    config:
+      protocol: http
+      hostname: ''
+      port: ''
+      auth:
+        username: ''
+        password: ''
+      bypassProxy: ''
+items:
+  - info:
+      name: cenarios/executar
+      type: http
+      seq: 8
+    http:
+      method: POST
+      url: http://localhost:8080/api/simulador/cenarios/executar
+      body:
+        type: json
+        data: |-
+          {
+            "messageModel": "SINGLE_MESSAGE",
+            "paymentNetwork": "MASTERCARD",
+            "messageType": "AUTORIZACAO",
+            "message": "F0F1F0F0F820000008C040000000000000080000F1F6F1F2F3F4F5F6F7F8F9F0F1F2F3F4F5F6F0F0F0F0F0F0F0F0F0F0F0F0F0F0F1F0F0F0F0F0F0F0F0F0F0F0F2F0F0F0F1F2F3F4F5F6E3C5D9D4F0F0F0F1F0F0F0F1E3C5D9D4F0F0F0F1D4C5D9C3C8C1D5E3F0F0F0F0F0F0F1F9F8F6F0F2F1A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7"
+          }
+      auth: inherit
+    settings:
+      encodeUrl: true
+      timeout: 0
+      followRedirects: true
+      maxRedirects: 5
+  - info:
+      name: cenarios/findAll
+      type: http
+      seq: 9
+    http:
+      method: GET
+      url: http://localhost:8080/api/simulador/cenarios
+      auth: inherit
+    settings:
+      encodeUrl: true
+      timeout: 0
+      followRedirects: true
+      maxRedirects: 5
+  - info:
+      name: cenarios/findByproductName
+      type: http
+      seq: 10
+    http:
+      method: GET
+      url: http://localhost:8080/api/simulador/cenarios?productName=ESTORNO
+      params:
+        - name: productName
+          value: ESTORNO
+          type: query
+      auth: inherit
+    settings:
+      encodeUrl: true
+      timeout: 0
+      followRedirects: true
+      maxRedirects: 5
+  - info:
+      name: cenarios/save
+      type: http
+      seq: 7
+    http:
+      method: POST
+      url: http://localhost:8080/api/simulador/cenarios/salvar
+      body:
+        type: json
+        data: |-
+          {
+            "productName": "bbbbb",
+            "tag": "marcelo",
+            "description": "teste",
+            "mensagemIso": "bbbbbbbbbbbbbbbbb",  
+            "messageModel": "SINGLE_MESSAGE",
+            "paymentNetwork": "MASTERCARD",
+            "messageType": "AUTORIZACAO",
+            "message": "F0F1F0F0F820000008C040000000000000080000F1F6F1F2F3F4F5F6F7F8F9F0F1F2F3F4F5F6F0F0F0F0F0F0F0F0F0F0F0F0F0F0F1F0F0F0F0F0F0F0F0F0F0F0F2F0F0F0F1F2F3F4F5F6E3C5D9D4F0F0F0F1F0F0F0F1E3C5D9D4F0F0F0F1D4C5D9C3C8C1D5E3F0F0F0F0F0F0F1F9F8F6F0F2F1A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7"
+          }
+      auth: inherit
+    settings:
+      encodeUrl: true
+      timeout: 0
+      followRedirects: true
+      maxRedirects: 5
+  - info:
+      name: ebcdic/to-hex
+      type: http
+      seq: 11
+    http:
+      method: POST
+      url: http://localhost:8080/api/simulador/ebcdic/to-hex
+      body:
+        type: json
+        data: |-
+          {
+            "text":"02001234567890003000000000001234986FAKE_MERCHANT_STORE1SAO_PAULO_CAPITAL_BRZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ"
+          }
+      auth: inherit
+    settings:
+      encodeUrl: true
+      timeout: 0
+      followRedirects: true
+      maxRedirects: 5
+  - info:
+      name: ebcdic/to-text
+      type: http
+      seq: 12
+    http:
+      method: POST
+      url: http://localhost:8080/api/simulador/ebcdic/to-text
+      body:
+        type: json
+        data: |2-
+            {
+              "hexEbcdic":"9F0306000000000000009F1A0200769F3602004982023900840AA0000000041010D07612950500000480009A032603209C01005F2A0209869F3704D8699B949F10120710A040032200000000000000000000FF9F2608763D97D5302436789F2701809F34034203009F02060000000250009F3303E0F0E8"
+          }
+      auth: inherit
+    settings:
+      encodeUrl: true
+      timeout: 0
+      followRedirects: true
+      maxRedirects: 5
+  - info:
+      name: iso/build - Clearing
+      type: http
+      seq: 4
+    http:
+      method: POST
+      url: http://localhost:8080/api/simulador/message/build
+      body:
+        type: json
+        data: |-
+          {
+            "messageModel": "DUAL_MESSAGE",
+            "paymentNetwork": "MASTERCARD",
+            "messageType": "CONCILIACAO",
+            "mti": "1240",
+            "fields": {
+              "2": "5320010007044630",
+              "3": "002000",
+              "4": "000000025000",
+              "5": "000000025000",
+              "6": "000000025000",
+              "9": "61000000",
+              "10": "61000000",
+              "12": "260320162103",
+              "22": "M10901C19001",
+              "23": "000",
+              "24": "200",
+              "26": "8661",
+              "31": "22711626080035108251625",
+              "33": "030829",
+              "38": "837907",
+              "41": "20448778",
+              "42": "110004310013   ",
+              "43": "PAROQUIA SANTANA\\AV TRINTA\\RIO CLARO\\13500270  SP BRA",
+              "48": "0002003MDS0003003MDS001500726032010023003POI01460360029019860000000003098600000030014800498620158031DMC4076000IA260321040DMCNNNNNNNN01590673168       000000003168               3LA00098620N26032104260323010165030M                                  0177002N 01910012",
+              "49": "986",
+              "50": "986",
+              "51": "986",
+              "55": "9F0306000000000000009F1A0200769F3602004982023900840AA0000000041010D07612950500000480009A032603209C01005F2A0209869F3704D8699B949F10120710A040032200000000000000000000FF9F2608763D97D5302436789F2701809F34034203009F02060000000250009F3303E0F0E8",
+              "63": " MDSLZKDT70320  ",
+              "71": "00450861",
+              "93": "003168",
+              "94": "030829",
+              "100": "003168"
+            }
+          }
+      auth: inherit
+    settings:
+      encodeUrl: true
+      timeout: 0
+      followRedirects: true
+      maxRedirects: 5
+  - info:
+      name: iso/build - Visa
+      type: http
+      seq: 3
+    http:
+      method: POST
+      url: http://localhost:8080/api/simulador/message/build
+      body:
+        type: json
+        data: |-
+          {
+            "messageModel": "DUAL_MESSAGE",
+            "paymentNetwork": "VISA",
+            "messageType": "AUTORIZACAO",
+            "mti": "0100",
+            "fields": {
+              "2": "4824810061722706",
+              "3": "002000",
+              "4": "000000006400",
+              "6": "000000001223",
+              "7": "0321133832",
+              "10": "71910938",
+              "11": "500070",
+              "14": "3204",
+              "18": "5533",
+              "19": "076",
+              "22": "0510",
+              "23": "000",
+              "25": "00",
+              "32": "489409",
+              "35": "4824810061722707432042200900087500027",
+              "37": "608013500070",
+              "41": "PV102853",
+              "42": "079652743      ",
+              "43": "GEEFPEL                  SALVADOR     BR",
+              "44": "    1    ",
+              "49": "986",
+              "51": "840",
+              "52": "D6E6CA3D24628373",
+              "53": "2001010100000000",
+              "55": "01004D9F3303E0F0C8950500800480009F370455966AD59F100706071203A020239F2608F2A1CE985A8CF9899F36020210820238009C01009F1A0200769A032603219F02060000000064005F2A020986",
+              "59": "0000040300161",
+              "60": "05000013",
+              "62": "C0000C0000000000C50586080491136479F0F5F0F0F0F0F0F0F0F0",
+              "63": "8000000002",
+              "104": "57000483026085"
+            }
+          }
+      auth: inherit
+    settings:
+      encodeUrl: true
+      timeout: 0
+      followRedirects: true
+      maxRedirects: 5
+  - info:
+      name: message/parse - iso - Clearing
+      type: http
+      seq: 6
+    http:
+      method: POST
+      url: http://localhost:8080/api/simulador/message/parse
+      body:
+        type: json
+        data: |-
+          {
+             "messageModel": "DUAL_MESSAGE",
+            "paymentNetwork": "MASTERCARD",
+            "messageType": "CONCILIACAO",
+            "message":"F1F2F4F0FCD0074284E1E2020200000C10000000F1F6F5F3F2F0F0F1F0F0F0F7F0F4F4F6F3F0F0F0F2F0F0F0F0F0F0F0F0F0F0F2F5F0F0F0F0F0F0F0F0F0F0F2F5F0F0F0F0F0F0F0F0F0F0F2F5F0F0F0F6F1F0F0F0F0F0F0F6F1F0F0F0F0F0F0F2F6F0F3F2F0F1F6F2F1F0F3D4F1F0F9F0F1C3F1F9F0F0F1F0F0F0F2F0F0F8F6F6F1F2F3F2F2F7F1F1F6F2F6F0F8F0F0F3F5F1F0F8F2F5F1F6F2F5F0F6F0F3F0F8F2F9F8F3F7F9F0F7F2F0F4F4F8F7F7F8F1F1F0F0F0F4F3F1F0F0F1F3404040F5F3D7C1D9D6D8E4C9C140E2C1D5E3C1D5C1E0C1E540E3D9C9D5E3C1E0D9C9D640C3D3C1D9D6E0F1F3F5F0F0F2F7F04040E2D740C2D9C1F2F6F4F0F0F0F2F0F0F3D4C4E2F0F0F0F3F0F0F3D4C4E2F0F0F1F5F0F0F7F2F6F0F3F2F0F1F0F0F2F3F0F0F3D7D6C9F0F1F4F6F0F3F6F0F0F2F9F0F1F9F8F6F0F0F0F0F0F0F0F0F0F3F0F9F8F6F0F0F0F0F0F0F3F0F0F1F4F8F0F0F4F9F8F6F2F0F1F5F8F0F3F1C4D4C3F4F0F7F6F0F0F0C9C1F2F6F0F3F2F1F0F4F0C4D4C3D5D5D5D5D5D5D5D5F0F1F5F9F0F6F7F3F1F6F840404040404040F0F0F0F0F0F0F0F0F3F1F6F8404040404040404040404040404040F3D3C1F0F0F0F9F8F6F2F0D5F2F6F0F3F2F1F0F4F2F6F0F3F2F3F0F1F0F1F6F5F0F3F0D440404040404040404040404040404040404040404040404040404040404040404040F0F1F7F7F0F0F2D540F0F1F9F1F0F0F1F2F9F8F6F9F8F6F9F8F6F1F1F99F0306000000000000009F1A0200769F3602004982023900840AA0000000041010D07612950500000480009A032603209C01005F2A0209869F3704D8699B949F10120710A040032200000000000000000000FF9F2608763D97D5302436789F2701809F34034203009F02060000000250009F3303E0F0E8F0F1F640D4C4E2D3E9D2C4E3F7F0F3F2F04040F0F0F4F5F0F8F6F1F0F6F0F0F3F1F6F8F0F6F0F3F0F8F2F9F0F6F0F0F3F1F6F8"
+          }
+      auth: inherit
+    settings:
+      encodeUrl: true
+      timeout: 0
+      followRedirects: true
+      maxRedirects: 5
+  - info:
+      name: message/parse - iso - Visa
+      type: http
+      seq: 5
+    http:
+      method: POST
+      url: http://localhost:8080/api/simulador/message/parse
+      body:
+        type: json
+        data: |-
+          {
+             "messageModel": "DUAL_MESSAGE",
+            "paymentNetwork": "VISA",
+            "messageType": "AUTORIZACAO",
+            "message":"0100F664668128F0BA3600000000010000001048248100617227060020000000000064000000000012230321133832719109385000703204553300760510000000064894092504824810061722707432042200900087500027F6F0F8F0F1F3F5F0F0F0F7F0D7E5F1F0F2F8F5F3F0F7F9F6F5F2F7F4F3404040404040C7C5C5C6D7C5D3404040404040404040404040404040404040E2C1D3E5C1C4D6D94040404040C2D90940404040F14040404009860840D6E6CA3D2462837320010101000000005001004D9F3303E0F0C8950500800480009F370455966AD59F100706071203A020239F2608F2A1CE985A8CF9899F36020210820238009C01009F1A0200769A032603219F02060000000064005F2A0209860DF0F0F0F0F0F4F0F3F0F0F1F6F104050000131BC0000C0000000000C50586080491136479F0F5F0F0F0F0F0F0F0F00580000000020757000483026085"
+          }
+      auth: inherit
+    settings:
+      encodeUrl: true
+      timeout: 0
+      followRedirects: true
+      maxRedirects: 5
+  - info:
+      name: message/parse - positional
+      type: http
+      seq: 1
+    http:
+      method: POST
+      url: http://localhost:8080/api/simulador/message/parse
+      body:
+        type: json
+        data: |-
+          {
+            "messageModel": "SINGLE_MESSAGE",
+            "paymentNetwork": "MASTERCARD",
+            "messageType": "CONCILIACAO",
+            "message":"C6D9C5C3F2F4F1F9F8F6F8F4F0C9F0F3F0F1F0F3F1F9F2F6F2F0F1F3F0F0F1F6F5F2F3F4F3F1F1F4F0F5F1F4F6F7F8F6404040F0F0F0F0F0F0F4F9F2F7F2F2F5F5F4F2F0F7F1F6F0F7F8F0F4F0F1F2F7F2F2F1F1F2F1F0F0F0F2F4F8F1F0F0F4F0F1F0F14040F0F0D4E2F1F2F5F1F0F2F1F040404040D4D7F7F0F7F6F8F4F0F2F0F0F0F0F0F0F0F0F8F9F9F9C4F0F0F0F0F0F0F0F0F0F0F0F0C4F0F0F0F0F0F0F0F0C4F8F4F0F2F1F1F0F0F0F0F0F0F0F0F0F0F0F0F0F0F8F9F9F9C4F0F0F0F0F0F0F0F0F5F8C3404040404040404040404040404040F4D5E8E840F0F0F0F0F0F0F0F1F2F5F0F0404040404040404040404040F2F8F6F8F4F040C6D7E2E3F2F4F1F9F8F6F8F4F0F0F0F0F0F0F1F4F0F0F1F3F1F7F0F0F0F6F2F8F2F7F1F9F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0404040404040404040F1F9F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0404040404040404040E2C6D440F1F8F5404040404040404040404040404040D6D9D3C1D5C4D6404040404040404040E4E2C1D5D5F0F0F0F0F0F0F0F0F0F1F0F0F4F0F1F0F0F0F0F0F0F0F4F7F8F0F4F9F8F6C4F2404040F0F0F0F3F0F140404040404040404040404040404040404040404040404040404040404040404040404040F0F1F0F0F0F0F0F0F0F0F0404040404040404040404040404040404040404040404040"  
+          }
+      auth: inherit
+    settings:
+      encodeUrl: true
+      timeout: 0
+      followRedirects: true
+      maxRedirects: 5
+  - info:
+      name: iso/build - poicional
+      type: http
+      seq: 1
+    http:
+      method: POST
+      url: http://localhost:8080/api/simulador/message/build
+      body:
+        type: json
+        data: |-
+          {
+            "messageModel": "SINGLE_MESSAGE",
+            "paymentNetwork": "MASTERCARD",
+            "messageType": "CONCILIACAO",
+            "mti": "FREC",
+            "fields": {
+              "messageTypeIndicator": "FREC",
+              "switchSerialNumber": "241986840",
+              "processAcquirerOrIssuer": "I",
+              "processorId": "0301",
+              "transactionDate": "031926",
+              "transactionTime": "201300",
+              "panLength": "16",
+              "pan": "5234311405146786",
+              "panFiller": "",
+              "processingCode": "000000",
+              "traceNumber": "492722",
+              "merchantType": "5542",
+              "posEntry": "071",
+              "referenceNumber": "607804012722",
+              "acquirerInstitutionId": "1121000248",
+              "terminalId": "10040101  ",
+              "responseCode": "00",
+              "brand": "MS1",
+              "adviceReasonCode": "2510210",
+              "intraCurrencyAgreementCode": "",
+              "authorizationId": "MP7076",
+              "currencyCodeTransaction": "840",
+              "impliedDecimalTransaction": "2",
+              "completedAmountTransaction": "000000008999",
+              "completedAmountTransactionIndicator": "D",
+              "cashBackAmount": "000000000000",
+              "cashBackAmountIndicator": "D",
+              "accessFee": "00000000",
+              "accessFeeIndicator": "D",
+              "currencyCodeSettlement": "840",
+              "impliedDecimalSettlement": "2",
+              "conversionRateSettlement": "11000000",
+              "completedAmtSettlement": "000000008999",
+              "completedAmtSettlementIndicator": "D",
+              "interchangeFee": "0000000058",
+              "interchangeFeeIndicator": "C",
+              "serviceLevelIndicator": "",
+              "responseCode2": "",
+              "fillerBlock1": "4NYY 000000012500            286840 ",
+              "messageTypeIndicatorBlock2": "FPST",
+              "switchSerialNumberBlock2": "241986840",
+              "posData": "00000140013",
+              "cardIssuerInstitution": "1700062827",
+              "account1Length": "19",
+              "account1From": "0000000000000000000",
+              "filler": "",
+              "account2Length": "19",
+              "account2To": "0000000000000000000",
+              "filler2": "",
+              "cardAcceptorNameAddress": "SFM 185               ",
+              "cardAcceptorCity": "ORLANDO         ",
+              "cardAcceptorStateCountryCode": "USA",
+              "standInTransaction": "N",
+              "debitMastercardOffline": "N",
+              "merchantId": "000000000100401",
+              "amountCardholderBilling": "000000047804",
+              "currencyCodeCardholderBilling": "986",
+              "amtIndicator": "D",
+              "impliedDecimalCardholderBilling": "2",
+              "paymentTypeIndicator": "",
+              "processorIdBlock2": "000301",
+              "paymentFacilitatorId": "",
+              "independentSalesOrgId": "",
+              "subMerchantId": "",
+              "filler3": "01000000000                        ",
+              "fillerFinal": ""
+            }
+          }
+      auth: inherit
+    settings:
+      encodeUrl: true
+      timeout: 0
+      followRedirects: true
+      maxRedirects: 5
+  - info:
+      name: Gera numero 5 digitos
+      type: http
+      seq: 13
+    http:
+      method: POST
+      url: http://localhost:8080/api/simulador/number-generator/generate
+      body:
+        type: json
+        data: |-
+          {
+            "mti": "0420",
+            "de2": "589916",
+            "de7": "0322101010",
+            "de11": "123459"
+          }
+      auth: inherit
+    settings:
+      encodeUrl: true
+      timeout: 0
+      followRedirects: true
+      maxRedirects: 5
+bundled: true
+extensions:
+  bruno:
+    ignore:
+      - node_modules
+      - .git
+    exportedAt: '2026-03-23T01:23:20.057Z'
+    exportedUsing: Bruno
