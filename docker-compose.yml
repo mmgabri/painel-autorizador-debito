@@ -1,0 +1,25 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: debit-simulator-frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./backend/debit-authorizer-simulator
+      dockerfile: Dockerfile
+    container_name: debit-simulator-backend
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./cenarios_testes.csv:/app/data/cenarios_testes.csv
+    environment:
+      - APP_CSV_CENARIOS_FILE=/app/data/cenarios_testes.csv
+      - SPRING_PROFILES_ACTIVE=dev
+
+    
