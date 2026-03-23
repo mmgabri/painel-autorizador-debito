@@ -15,8 +15,6 @@ WORKDIR /app
 
 COPY --from=build /app/target/*.jar app.jar
 
-ENV SPRING_PROFILES_ACTIVE=prod
-
 ENV JAVA_TOOL_OPTIONS="\
   -XX:+UseG1GC \
   -XX:MaxGCPauseMillis=100 \
@@ -26,5 +24,5 @@ ENV JAVA_TOOL_OPTIONS="\
   -XX:MaxRAMPercentage=75 \
 "
 
-EXPOSE 8080 58080
+EXPOSE 8081
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]
