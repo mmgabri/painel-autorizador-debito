@@ -42,18 +42,19 @@ body {
 
 // Global Itaú overrides
 
-// Buttons — primary uses Itaú orange (like "Enviar avaliação")
+// Buttons — primary uses dark premium style (Personnalité Black)
 .mat-mdc-raised-button.mat-primary,
 .mat-mdc-flat-button.mat-primary,
 .mat-mdc-unelevated-button.mat-primary {
-  --mdc-filled-button-container-color: #{$itau-orange};
-  --mdc-filled-button-label-text-color: #fff;
+  --mdc-filled-button-container-color: #1a2030;
+  --mdc-filled-button-label-text-color: #c0c8d8;
   border-radius: 20px !important;
   font-weight: 500;
   font-size: 13px;
   letter-spacing: 0.2px;
   height: 36px;
   padding: 0 24px !important;
+  border: 1px solid #3a4050 !important;
 }
 
 // Stroked / outlined buttons — Itaú dark style
@@ -119,9 +120,10 @@ body {
 // Accent / warn color overrides
 .mat-mdc-raised-button.mat-accent,
 .mat-mdc-flat-button.mat-accent {
-  --mdc-filled-button-container-color: #{$itau-orange};
-  --mdc-filled-button-label-text-color: #fff;
+  --mdc-filled-button-container-color: #1a2030;
+  --mdc-filled-button-label-text-color: #c0c8d8;
   border-radius: 20px !important;
+  border: 1px solid #3a4050 !important;
 }
 
 // Warn buttons

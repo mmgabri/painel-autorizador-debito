@@ -3,9 +3,9 @@
 }
 
 .itau-btn {
-  background-color: #ec7000 !important;
-  color: #fff !important;
-  border: none !important;
+  background-color: #1a2030 !important;
+  color: #c0c8d8 !important;
+  border: 1px solid #3a4050 !important;
   border-radius: 8px !important;
   font-weight: 600 !important;
   font-size: 13px !important;
@@ -13,10 +13,11 @@
   height: 40px !important;
   letter-spacing: 0.2px;
   box-shadow: none !important;
-  transition: background-color 0.2s !important;
+  transition: background-color 0.2s, border-color 0.2s !important;
 
   &:hover {
-    background-color: #d56500 !important;
+    background-color: #222b3a !important;
+    border-color: #5a6070 !important;
   }
 
   &:disabled {
