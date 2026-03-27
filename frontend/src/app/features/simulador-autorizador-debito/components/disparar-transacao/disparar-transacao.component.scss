@@ -167,15 +167,15 @@
   width: 36px;
   height: 36px;
   border-radius: 10px;
-  background: linear-gradient(135deg, #ec7000 0%, #ff9800 100%);
+  background: #1a2030;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(236, 112, 0, 0.3);
+  border: 1px solid #3a4050;
 
   mat-icon {
-    color: #fff;
+    color: #e7eaf0;
     font-size: 18px;
     width: 18px;
     height: 18px;

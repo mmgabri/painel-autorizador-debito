@@ -8,7 +8,7 @@
   justify-content: space-between;
   margin-bottom: 20px;
   padding-bottom: 18px;
-  border-bottom: 2px solid #ec7000;
+  border-bottom: 1px solid #262c36;
   color: #e7eaf0;
 }
 
@@ -22,15 +22,15 @@
   width: 45px;
   height: 45px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #ec7000 0%, #ff9800 100%);
+  background: #1a2030;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 3px 10px rgba(236, 112, 0, 0.35);
+  border: 1px solid #3a4050;
 
   mat-icon {
-    color: #fff;
+    color: #e7eaf0;
     font-size: 21px;
     width: 21px;
     height: 21px;
@@ -93,12 +93,12 @@
     font-weight: 700;
     border-color: #262c36;
     border-bottom-color: #161b22;
-    border-top: 3px solid #ec7000;
+    border-top: 2px solid #e7eaf0;
     z-index: 1;
     box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.2);
 
     mat-icon {
-      color: #ec7000;
+      color: #e7eaf0;
     }
   }
 
