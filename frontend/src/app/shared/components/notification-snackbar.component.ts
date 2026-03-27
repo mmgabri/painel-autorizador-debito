@@ -36,8 +36,8 @@ export interface NotificationData {
       border-radius: 8px;
       min-width: 300px;
       max-width: 480px;
-      background: #fff;
-      box-shadow: 0 4px 20px rgba(0,0,0,.14), 0 2px 8px rgba(0,0,0,.10);
+      background: #161b22;
+      box-shadow: 0 4px 20px rgba(0,0,0,.4), 0 2px 8px rgba(0,0,0,.3);
       overflow: hidden;
       font-size: 13px;
       font-family: 'Segoe UI', Roboto, sans-serif;
@@ -61,7 +61,7 @@ export interface NotificationData {
       flex: 1;
       line-height: 1.45;
       font-weight: 500;
-      color: #1a1a1a;
+      color: #e7eaf0;
       padding: 14px 0;
     }
 
@@ -70,9 +70,9 @@ export interface NotificationData {
       width: 32px;
       height: 32px;
       line-height: 32px;
-      color: #777;
+      color: #6a7080;
     }
-    .notif-close:hover { color: #1a1a1a; }
+    .notif-close:hover { color: #e7eaf0; }
     .notif-close .mat-icon { font-size: 18px; width: 18px; height: 18px; }
 
     /* Success — Itaú green */

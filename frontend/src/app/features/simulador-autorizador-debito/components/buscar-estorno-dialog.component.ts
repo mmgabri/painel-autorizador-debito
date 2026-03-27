@@ -126,8 +126,8 @@ import { IsoParserService, TransacaoItem } from '../services/iso-parser.service'
     /* ── Search ── */
     .search-wrap {
       padding: 12px 20px 4px;
-      background: #fafafa;
-      border-bottom: 1px solid rgba(0,0,0,.08);
+      background: #1a2030;
+      border-bottom: 1px solid #262c36;
     }
     .search-field { width: 100%; font-size: 13px; }
     .search-icon  { color: #888; font-size: 18px; }
@@ -150,16 +150,16 @@ import { IsoParserService, TransacaoItem } from '../services/iso-parser.service'
 
     .item-card {
       display: flex; align-items: center;
-      border: 1px solid rgba(0,0,0,.1);
+      border: 1px solid #262c36;
       border-radius: 8px;
       overflow: hidden;
       cursor: pointer;
       transition: box-shadow .15s, border-color .15s;
-      background: #fff;
+      background: #161b22;
     }
     .item-card:hover {
       border-color: #ec7000;
-      box-shadow: 0 2px 10px rgba(236,112,0,.12);
+      box-shadow: 0 2px 10px rgba(236,112,0,.2);
     }
 
     .item-accent {
@@ -176,17 +176,17 @@ import { IsoParserService, TransacaoItem } from '../services/iso-parser.service'
       display: flex; align-items: baseline; justify-content: space-between; gap: 8px;
     }
     .item-nome {
-      font-size: 13px; font-weight: 600; color: #1a1a1a;
+      font-size: 13px; font-weight: 600; color: #e7eaf0;
     }
     .item-bandeira {
-      font-size: 11px; font-weight: 600; color: #003366;
-      background: rgba(0,51,102,.08); border-radius: 4px; padding: 1px 6px;
+      font-size: 11px; font-weight: 600; color: #60a5fa;
+      background: rgba(0,51,102,.2); border-radius: 4px; padding: 1px 6px;
     }
 
     .item-row-mid { display: flex; gap: 6px; flex-wrap: wrap; }
     .item-badge {
-      font-size: 11px; color: #555;
-      background: #f0f0f0; border-radius: 4px; padding: 1px 7px;
+      font-size: 11px; color: #a8b0bf;
+      background: #262c36; border-radius: 4px; padding: 1px 7px;
     }
     .item-badge-model { color: #ec7000; background: rgba(236,112,0,.08); }
 
@@ -195,7 +195,7 @@ import { IsoParserService, TransacaoItem } from '../services/iso-parser.service'
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
 
-    .item-arrow { color: #bbb; font-size: 20px; margin-right: 8px; flex-shrink: 0; }
+    .item-arrow { color: #6a7080; font-size: 20px; margin-right: 8px; flex-shrink: 0; }
     .item-card:hover .item-arrow { color: #ec7000; }
 
     /* ── Empty ── */
@@ -203,14 +203,14 @@ import { IsoParserService, TransacaoItem } from '../services/iso-parser.service'
       display: flex; flex-direction: column; align-items: center;
       gap: 6px; padding: 40px 0;
     }
-    .empty-icon  { font-size: 48px; width: 48px; height: 48px; color: #ccc; }
-    .empty-title { font-size: 14px; font-weight: 500; color: #555; }
-    .empty-sub   { font-size: 12px; color: #aaa; }
+    .empty-icon  { font-size: 48px; width: 48px; height: 48px; color: #3a4050; }
+    .empty-title { font-size: 14px; font-weight: 500; color: #a8b0bf; }
+    .empty-sub   { font-size: 12px; color: #6a7080; }
 
     /* ── Footer ── */
     .dialog-footer {
       padding: 10px 20px !important;
-      border-top: 1px solid rgba(0,0,0,.08);
+      border-top: 1px solid #262c36;
       justify-content: flex-end !important;
     }
   `],

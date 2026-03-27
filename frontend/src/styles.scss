@@ -17,15 +17,23 @@ html {
     density: 0,
   ));
 
-  --mdc-outlined-text-field-outline-color: #666;
-  --mdc-outlined-text-field-hover-outline-color: #444;
-  --mdc-outlined-text-field-disabled-outline-color: #ccc;
+  --mdc-outlined-text-field-outline-color: #3a4050;
+  --mdc-outlined-text-field-hover-outline-color: #5a6070;
+  --mdc-outlined-text-field-disabled-outline-color: #2a2f3a;
+  --mdc-outlined-text-field-label-text-color: #a8b0bf;
+  --mdc-outlined-text-field-input-text-color: #e7eaf0;
+  --mdc-outlined-text-field-caret-color: #ec7000;
+  --mat-select-panel-background-color: #1e2530;
+  --mat-option-label-text-color: #e7eaf0;
+  --mat-option-hover-state-layer-color: rgba(255, 255, 255, 0.06);
+  --mat-option-selected-state-layer-color: rgba(236, 112, 0, 0.12);
+  --mdc-filled-text-field-container-color: #161b22;
 }
 
 body {
-  color-scheme: light;
-  background-color: #fafafa;
-  color: #1a1a1a;
+  color-scheme: dark;
+  background-color: #0f1217;
+  color: #e7eaf0;
   font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   font-size: 13px;
   margin: 0;
@@ -110,19 +118,22 @@ body {
 // Cards
 .mat-mdc-card {
   border-radius: 8px !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+  background-color: #161b22 !important;
+  color: #e7eaf0 !important;
+  border: 1px solid #262c36;
 }
 
 // Page headings (h1)
 h1 {
-  color: $itau-navy;
+  color: #e7eaf0;
   font-weight: 600;
   font-size: 18px;
   letter-spacing: -0.2px;
 }
 
 h2 {
-  color: $itau-navy;
+  color: #e7eaf0;
   font-weight: 500;
   font-size: 15px;
 }
@@ -131,11 +142,65 @@ h2 {
 .mat-mdc-nav-list .mat-mdc-list-item {
   border-radius: 0 !important;
   margin: 0 !important;
+  color: #c0c8d8 !important;
+}
+
+// Dark mode — Material table
+.mat-mdc-table {
+  background-color: #161b22 !important;
+}
+
+.mat-mdc-header-cell {
+  color: #a8b0bf !important;
+  background-color: #1a2030 !important;
+  border-bottom-color: #262c36 !important;
+}
+
+.mat-mdc-cell {
+  color: #e7eaf0 !important;
+  border-bottom-color: #262c36 !important;
+}
+
+.mat-mdc-row:hover {
+  background-color: rgba(255, 255, 255, 0.04) !important;
+}
+
+// Dark mode — Material dialog
+.mat-mdc-dialog-container .mdc-dialog__surface {
+  background-color: #161b22 !important;
+  color: #e7eaf0 !important;
+}
+
+// Dark mode — Material select dropdown
+.mat-mdc-select-panel {
+  background-color: #1e2530 !important;
+}
+
+// Dark mode — Material datepicker
+.mat-datepicker-content {
+  background-color: #161b22 !important;
+  color: #e7eaf0 !important;
+}
+
+// Dark mode — Material form field floating label
+.mat-mdc-floating-label {
+  color: #a8b0bf !important;
+}
+
+// Dark mode — Material form field text wrapper
+.mat-mdc-text-field-wrapper {
+  background-color: transparent !important;
+}
+
+// Dark mode — Material icon button
+.mat-mdc-icon-button {
+  color: #a8b0bf !important;
 }
 
 // Dialog Itaú — remove o padding padrão do Material para header edge-to-edge
 .itau-dialog-panel .mdc-dialog__surface {
   padding: 0 !important;
+  background-color: #161b22 !important;
 }
 .itau-dialog-panel mat-dialog-content,
 .itau-dialog-panel .mat-mdc-dialog-content {

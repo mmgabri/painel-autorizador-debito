@@ -44,7 +44,7 @@
   border-radius: 10px;
   width: 42px;
   height: 36px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 .itau-logo-text {
@@ -68,17 +68,17 @@
 
 .sidenav {
   width: 260px;
-  background: #f7f7f7;
-  border-right: 1px solid #e0e0e0;
+  background: #0d1117;
+  border-right: 1px solid #262c36;
 }
 
 .content {
   padding: 24px;
-  background: #fafafa;
+  background: #0f1217;
 }
 
 .active-link {
-  background-color: rgba(236, 112, 0, 0.1) !important;
+  background-color: rgba(236, 112, 0, 0.15) !important;
   color: #ec7000 !important;
   font-weight: 600;
   box-shadow: inset 3px 0 0 #ec7000;

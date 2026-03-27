@@ -52,13 +52,13 @@ import { MatIconModule } from '@angular/material/icon';
     .confirm-title {
       font-size: 16px;
       font-weight: 700;
-      color: #1a1a2e;
+      color: #e7eaf0;
       margin: 0 0 8px;
     }
 
     .confirm-message {
       font-size: 13px;
-      color: #888;
+      color: #a8b0bf;
       line-height: 1.6;
       margin: 0 0 24px;
     }
@@ -84,9 +84,9 @@ import { MatIconModule } from '@angular/material/icon';
     }
 
     .btn-cancelar {
-      background: #f0f0f0;
-      color: #555;
-      border: 1px solid #ddd;
+      background: #262c36;
+      color: #a8b0bf;
+      border: 1px solid #3a4050;
     }
 
     .btn-confirmar {
