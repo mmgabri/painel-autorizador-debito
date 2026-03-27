@@ -130,7 +130,7 @@ import { IsoParserService, TransacaoItem } from '../services/iso-parser.service'
       border-bottom: 1px solid #262c36;
     }
     .search-field { width: 100%; font-size: 13px; }
-    .search-icon  { color: #888; font-size: 18px; }
+    .search-icon  { color: #6a7080; font-size: 18px; }
 
     /* ── Content ── */
     .dialog-content {
@@ -143,7 +143,7 @@ import { IsoParserService, TransacaoItem } from '../services/iso-parser.service'
       display: flex; flex-direction: column; align-items: center;
       gap: 12px; padding: 32px 0;
     }
-    .loading-text { font-size: 13px; color: #888; }
+    .loading-text { font-size: 13px; color: #a8b0bf; }
 
     /* ── Item cards ── */
     .item-list { display: flex; flex-direction: column; gap: 8px; }
@@ -191,7 +191,7 @@ import { IsoParserService, TransacaoItem } from '../services/iso-parser.service'
     .item-badge-model { color: #ec7000; background: rgba(236,112,0,.08); }
 
     .item-descricao {
-      font-size: 11px; color: #888; font-style: italic;
+      font-size: 11px; color: #6a7080; font-style: italic;
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
 

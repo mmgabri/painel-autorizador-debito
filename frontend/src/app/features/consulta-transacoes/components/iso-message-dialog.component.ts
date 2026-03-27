@@ -71,7 +71,7 @@ export interface IsoMessageDialogData {
     }
     .empty-state {
       text-align: center;
-      color: rgba(0, 0, 0, 0.54);
+      color: #a8b0bf;
       padding: 16px;
     }
   `],

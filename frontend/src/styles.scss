@@ -56,14 +56,32 @@ body {
   padding: 0 24px !important;
 }
 
-// Stroked / outlined buttons — Itaú style
+// Stroked / outlined buttons — Itaú dark style
 .mat-mdc-raised-button:not(.mat-primary):not(.mat-accent):not(.mat-warn) {
+  --mdc-filled-button-container-color: #262c36;
+  --mdc-filled-button-label-text-color: #e7eaf0;
   border-radius: 20px !important;
   font-weight: 500;
   font-size: 13px;
   letter-spacing: 0.2px;
   height: 36px;
   padding: 0 24px !important;
+  border: 1px solid #3a4050 !important;
+}
+
+.mat-mdc-outlined-button:not(.mat-primary):not(.mat-accent):not(.mat-warn) {
+  --mdc-outlined-button-label-text-color: #e7eaf0;
+  --mdc-outlined-button-outline-color: #3a4050;
+  border-radius: 20px !important;
+  font-weight: 500;
+  font-size: 13px;
+  height: 36px;
+}
+
+// Stroked button with primary
+.mat-mdc-outlined-button.mat-primary {
+  --mdc-outlined-button-label-text-color: #ec7000;
+  --mdc-outlined-button-outline-color: #ec7000;
 }
 
 // Form fields — outline uses Itaú orange for focus + compact sizing
@@ -195,6 +213,162 @@ h2 {
 // Dark mode — Material icon button
 .mat-mdc-icon-button {
   color: #a8b0bf !important;
+}
+
+// Dark mode — Material select trigger
+.mat-mdc-select-value {
+  color: #e7eaf0 !important;
+}
+
+.mat-mdc-select-arrow {
+  color: #a8b0bf !important;
+}
+
+// Dark mode — Material checkbox
+.mat-mdc-checkbox {
+  --mdc-checkbox-unselected-icon-color: #6a7080;
+  --mdc-checkbox-selected-icon-color: #ec7000;
+  --mdc-checkbox-selected-checkmark-color: #fff;
+  --mdc-checkbox-unselected-hover-icon-color: #a8b0bf;
+}
+
+// Dark mode — Material slide toggle
+.mat-mdc-slide-toggle {
+  --mdc-switch-unselected-track-color: #3a4050;
+  --mdc-switch-unselected-handle-color: #6a7080;
+  --mdc-switch-selected-track-color: rgba(236, 112, 0, 0.5);
+  --mdc-switch-selected-handle-color: #ec7000;
+}
+
+// Dark mode — Material progress bar
+.mat-mdc-progress-bar {
+  --mdc-linear-progress-track-color: #262c36;
+  --mdc-linear-progress-active-indicator-color: #ec7000;
+}
+
+// Dark mode — Material tooltip
+.mat-mdc-tooltip .mdc-tooltip__surface {
+  background-color: #1e2530 !important;
+  color: #e7eaf0 !important;
+  border: 1px solid #3a4050;
+}
+
+// Dark mode — Material menu
+.mat-mdc-menu-panel {
+  background-color: #1e2530 !important;
+  border: 1px solid #262c36;
+}
+
+.mat-mdc-menu-item {
+  color: #e7eaf0 !important;
+}
+
+.mat-mdc-menu-item:hover {
+  background-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+// Dark mode — Material autocomplete panel
+.mat-mdc-autocomplete-panel {
+  background-color: #1e2530 !important;
+}
+
+// Dark mode — Material paginator
+.mat-mdc-paginator {
+  background-color: #161b22 !important;
+  color: #a8b0bf !important;
+}
+
+// Dark mode — Mat chip
+.mat-mdc-chip {
+  --mdc-chip-elevated-container-color: #262c36;
+  --mdc-chip-label-text-color: #e7eaf0;
+}
+
+// Dark mode — Mat expansion panel
+.mat-expansion-panel {
+  background-color: #161b22 !important;
+  color: #e7eaf0 !important;
+}
+
+// Dark mode — sidenav list items hover
+.mat-mdc-nav-list .mat-mdc-list-item:hover {
+  background-color: rgba(255, 255, 255, 0.04) !important;
+}
+
+// Dark mode — Scrollbar styling
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0f1217;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #3a4050;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #5a6070;
+}
+
+// Dark mode — Disabled buttons
+.mat-mdc-raised-button[disabled],
+.mat-mdc-flat-button[disabled],
+.mat-mdc-unelevated-button[disabled],
+.mat-mdc-outlined-button[disabled] {
+  --mdc-filled-button-disabled-container-color: #262c36 !important;
+  --mdc-filled-button-disabled-label-text-color: #6a7080 !important;
+  background-color: #262c36 !important;
+  color: #6a7080 !important;
+}
+
+// Dark mode — Mat datepicker calendar
+.mat-calendar {
+  background-color: #161b22;
+}
+
+.mat-calendar-body-cell-content {
+  color: #e7eaf0;
+}
+
+.mat-calendar-body-selected {
+  background-color: #ec7000 !important;
+  color: #fff !important;
+}
+
+.mat-calendar-body-today:not(.mat-calendar-body-selected) {
+  border-color: #ec7000 !important;
+}
+
+.mat-calendar-table-header,
+.mat-calendar-body-label {
+  color: #a8b0bf;
+}
+
+.mat-calendar-arrow {
+  fill: #a8b0bf;
+}
+
+.mat-datepicker-toggle-default-icon {
+  color: #a8b0bf;
+}
+
+// Dark mode — Material form field hint
+.mat-mdc-form-field-hint {
+  color: #6a7080 !important;
+}
+
+// Dark mode — Material form field error
+.mat-mdc-form-field-error {
+  color: #f87171 !important;
+}
+
+// Dark mode — Mat divider
+.mat-divider {
+  border-top-color: #262c36 !important;
 }
 
 // Dialog Itaú — remove o padding padrão do Material para header edge-to-edge
