@@ -1,0 +1,45 @@
+<div class="page-hero">
+  <div class="page-hero-left">
+    <div class="page-hero-icon">
+      <mat-icon>data_object</mat-icon>
+    </div>
+    <div>
+      <h1 class="page-hero-title">Massa de Testes</h1>
+      <span class="page-hero-subtitle">Gerencie e carregue dados de massa de testes</span>
+    </div>
+  </div>
+</div>
+
+<div class="itau-tabs">
+  <button
+    class="itau-tab"
+    [class.active]="activeView() === 'pesquisar'"
+    (click)="onIrParaPesquisar()"
+  >
+    <mat-icon>search</mat-icon>
+    Pesquisar Massa
+  </button>
+  <button
+    class="itau-tab"
+    [class.active]="activeView() === 'configurar'"
+    (click)="onIrParaConfigurar()"
+  >
+    <mat-icon>settings</mat-icon>
+    Configurar Massa
+  </button>
+</div>
+
+<div class="itau-tab-content">
+  @if (activeView() === 'pesquisar') {
+    <app-pesquisar-massa
+      (editou)="onEditou($event)"
+      (criarMassa)="onIrParaConfigurar()"
+    />
+  }
+
+  @if (activeView() === 'configurar') {
+    <app-configurar-massa
+      [massa]="massaParaEditar()"
+    />
+  }
+</div>

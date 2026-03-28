@@ -34,6 +34,13 @@ export const routes: Routes = [
             (m) => m.DASHBOARD_ROUTES,
           ),
       },
+      {
+        path: 'massa-testes',
+        loadChildren: () =>
+          import('./features/massa-testes/routes').then(
+            (m) => m.MASSA_TESTES_ROUTES,
+          ),
+      },
       { path: '', redirectTo: 'simulador', pathMatch: 'full' },
     ],
   },
