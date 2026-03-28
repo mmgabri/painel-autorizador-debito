@@ -20,45 +20,104 @@
     <button mat-raised-button color="primary" class="filtrar-btn itau-btn" (click)="onFiltrar()">
       Filtrar
     </button>
+    <button mat-raised-button color="primary" class="criar-btn itau-btn" (click)="criarCenario.emit()">
+      <mat-icon>add</mat-icon> Criar Cenário
+    </button>
   </div>
 
   @if (loading()) {
     <mat-progress-bar mode="indeterminate"></mat-progress-bar>
   }
 
-  <div class="transacao-list">
-    @for (item of transacoes(); track item.id) {
-      <div class="transacao-row">
-        <div class="transacao-info">
-          <span class="nome">{{ item.productName }}</span>
-          <span class="tag">{{ item.tag }}</span>
+  <div class="table-container">
+    <table mat-table [dataSource]="transacoes()" class="cenarios-table">
+
+      <!-- Nome Produto -->
+      <ng-container matColumnDef="productName">
+        <th mat-header-cell *matHeaderCellDef>Nome do Produto</th>
+        <td mat-cell *matCellDef="let item">
+          <span class="cell-nome">{{ item.productName }}</span>
+        </td>
+      </ng-container>
+
+      <!-- Bandeira -->
+      <ng-container matColumnDef="paymentNetwork">
+        <th mat-header-cell *matHeaderCellDef>Bandeira</th>
+        <td mat-cell *matCellDef="let item">
           @if (item.paymentNetwork) {
-            <span class="badge bandeira-badge">{{ item.paymentNetwork }}</span>
+            <img
+              [src]="getBandeiraLogo(item.paymentNetwork)"
+              [alt]="item.paymentNetwork"
+              class="bandeira-logo"
+              [title]="item.paymentNetwork"
+              (error)="onLogoError($event, item.paymentNetwork)"
+            />
+          } @else {
+            <span class="cell-empty">—</span>
           }
+        </td>
+      </ng-container>
+
+      <!-- Modelo Mensagem -->
+      <ng-container matColumnDef="messageModel">
+        <th mat-header-cell *matHeaderCellDef>Modelo Mensagem</th>
+        <td mat-cell *matCellDef="let item">
           @if (item.messageModel) {
-            <span class="badge message-model">{{ item.messageModel }}</span>
+            <span class="badge" [ngClass]="'model-' + item.messageModel.toLowerCase()">{{ item.messageModel }}</span>
+          } @else {
+            <span class="cell-empty">—</span>
           }
+        </td>
+      </ng-container>
+
+      <!-- Tipo Mensagem -->
+      <ng-container matColumnDef="messageType">
+        <th mat-header-cell *matHeaderCellDef>Tipo Mensagem</th>
+        <td mat-cell *matCellDef="let item">
           @if (item.messageType) {
-            <span class="badge message-type">{{ item.messageType }}</span>
+            <span class="badge" [ngClass]="'type-' + item.messageType.toLowerCase()">{{ item.messageType }}</span>
+          } @else {
+            <span class="cell-empty">—</span>
           }
-          <span class="descricao">{{ item.description }}</span>
-        </div>
-        <div class="transacao-actions">
-          <button class="action-btn action-btn--disparar" (click)="onSelecionar(item)" aria-label="Executar transação">
-            <mat-icon>send</mat-icon>
-          </button>
-          <button class="action-btn action-btn--editar" (click)="onEditar(item)" aria-label="Editar cenário">
-            <mat-icon>edit</mat-icon>
-          </button>
-          <button class="action-btn action-btn--excluir" (click)="onExcluir(item)" aria-label="Excluir cenário">
-            <mat-icon>delete_outline</mat-icon>
-          </button>
-        </div>
-      </div>
-    } @empty {
-      @if (!loading()) {
-        <p class="empty-message">Nenhuma transação encontrada</p>
-      }
-    }
+        </td>
+      </ng-container>
+
+      <!-- Tag -->
+      <ng-container matColumnDef="tag">
+        <th mat-header-cell *matHeaderCellDef>Tag</th>
+        <td mat-cell *matCellDef="let item">
+          <span class="tag">{{ item.tag }}</span>
+        </td>
+      </ng-container>
+
+      <!-- Ações -->
+      <ng-container matColumnDef="acoes" stickyEnd>
+        <th mat-header-cell *matHeaderCellDef>Ações</th>
+        <td mat-cell *matCellDef="let item">
+          <div class="transacao-actions">
+            <button class="action-btn action-btn--disparar" (click)="onSelecionar(item)" aria-label="Executar transação" title="Disparar">
+              <mat-icon>send</mat-icon>
+            </button>
+            <button class="action-btn action-btn--editar" (click)="onEditar(item)" aria-label="Editar cenário" title="Editar">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button class="action-btn action-btn--excluir" (click)="onExcluir(item)" aria-label="Excluir cenário" title="Excluir">
+              <mat-icon>delete_outline</mat-icon>
+            </button>
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="cenario-row"></tr>
+
+      <tr class="mat-row" *matNoDataRow>
+        @if (!loading()) {
+          <td [attr.colspan]="displayedColumns.length" class="empty-message">
+            Nenhum cenário encontrado
+          </td>
+        }
+      </tr>
+    </table>
   </div>
 </div>

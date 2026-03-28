@@ -7,10 +7,16 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatTableModule } from '@angular/material/table';
 import { MatDialog } from '@angular/material/dialog';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { IsoParserService, TransacaoItem } from '../../services/iso-parser.service';
 import { ConfirmarExclusaoDialogComponent } from './confirmar-exclusao-dialog.component';
+
+const BANDEIRA_LOGOS: Record<string, string> = {
+  VISA:       'logo-visa.png',
+  MASTERCARD: 'logo-mastercard.png',
+};
 
 @Component({
   selector: 'app-buscar-cenarios',
@@ -25,6 +31,7 @@ import { ConfirmarExclusaoDialogComponent } from './confirmar-exclusao-dialog.co
     MatButtonModule,
     MatIconModule,
     MatProgressBarModule,
+    MatTableModule,
   ],
   templateUrl: './buscar-cenarios.component.html',
   styleUrl: './buscar-cenarios.component.scss',
@@ -36,6 +43,7 @@ export class BuscarCenariosComponent implements OnInit {
 
   readonly selecionou = output<TransacaoItem>();
   readonly editou = output<TransacaoItem>();
+  readonly criarCenario = output<void>();
 
   filtroNome = '';
   filtroTag = '';
@@ -43,10 +51,24 @@ export class BuscarCenariosComponent implements OnInit {
   loading = signal(false);
   transacoes = signal<TransacaoItem[]>([]);
 
+  readonly displayedColumns = ['productName', 'paymentNetwork', 'messageModel', 'messageType', 'tag', 'acoes'];
   readonly bandeiraOptions = ['MASTERCARD', 'VISA'];
 
   ngOnInit(): void {
     this.carregar();
+  }
+
+  getBandeiraLogo(paymentNetwork: string): string {
+    return BANDEIRA_LOGOS[paymentNetwork?.toUpperCase()] ?? '';
+  }
+
+  onLogoError(event: Event, paymentNetwork: string): void {
+    const img = event.target as HTMLImageElement;
+    img.style.display = 'none';
+    const span = document.createElement('span');
+    span.className = 'badge bandeira-badge';
+    span.textContent = paymentNetwork;
+    img.parentNode?.replaceChild(span, img);
   }
 
   onFiltrar(): void {
