@@ -1,0 +1,138 @@
+<div class="buscar-panel">
+  <div class="filter-row">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filter-field filter-nome">
+      <mat-label>Filtrar por Nome Produto</mat-label>
+      <input matInput [(ngModel)]="filtroNome" maxlength="60" (keyup.enter)="onFiltrar()" />
+    </mat-form-field>
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filter-field filter-microservico">
+      <mat-label>Filtrar por Micro-serviço Alvo</mat-label>
+      <mat-select [(ngModel)]="filtroMicroservico">
+        <mat-option value="">Todos</mat-option>
+        @for (svc of microserviceOptions; track svc) {
+          <mat-option [value]="svc">{{ svc }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filter-field filter-tag">
+      <mat-label>Filtrar por Tag</mat-label>
+      <input matInput [(ngModel)]="filtroTag" maxlength="60" (keyup.enter)="onFiltrar()" />
+    </mat-form-field>
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filter-field filter-bandeira">
+      <mat-label>Filtrar por Bandeira</mat-label>
+      <mat-select [(ngModel)]="filtroBandeira">
+        <mat-option value="">Todas</mat-option>
+        @for (opt of bandeiraOptions; track opt) {
+          <mat-option [value]="opt">{{ opt }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <button mat-raised-button color="primary" class="filtrar-btn itau-btn" (click)="onFiltrar()">
+      Filtrar
+    </button>
+    <button mat-raised-button color="primary" class="criar-btn itau-btn" (click)="criarEvento.emit()">
+      <mat-icon>add</mat-icon> Criar Evento
+    </button>
+  </div>
+
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  }
+
+  <div class="table-container">
+    <table mat-table [dataSource]="eventos()" class="cenarios-table">
+
+      <!-- Nome Produto -->
+      <ng-container matColumnDef="productName">
+        <th mat-header-cell *matHeaderCellDef>Nome do Produto</th>
+        <td mat-cell *matCellDef="let item">
+          <span class="cell-nome">{{ item.productName }}</span>
+        </td>
+      </ng-container>
+
+      <!-- Micro-serviço Alvo -->
+      <ng-container matColumnDef="targetMicroservice">
+        <th mat-header-cell *matHeaderCellDef>Micro-serviço Alvo</th>
+        <td mat-cell *matCellDef="let item">
+          @if (item.targetMicroservice) {
+            <span class="cell-microservico">{{ item.targetMicroservice }}</span>
+          } @else {
+            <span class="cell-empty">—</span>
+          }
+        </td>
+      </ng-container>
+
+      <!-- Bandeira -->
+      <ng-container matColumnDef="paymentNetwork">
+        <th mat-header-cell *matHeaderCellDef>Bandeira</th>
+        <td mat-cell *matCellDef="let item">
+          @if (item.paymentNetwork) {
+            <span class="badge bandeira-badge">{{ item.paymentNetwork }}</span>
+          } @else {
+            <span class="cell-empty">—</span>
+          }
+        </td>
+      </ng-container>
+
+      <!-- Modelo Mensagem -->
+      <ng-container matColumnDef="messageModel">
+        <th mat-header-cell *matHeaderCellDef>Modelo Mensagem</th>
+        <td mat-cell *matCellDef="let item">
+          @if (item.messageModel) {
+            <span class="badge" [ngClass]="'model-' + item.messageModel.toLowerCase()">{{ item.messageModel }}</span>
+          } @else {
+            <span class="cell-empty">—</span>
+          }
+        </td>
+      </ng-container>
+
+      <!-- Tipo Mensagem -->
+      <ng-container matColumnDef="messageType">
+        <th mat-header-cell *matHeaderCellDef>Tipo Mensagem</th>
+        <td mat-cell *matCellDef="let item">
+          @if (item.messageType) {
+            <span class="badge" [ngClass]="'type-' + item.messageType.toLowerCase()">{{ item.messageType }}</span>
+          } @else {
+            <span class="cell-empty">—</span>
+          }
+        </td>
+      </ng-container>
+
+      <!-- Tag -->
+      <ng-container matColumnDef="tag">
+        <th mat-header-cell *matHeaderCellDef>Tag</th>
+        <td mat-cell *matCellDef="let item">
+          <span class="tag">{{ item.tag }}</span>
+        </td>
+      </ng-container>
+
+      <!-- Ações -->
+      <ng-container matColumnDef="acoes" stickyEnd>
+        <th mat-header-cell *matHeaderCellDef>Ações</th>
+        <td mat-cell *matCellDef="let item">
+          <div class="transacao-actions">
+            <button class="action-btn action-btn--disparar" (click)="onSelecionar(item)" aria-label="Executar evento" title="Disparar">
+              <mat-icon>send</mat-icon>
+            </button>
+            <button class="action-btn action-btn--editar" (click)="onEditar(item)" aria-label="Editar evento" title="Editar">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button class="action-btn action-btn--excluir" (click)="onExcluir(item)" aria-label="Excluir evento" title="Excluir">
+              <mat-icon>delete_outline</mat-icon>
+            </button>
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="cenario-row"></tr>
+
+      <tr class="mat-row" *matNoDataRow>
+        @if (!loading()) {
+          <td [attr.colspan]="displayedColumns.length" class="empty-message">
+            Nenhum evento encontrado
+          </td>
+        }
+      </tr>
+    </table>
+  </div>
+</div>

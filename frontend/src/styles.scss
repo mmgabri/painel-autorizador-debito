@@ -271,6 +271,12 @@ body {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06) !important;
 }
 
+// Standard project buttons — use 8px border-radius instead of default 20px
+.mat-mdc-raised-button.btn-atualizar.itau-btn:not(.mat-primary):not(.mat-accent):not(.mat-warn),
+.mat-mdc-raised-button.btn-adicionar {
+  border-radius: 8px !important;
+}
+
 // Dark mode: .itau-btn switches to Itaú blue
 // (higher specificity than component-level .itau-btn { ...!important })
 html.dark-theme .itau-btn {
