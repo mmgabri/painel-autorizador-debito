@@ -1,0 +1,231 @@
+<div class="configurar-panel">
+  <div class="page-header">
+    <div class="page-header-icon">
+      <mat-icon>inventory_2</mat-icon>
+    </div>
+    <div class="page-header-text">
+      <h1 class="page-title">{{ massa ? 'Editar massa' : 'Criar massa' }}</h1>
+      <span class="page-subtitle">{{ massa ? 'Edite os dados da massa de testes' : 'Configure os dados da nova massa de testes' }}</span>
+    </div>
+  </div>
+
+  <form [formGroup]="form" class="form-wrapper">
+
+    <!-- Bloco 1: Dados -->
+    <div class="campos-section">
+      <div class="campos-header">
+        <div class="campos-title">
+          <mat-icon class="campos-icon">info_outline</mat-icon>
+          <span>Dados</span>
+        </div>
+      </div>
+      <div class="campos-list">
+        <div class="toggles-row">
+          <div class="toggle-group-field">
+            <span class="toggle-label">Bandeira</span>
+            <mat-button-toggle-group formControlName="bandeira" class="itau-toggle-group">
+              @for (opt of bandeiraOptions; track opt) {
+                <mat-button-toggle [value]="opt">{{ opt }}</mat-button-toggle>
+              }
+            </mat-button-toggle-group>
+          </div>
+          <div class="toggle-group-field">
+            <span class="toggle-label">Modelo de Mensagem</span>
+            <mat-button-toggle-group formControlName="modeloMensagem" class="itau-toggle-group">
+              @for (opt of modeloMensagemOptions; track opt) {
+                <mat-button-toggle [value]="opt">{{ opt }}</mat-button-toggle>
+              }
+            </mat-button-toggle-group>
+          </div>
+        </div>
+
+        <div class="inline-row">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input campo-tag">
+            <mat-label>Tag</mat-label>
+            <input matInput formControlName="tag" maxlength="60" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
+            <mat-label>Descrição</mat-label>
+            <input matInput formControlName="descricao" />
+          </mat-form-field>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bloco 2: Dados Cartão -->
+    <div class="campos-section">
+      <div class="campos-header">
+        <div class="campos-title">
+          <mat-icon class="campos-icon">credit_card</mat-icon>
+          <span>Dados Cartão</span>
+        </div>
+      </div>
+      <div class="campos-list">
+        <mat-form-field appearance="outline" class="campo-input">
+          <mat-label>Cartão</mat-label>
+          <input matInput formControlName="cartao" placeholder="Número do cartão" maxlength="19" (input)="filterDigits($event, 'cartao')" />
+          @if (form.controls.cartao.hasError('maxlength')) {
+            <mat-error>Máximo 19 dígitos</mat-error>
+          } @else if (form.controls.cartao.hasError('pattern')) {
+            <mat-error>Somente números</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
+          <mat-label>Data Vencimento</mat-label>
+          <input matInput formControlName="dataVencimento" placeholder="11-10-2035" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
+          <mat-label>Código Funcionalidade Cartão</mat-label>
+          <input matInput formControlName="codigoFuncionalidadeCartao" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
+          <mat-label>Código Serviço Primeiro Dígito</mat-label>
+          <input matInput formControlName="codigoServicoPrimeiroDigito" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
+          <mat-label>Código Situação</mat-label>
+          <input matInput formControlName="codigoSituacao" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
+          <mat-label>Código Status</mat-label>
+          <input matInput formControlName="codigoStatus" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
+          <mat-label>Código Tecnologia</mat-label>
+          <input matInput formControlName="codigoTecnologia" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
+          <mat-label>Código Tipo</mat-label>
+          <input matInput formControlName="codigoTipo" />
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- Bloco 3: Dados Conta Corrente -->
+    <div class="campos-section">
+      <div class="campos-header">
+        <div class="campos-title">
+          <mat-icon class="campos-icon">account_balance</mat-icon>
+          <span>Dados Conta Corrente</span>
+        </div>
+      </div>
+      <div class="campos-list">
+        <mat-form-field appearance="outline" class="campo-input">
+          <mat-label>ID Conta</mat-label>
+          <input matInput formControlName="idConta" maxlength="36" (input)="filterAlphanumeric($event, 'idConta')" />
+          @if (form.controls.idConta.hasError('maxlength')) {
+            <mat-error>Máximo 36 caracteres</mat-error>
+          } @else if (form.controls.idConta.hasError('pattern')) {
+            <mat-error>Somente letras e números</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="campo-input">
+          <mat-label>Agência</mat-label>
+          <input matInput formControlName="agencia" maxlength="4" (input)="filterDigits($event, 'agencia')" />
+          @if (form.controls.agencia.hasError('maxlength')) {
+            <mat-error>Máximo 4 dígitos</mat-error>
+          } @else if (form.controls.agencia.hasError('pattern')) {
+            <mat-error>Somente números</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="campo-input">
+          <mat-label>Conta</mat-label>
+          <input matInput formControlName="conta" maxlength="7" (input)="filterDigits($event, 'conta')" />
+          @if (form.controls.conta.hasError('maxlength')) {
+            <mat-error>Máximo 7 dígitos</mat-error>
+          } @else if (form.controls.conta.hasError('pattern')) {
+            <mat-error>Somente números</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="campo-input">
+          <mat-label>DAC</mat-label>
+          <input matInput formControlName="dac" maxlength="1" (input)="filterDigits($event, 'dac')" />
+          @if (form.controls.dac.hasError('maxlength')) {
+            <mat-error>Máximo 1 dígito</mat-error>
+          } @else if (form.controls.dac.hasError('pattern')) {
+            <mat-error>Somente número</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
+          <mat-label>Sufixo</mat-label>
+          <input matInput formControlName="sufixo" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="campo-input">
+          <mat-label>Titular</mat-label>
+          <input matInput formControlName="titular" maxlength="6" (input)="filterDigits($event, 'titular')" />
+          @if (form.controls.titular.hasError('maxlength')) {
+            <mat-error>Máximo 6 dígitos</mat-error>
+          } @else if (form.controls.titular.hasError('pattern')) {
+            <mat-error>Somente números</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="campo-input">
+          <mat-label>ID Categoria</mat-label>
+          <input matInput formControlName="idCategoria" maxlength="3" (input)="filterDigits($event, 'idCategoria')" />
+          @if (form.controls.idCategoria.hasError('maxlength')) {
+            <mat-error>Máximo 3 dígitos</mat-error>
+          } @else if (form.controls.idCategoria.hasError('pattern')) {
+            <mat-error>Somente números</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="campo-input">
+          <mat-label>Código Segmento</mat-label>
+          <input matInput formControlName="codigoSegmento" maxlength="4" />
+          @if (form.controls.codigoSegmento.hasError('maxlength')) {
+            <mat-error>Máximo 4 caracteres</mat-error>
+          }
+        </mat-form-field>
+
+        <div class="toggle-group-field toggle-standalone">
+          <span class="toggle-label">Tipo Conta</span>
+          <mat-button-toggle-group formControlName="tipoConta" class="itau-toggle-group">
+            @for (opt of tipoContaOptions; track opt) {
+              <mat-button-toggle [value]="opt">{{ opt }}</mat-button-toggle>
+            }
+          </mat-button-toggle-group>
+        </div>
+
+        <div class="toggle-group-field toggle-standalone">
+          <span class="toggle-label">Código Tipo Pessoa</span>
+          <mat-button-toggle-group formControlName="codigoTipoPessoa" class="itau-toggle-group">
+            @for (opt of tipoPessoaOptions; track opt) {
+              <mat-button-toggle [value]="opt">{{ opt }}</mat-button-toggle>
+            }
+          </mat-button-toggle-group>
+        </div>
+      </div>
+    </div>
+
+  </form>
+
+  <div class="save-actions">
+    <button mat-raised-button color="primary" class="itau-btn" [disabled]="saving()" (click)="onSalvar()">
+      Salvar
+    </button>
+    <button mat-raised-button color="primary" class="itau-btn" [disabled]="!canCreateNext()" (click)="onCriarProximo()">
+      Criar Próximo
+    </button>
+    <button mat-raised-button color="primary" class="itau-btn" [disabled]="!savedSuccessfully()" (click)="onCarregarDadinho()">
+      Carregar Dadinho
+    </button>
+  </div>
+
+  @if (saving()) {
+    <mat-progress-bar mode="indeterminate" class="loading-bar"></mat-progress-bar>
+  }
+</div>
