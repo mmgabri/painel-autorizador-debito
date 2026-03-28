@@ -1,0 +1,56 @@
+<div class="page-hero">
+  <div class="page-hero-left">
+    <div class="page-hero-icon">
+      <mat-icon>hub</mat-icon>
+    </div>
+    <div>
+      <h1 class="page-hero-title">Dispatcher Bandeiras</h1>
+      <span class="page-hero-subtitle">Pesquise, configure e dispare eventos</span>
+    </div>
+  </div>
+</div>
+
+<div class="itau-tabs">
+  <button
+    class="itau-tab"
+    [class.active]="activeView() === 'buscarDispatcher' || activeView() === 'dispararEvento'"
+    (click)="onIrParaBuscarDispatcher()"
+  >
+    <mat-icon>search</mat-icon>
+    Pesquisar Eventos
+  </button>
+  <button
+    class="itau-tab"
+    [class.active]="activeView() === 'incluirDispatcher'"
+    (click)="onIrParaIncluirDispatcher()"
+  >
+    <mat-icon>settings</mat-icon>
+    Configurar Evento
+  </button>
+</div>
+
+<div class="itau-tab-content">
+  @if (activeView() === 'buscarDispatcher') {
+    <app-buscar-dispatcher
+      (selecionou)="onSelecionouEvento($event)"
+      (editou)="onEditouEvento($event)"
+      (criarEvento)="onIrParaIncluirDispatcher()"
+    />
+  }
+
+  @if (activeView() === 'incluirDispatcher') {
+    <app-configurar-dispatcher
+      [evento]="eventoParaEditar()"
+      (disparar)="onDispararFromConfigurarDispatcher($event)"
+    />
+  }
+
+  @if (activeView() === 'dispararEvento') {
+    <app-disparar-evento
+      [evento]="eventoSelecionado()!"
+      (voltou)="onVoltouDoDispararEvento()"
+      (editou)="onEditouEvento($event)"
+      (excluiu)="onExcluiuDoDispararEvento()"
+    />
+  }
+</div>

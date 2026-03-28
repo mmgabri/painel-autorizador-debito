@@ -1,0 +1,56 @@
+<div class="page-hero">
+  <div class="page-hero-left">
+    <div class="page-hero-icon">
+      <mat-icon>payment</mat-icon>
+    </div>
+    <div>
+      <h1 class="page-hero-title">Simulador Bandeiras</h1>
+      <span class="page-hero-subtitle">Pesquise, configure e dispare cenários</span>
+    </div>
+  </div>
+</div>
+
+<div class="itau-tabs">
+  <button
+    class="itau-tab"
+    [class.active]="activeView() === 'buscar' || activeView() === 'disparar'"
+    (click)="onIrParaBuscar()"
+  >
+    <mat-icon>search</mat-icon>
+    Pesquisar Cenários
+  </button>
+  <button
+    class="itau-tab"
+    [class.active]="activeView() === 'incluir'"
+    (click)="onIrParaIncluir()"
+  >
+    <mat-icon>settings</mat-icon>
+    Configurar Cenário
+  </button>
+</div>
+
+<div class="itau-tab-content">
+  @if (activeView() === 'buscar') {
+    <app-buscar-cenarios
+      (selecionou)="onSelecionouCenario($event)"
+      (editou)="onEditouCenario($event)"
+      (criarCenario)="onIrParaIncluir()"
+    />
+  }
+
+  @if (activeView() === 'incluir') {
+    <app-configurar-cenario
+      [cenario]="cenarioParaEditar()"
+      (disparar)="onDispararFromConfigurar($event)"
+    />
+  }
+
+  @if (activeView() === 'disparar') {
+    <app-disparar-transacao
+      [transacao]="cenarioSelecionado()!"
+      (voltou)="onVoltouDoDisparar()"
+      (editou)="onEditouCenario($event)"
+      (excluiu)="onExcluiuDoDisparar()"
+    />
+  }
+</div>

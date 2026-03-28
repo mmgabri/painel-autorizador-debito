@@ -13,6 +13,11 @@ import { NotificationService } from '../../../../core/services/notification.serv
 import { DispatcherService, DispatcherEventoItem } from '../../services/dispatcher.service';
 import { ConfirmarExclusaoDispatcherDialogComponent } from './confirmar-exclusao-dispatcher-dialog.component';
 
+const BANDEIRA_LOGOS: Record<string, string> = {
+  VISA: 'logo-visa.png',
+  MASTERCARD: 'logo-mastercard.png',
+};
+
 @Component({
   selector: 'app-buscar-dispatcher',
   standalone: true,
@@ -65,6 +70,19 @@ export class BuscarDispatcherComponent implements OnInit {
 
   ngOnInit(): void {
     this.carregar();
+  }
+
+  getBandeiraLogo(paymentNetwork: string): string {
+    return BANDEIRA_LOGOS[paymentNetwork?.toUpperCase()] ?? '';
+  }
+
+  onLogoError(event: Event, paymentNetwork: string): void {
+    const img = event.target as HTMLImageElement;
+    img.style.display = 'none';
+    const span = document.createElement('span');
+    span.className = 'badge bandeira-badge';
+    span.textContent = paymentNetwork;
+    img.parentNode?.replaceChild(span, img);
   }
 
   onFiltrar(): void {

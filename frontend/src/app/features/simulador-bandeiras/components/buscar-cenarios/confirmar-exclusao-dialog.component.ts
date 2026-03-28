@@ -63,6 +63,14 @@ import { MatIconModule } from '@angular/material/icon';
       margin: 0 0 24px;
     }
 
+    :host-context(html.dark-theme) .confirm-title {
+      color: #f3f4f6;
+    }
+
+    :host-context(html.dark-theme) .confirm-message {
+      color: #d1d5db;
+    }
+
     .confirm-actions {
       display: flex;
       gap: 10px;

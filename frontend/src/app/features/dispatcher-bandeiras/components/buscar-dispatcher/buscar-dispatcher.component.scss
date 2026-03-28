@@ -183,6 +183,18 @@
   color: var(--app-bandeira-color);
 }
 
+.bandeira-logo {
+  height: 28px;
+  max-width: 60px;
+  object-fit: contain;
+  display: block;
+
+  &[alt="VISA"] {
+    height: 38px;
+    max-width: 72px;
+  }
+}
+
 .transacao-actions {
   display: flex;
   gap: 6px;

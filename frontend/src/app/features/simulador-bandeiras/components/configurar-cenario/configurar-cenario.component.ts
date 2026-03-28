@@ -63,6 +63,7 @@ export class ConfigurarCenarioComponent implements OnInit {
   loading = signal(false);
   saving = signal(false);
   savedSuccessfully = signal(false);
+  canCreateNext = signal(false);
 
   private editingTransacaoId = signal<string | null>(null);
 
@@ -180,6 +181,8 @@ export class ConfigurarCenarioComponent implements OnInit {
   }
 
   onSalvarTransacao(): void {
+    const isNewTransacao = !this.editingTransacaoId();
+
     const fieldsMap = this.getRequestFieldsMap();
     if (Object.keys(fieldsMap).length === 0) {
       this.notif.warn('Adicione pelo menos um campo ISO');
@@ -238,6 +241,7 @@ export class ConfigurarCenarioComponent implements OnInit {
           this.saving.set(false);
           this.editingTransacaoId.set(result.id);
           this.savedSuccessfully.set(true);
+          this.canCreateNext.set(isNewTransacao);
           this.notif.success('Transação salva com sucesso');
 
           const saved: TransacaoItem = {
@@ -258,6 +262,28 @@ export class ConfigurarCenarioComponent implements OnInit {
           this.notif.error('Erro ao salvar transação');
         },
       });
+  }
+
+  onCriarProximo(): void {
+    this.cenario = null;
+    this.editingTransacaoId.set(null);
+    this.savedSuccessfully.set(false);
+    this.canCreateNext.set(false);
+
+    this.incluirForm.reset({
+      nomeProduto: '',
+      tag: '',
+      messageModel: '',
+      messageType: '',
+      bandeira: '',
+      descricao: '',
+      isoMessage: '',
+    });
+
+    this.mti.set('');
+    this.bitsForm.set(new FormGroup<Record<string, FormControl<string>>>({}));
+    this.sortedKeys.set([]);
+    this.updateAvailableBits();
   }
 
   onDispararFromIncluir(): void {

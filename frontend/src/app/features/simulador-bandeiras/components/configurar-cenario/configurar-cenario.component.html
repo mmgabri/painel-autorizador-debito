@@ -149,6 +149,15 @@
       mat-raised-button
       color="primary"
       class="itau-btn"
+      [disabled]="!canCreateNext()"
+      (click)="onCriarProximo()"
+    >
+      Criar próximo
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      class="itau-btn"
       [disabled]="!savedSuccessfully()"
       (click)="onDispararFromIncluir()"
     >
