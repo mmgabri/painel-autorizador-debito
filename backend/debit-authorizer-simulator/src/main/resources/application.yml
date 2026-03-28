@@ -7,9 +7,30 @@ spring:
     virtual:
       enabled: true
 
+  cassandra:
+    keyspace-name: presentekeyspaces
+    contact-points: cassandra.us-east-1.amazonaws.com
+    port: 9142
+    local-datacenter: us-east-1
+    schema-action: none
+    request:
+      timeout: 5s
+      consistency: LOCAL_QUORUM
+    connection:
+      connect-timeout: 5s
+      init-query-timeout: 5s
+
 server:
   port: 8081
 
 logging:
   level:
     br.com.mmgabri: info
+
+app:
+  keyspaces:
+    # false = app sobe sem Cassandra (NoOp adapter). true = conecta no AWS Keyspaces (requer credenciais AWS configuradas)
+    enabled: true
+    aws-region: us-east-1
+    default-codbanco: "341"
+    default-tpempres: "01"

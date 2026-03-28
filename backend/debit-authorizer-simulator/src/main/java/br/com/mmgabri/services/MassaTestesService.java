@@ -1,6 +1,7 @@
 package br.com.mmgabri.services;
 
 import br.com.mmgabri.adapters.csv.MassaTestesCsvAdapter;
+import br.com.mmgabri.adapters.keyspaces.KeyspacesAdapter;
 import br.com.mmgabri.domains.MassaTestesCsvRequest;
 import br.com.mmgabri.domains.MassaTestesCsvRow;
 import org.slf4j.Logger;
@@ -18,9 +19,11 @@ public class MassaTestesService {
     private static final Logger logger = LoggerFactory.getLogger(MassaTestesService.class);
 
     private final MassaTestesCsvAdapter csvAdapter;
+    private final KeyspacesAdapter keyspacesAdapter;
 
-    public MassaTestesService(MassaTestesCsvAdapter csvAdapter) {
+    public MassaTestesService(MassaTestesCsvAdapter csvAdapter, KeyspacesAdapter keyspacesAdapter) {
         this.csvAdapter = csvAdapter;
+        this.keyspacesAdapter = keyspacesAdapter;
     }
 
     public MassaTestesCsvRow save(MassaTestesCsvRequest request) {
@@ -74,6 +77,12 @@ public class MassaTestesService {
 
     public void carregarDadinho(String id) {
         logger.info("Carregar Dadinho acionado para massa de testes. id={}", id);
+        MassaTestesCsvRow massa = csvAdapter.findAll().stream()
+                .filter(row -> id.equals(row.getId()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Massa de testes não encontrada. id=" + id));
+        keyspacesAdapter.carregarDados(massa);
+        logger.info("Dadinho carregado com sucesso no Keyspaces. id={}", id);
     }
 
     private void mapRequestToRow(MassaTestesCsvRequest request, MassaTestesCsvRow row) {
