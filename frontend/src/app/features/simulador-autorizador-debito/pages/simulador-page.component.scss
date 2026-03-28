@@ -126,6 +126,10 @@
   }
 }
 
+.itau-tab.tab-group-separator {
+  margin-left: 10px;
+}
+
 :host-context(html.dark-theme) .itau-tab mat-icon {
   color: #fff;
 }

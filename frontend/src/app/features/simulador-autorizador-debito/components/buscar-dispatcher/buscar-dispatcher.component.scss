@@ -1,0 +1,236 @@
+:host {
+  display: block;
+}
+
+.itau-btn {
+  background-color: #ec7000 !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  padding: 0 28px !important;
+  height: 40px !important;
+  letter-spacing: 0.2px;
+  box-shadow: none !important;
+  transition: background-color 0.2s !important;
+
+  &:hover {
+    background-color: #d56500 !important;
+  }
+
+  &:disabled {
+    background-color: #ccc !important;
+    color: #fff !important;
+  }
+}
+
+.buscar-panel {
+  .filter-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+
+    .filter-field {
+      min-width: 200px;
+    }
+
+    .filter-nome {
+      flex: 1;
+      max-width: 240px;
+    }
+
+    .filter-microservico {
+      flex: 1;
+      max-width: 260px;
+    }
+
+    .filter-tag {
+      flex: 1;
+      max-width: 220px;
+    }
+
+    .filter-bandeira {
+      flex: 1;
+      max-width: 220px;
+    }
+
+    .filtrar-btn {
+      align-self: center;
+      height: 40px;
+      font-size: 13px;
+    }
+
+    .criar-btn {
+      align-self: center;
+      height: 40px;
+      font-size: 13px;
+      margin-left: auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+  }
+}
+
+.table-container {
+  overflow-x: auto;
+  border: 1px solid var(--app-border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.cenarios-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  .mat-mdc-header-row {
+    background: var(--app-surface-3);
+    height: 42px;
+  }
+
+  .mat-mdc-header-cell {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--app-text-secondary);
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--app-border);
+    padding: 0 14px;
+  }
+
+  .mat-mdc-row {
+    height: 52px;
+    background: var(--app-surface);
+    transition: background 0.15s;
+
+    &:hover {
+      background: var(--app-transacao-row-hover);
+    }
+  }
+
+  .mat-mdc-cell {
+    border-bottom: 1px solid var(--app-border);
+    padding: 0 14px;
+    font-size: 13px;
+    color: var(--app-text);
+  }
+
+  .mat-mdc-row:last-child .mat-mdc-cell {
+    border-bottom: none;
+  }
+
+  .mat-column-acoes {
+    width: 120px;
+    text-align: center;
+    background: inherit;
+  }
+}
+
+.cell-nome {
+  font-weight: 500;
+  color: var(--app-text-navy);
+}
+
+.cell-empty {
+  color: var(--app-text-muted);
+}
+
+.tag {
+  display: inline-block;
+  font-size: 11px;
+  background: var(--app-tag-bg);
+  color: var(--app-tag-color);
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.badge {
+  display: inline-block;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.model-single_message {
+  background: var(--app-model-single-bg);
+  color: var(--app-model-single-color);
+}
+
+.model-dual_message {
+  background: var(--app-model-dual-bg);
+  color: var(--app-model-dual-color);
+}
+
+.type-autorizacao,
+.type-autorização {
+  background: var(--app-type-auth-bg);
+  color: var(--app-type-auth-color);
+}
+
+.type-conciliacao,
+.type-conciliação {
+  background: var(--app-type-conc-bg);
+  color: var(--app-type-conc-color);
+}
+
+.bandeira-badge {
+  background: var(--app-bandeira-bg);
+  color: var(--app-bandeira-color);
+}
+
+.transacao-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+}
+
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--app-action-btn-idle-border);
+  background: transparent;
+  color: var(--app-action-btn-idle-color);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.1s;
+
+  ::ng-deep mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: inherit;
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.action-btn--disparar:hover,
+.action-btn--editar:hover,
+.action-btn--excluir:hover {
+  background: #ff6200;
+  border-color: #ff6200;
+  color: #fff;
+  transform: translateY(-1px);
+
+  ::ng-deep mat-icon {
+    color: #fff;
+  }
+}
+
+.empty-message {
+  text-align: center;
+  color: var(--app-text-muted);
+  padding: 32px 16px;
+  font-size: 14px;
+}

@@ -27,6 +27,22 @@
     <mat-icon>settings</mat-icon>
     Configurar Cenário
   </button>
+  <button
+    class="itau-tab tab-group-separator"
+    [class.active]="activeView() === 'buscarDispatcher' || activeView() === 'dispararEvento'"
+    (click)="onIrParaBuscarDispatcher()"
+  >
+    <mat-icon>search</mat-icon>
+    Pesquisar Dispatcher
+  </button>
+  <button
+    class="itau-tab"
+    [class.active]="activeView() === 'incluirDispatcher'"
+    (click)="onIrParaIncluirDispatcher()"
+  >
+    <mat-icon>settings</mat-icon>
+    Configurar Dispatcher
+  </button>
 </div>
 
 <div class="itau-tab-content">
@@ -51,6 +67,30 @@
       (voltou)="onVoltouDoDisparar()"
       (editou)="onEditouCenario($event)"
       (excluiu)="onExcluiuDoDisparar()"
+    />
+  }
+
+  @if (activeView() === 'buscarDispatcher') {
+    <app-buscar-dispatcher
+      (selecionou)="onSelecionouEvento($event)"
+      (editou)="onEditouEvento($event)"
+      (criarEvento)="onIrParaIncluirDispatcher()"
+    />
+  }
+
+  @if (activeView() === 'incluirDispatcher') {
+    <app-configurar-dispatcher
+      [evento]="eventoParaEditar()"
+      (disparar)="onDispararFromConfigurarDispatcher($event)"
+    />
+  }
+
+  @if (activeView() === 'dispararEvento') {
+    <app-disparar-evento
+      [evento]="eventoSelecionado()!"
+      (voltou)="onVoltouDoDispararEvento()"
+      (editou)="onEditouEvento($event)"
+      (excluiu)="onExcluiuDoDispararEvento()"
     />
   }
 </div>

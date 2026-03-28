@@ -1,0 +1,122 @@
+<div class="incluir-panel">
+  <div class="page-header">
+    <div class="page-header-icon">
+      <mat-icon>bolt</mat-icon>
+    </div>
+    <div class="page-header-text">
+      <h1 class="page-title">{{ evento ? 'Editar evento' : 'Criar evento' }}</h1>
+      <span class="page-subtitle">{{ evento ? 'Edite os dados do evento dispatcher' : 'Configure os dados do novo evento' }}</span>
+    </div>
+  </div>
+
+  <div class="campos-section">
+    <div class="campos-header">
+      <div class="campos-title">
+        <mat-icon class="campos-icon">receipt_long</mat-icon>
+        <span>Dados do Evento</span>
+      </div>
+    </div>
+    <form [formGroup]="form" class="campos-list">
+      <div class="cenario-grid">
+        <div class="header-row">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
+            <mat-label>Nome Produto</mat-label>
+            <input matInput formControlName="nomeProduto" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
+            <mat-label>Micro-serviço Alvo</mat-label>
+            <mat-select formControlName="targetMicroservice">
+              <mat-option></mat-option>
+              @for (svc of microserviceOptions; track svc) {
+                <mat-option [value]="svc">{{ svc }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="inline-row">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input campo-tag">
+            <mat-label>Tag</mat-label>
+            <input matInput formControlName="tag" maxlength="60" />
+          </mat-form-field>
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
+            <mat-label>Descrição</mat-label>
+            <input matInput formControlName="descricao" placeholder="Ex: Evento de compra via dispatcher" />
+          </mat-form-field>
+        </div>
+
+        <div class="toggles-row">
+          <div class="toggle-group-field">
+            <span class="toggle-label">Bandeira</span>
+            <mat-button-toggle-group formControlName="bandeira" class="itau-toggle-group">
+              @for (opt of bandeiraOptions; track opt) {
+                <mat-button-toggle [value]="opt">{{ opt }}</mat-button-toggle>
+              }
+            </mat-button-toggle-group>
+          </div>
+
+          <div class="toggle-group-field">
+            <span class="toggle-label">Message Model</span>
+            <mat-button-toggle-group formControlName="messageModel" class="itau-toggle-group">
+              @for (opt of messageModelOptions; track opt) {
+                <mat-button-toggle [value]="opt">{{ opt }}</mat-button-toggle>
+              }
+            </mat-button-toggle-group>
+          </div>
+
+          <div class="toggle-group-field">
+            <span class="toggle-label">Tipo Mensagem</span>
+            <mat-button-toggle-group formControlName="messageType" class="itau-toggle-group">
+              @for (opt of messageTypeOptions; track opt) {
+                <mat-button-toggle [value]="opt">{{ opt }}</mat-button-toggle>
+              }
+            </mat-button-toggle-group>
+          </div>
+        </div>
+      </div>
+
+      <div class="evento-input-row">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="evento-input-field">
+          <mat-label>Evento</mat-label>
+          <input matInput formControlName="eventoMessage" placeholder='Ex: {"campo":"valor", ...}' />
+        </mat-form-field>
+        <button
+          mat-icon-button
+          type="button"
+          class="visualizar-btn"
+          matTooltip="Visualizar / Editar JSON"
+          aria-label="Visualizar JSON"
+          (click)="onAbrirJsonViewer()"
+        >
+          <mat-icon>visibility</mat-icon>
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div class="save-actions">
+    <button
+      mat-raised-button
+      color="primary"
+      class="itau-btn"
+      [disabled]="saving()"
+      (click)="onSalvar()"
+    >
+      Salvar
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      class="itau-btn"
+      [disabled]="!savedSuccessfully()"
+      (click)="onDisparar()"
+    >
+      Disparar
+    </button>
+  </div>
+
+  @if (saving()) {
+    <mat-progress-bar mode="indeterminate" class="loading-bar"></mat-progress-bar>
+  }
+</div>
