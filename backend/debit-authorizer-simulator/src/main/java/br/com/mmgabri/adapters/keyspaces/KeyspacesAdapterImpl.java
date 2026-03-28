@@ -57,7 +57,7 @@ public class KeyspacesAdapterImpl implements KeyspacesAdapter {
         }
 
         CartaoEntity entity = CartaoEntity.builder()
-                .numeroCartao(massa.getCartao())
+                .numeroCartao("000" + massa.getCartao())
                 .textoComplementoCartao(montarTextoComplementoCartao(massa, idCartao))
                 .build();
         cartaoRepository.save(entity);
