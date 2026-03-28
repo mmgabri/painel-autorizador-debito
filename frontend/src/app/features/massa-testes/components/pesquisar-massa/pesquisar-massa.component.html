@@ -14,7 +14,7 @@
     <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filter-field filter-bandeira">
       <mat-label>Bandeira</mat-label>
       <mat-select [(ngModel)]="filtroBandeira">
-        <mat-option value=""></mat-option>
+        <mat-option value="">TODAS</mat-option>
         @for (opt of bandeiraOptions; track opt) {
           <mat-option [value]="opt">{{ opt }}</mat-option>
         }
@@ -24,7 +24,7 @@
     <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filter-field filter-modelo">
       <mat-label>Modelo Mensagem</mat-label>
       <mat-select [(ngModel)]="filtroModeloMensagem">
-        <mat-option value=""></mat-option>
+        <mat-option value="">TODOS</mat-option>
         @for (opt of modeloMensagemOptions; track opt) {
           <mat-option [value]="opt">{{ opt }}</mat-option>
         }
