@@ -17,6 +17,15 @@
         }
       </mat-select>
     </mat-form-field>
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filter-field filter-tipo-mensagem">
+      <mat-label>Filtrar por Tipo Mensagem</mat-label>
+      <mat-select [(ngModel)]="filtroTipoMensagem">
+        <mat-option value="">Todas</mat-option>
+        @for (opt of tipoMensagemOptions; track opt) {
+          <mat-option [value]="opt">{{ opt }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
     <button mat-raised-button color="primary" class="filtrar-btn itau-btn" (click)="onFiltrar()">
       Filtrar
     </button>
