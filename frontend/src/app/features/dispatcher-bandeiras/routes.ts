@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { DispatcherPageComponent } from './pages/dispatcher-page.component';
+import { DispatcherPageComponent } from './pages';
 
 export const DISPATCHER_ROUTES: Routes = [
   { path: '', component: DispatcherPageComponent },

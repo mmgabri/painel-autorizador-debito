@@ -48,11 +48,13 @@ export class BuscarCenariosComponent implements OnInit {
   filtroNome = '';
   filtroTag = '';
   filtroBandeira = '';
+  filtroTipoMensagem = '';
   loading = signal(false);
   transacoes = signal<TransacaoItem[]>([]);
 
   readonly displayedColumns = ['productName', 'paymentNetwork', 'messageModel', 'messageType', 'tag', 'acoes'];
   readonly bandeiraOptions = ['MASTERCARD', 'VISA'];
+  readonly tipoMensagemOptions = ['AUTORIZACAO', 'CONCILIACAO'];
 
   ngOnInit(): void {
     this.carregar();
@@ -72,7 +74,7 @@ export class BuscarCenariosComponent implements OnInit {
   }
 
   onFiltrar(): void {
-    this.carregar(this.filtroNome, this.filtroTag, this.filtroBandeira);
+    this.carregar(this.filtroNome, this.filtroTag, this.filtroBandeira, this.filtroTipoMensagem);
   }
 
   onSelecionar(item: TransacaoItem): void {
@@ -103,9 +105,9 @@ export class BuscarCenariosComponent implements OnInit {
     });
   }
 
-  carregar(nomeProduto?: string, tag?: string, bandeira?: string): void {
+  carregar(nomeProduto?: string, tag?: string, bandeira?: string, tipoMensagem?: string): void {
     this.loading.set(true);
-    this.isoParserService.consultarTransacoes(nomeProduto, tag, bandeira).subscribe({
+    this.isoParserService.consultarTransacoes(nomeProduto, tag, bandeira, tipoMensagem).subscribe({
       next: (list) => {
         this.loading.set(false);
         this.transacoes.set(list);
