@@ -3,10 +3,16 @@
     <button class="menu-toggle" (click)="sidenav.toggle()" aria-label="Menu">
       <mat-icon>menu</mat-icon>
     </button>
-    <div class="itau-logo">
-      <span class="itau-logo-text">itaú</span>
-    </div>
+    <img src="Itaú_Unibanco_logo_2023.svg.png" alt="Itaú" class="itau-logo-img" />
     <span class="header-title">Painel Autorizador Débito</span>
+  </div>
+  <div class="header-right">
+    <button class="menu-toggle theme-toggle"
+            (click)="themeService.toggle()"
+            [title]="themeService.isDark() ? 'Modo claro' : 'Modo escuro'"
+            [attr.aria-label]="themeService.isDark() ? 'Ativar modo claro' : 'Ativar modo escuro'">
+      <mat-icon>{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+    </button>
   </div>
 </header>
 
@@ -15,7 +21,7 @@
     <mat-nav-list>
       <a mat-list-item routerLink="/simulador" routerLinkActive="active-link">
         <mat-icon matListItemIcon>payment</mat-icon>
-        <span matListItemTitle>Simulador Autorizador Débito</span>
+        <span matListItemTitle>Simulador Bandeiras</span>
       </a>
       <a mat-list-item routerLink="/transacoes" routerLinkActive="active-link">
         <mat-icon matListItemIcon>receipt_long</mat-icon>

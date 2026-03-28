@@ -11,6 +11,16 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
+<script>
+  (function() {
+    var s = localStorage.getItem('app-theme');
+    if (s === 'dark' || (!s && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark-theme');
+    } else {
+      document.documentElement.classList.add('light-theme');
+    }
+  })();
+</script>
 <body>
   <app-root></app-root>
 </body>

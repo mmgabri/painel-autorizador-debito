@@ -22,8 +22,8 @@ h1 {
     font-size: 16px;
     font-weight: bold;
     line-height: 24px;
-    color: var(--mat-sys-on-surface, rgba(0, 0, 0, 0.87));
-    background: var(--mat-sys-surface, #fff);
+    color: var(--mat-sys-on-surface, var(--app-text));
+    background: var(--mat-sys-surface, var(--app-surface));
   }
 }
 
@@ -101,18 +101,18 @@ h1 {
   font-weight: 500;
 
   &.status-aprovada {
-    background-color: #e8f5e9;
-    color: #2e7d32;
+    background-color: var(--app-status-ok-bg);
+    color: var(--app-status-ok-color);
   }
 
   &.status-negada {
-    background-color: #ffebee;
-    color: #c62828;
+    background-color: var(--app-status-err-bg);
+    color: var(--app-status-err-color);
   }
 }
 
 .empty-text {
   text-align: center;
-  color: rgba(0, 0, 0, 0.54);
+  color: var(--app-text-muted);
   padding: 16px;
 }
