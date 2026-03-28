@@ -9,8 +9,15 @@ export const routes: Routes = [
       {
         path: 'simulador',
         loadChildren: () =>
-          import('./features/simulador-autorizador-debito/routes').then(
+          import('./features/simulador-bandeiras/routes').then(
             (m) => m.SIMULADOR_ROUTES,
+          ),
+      },
+      {
+        path: 'dispatcher',
+        loadChildren: () =>
+          import('./features/dispatcher-bandeiras/routes').then(
+            (m) => m.DISPATCHER_ROUTES,
           ),
       },
       {

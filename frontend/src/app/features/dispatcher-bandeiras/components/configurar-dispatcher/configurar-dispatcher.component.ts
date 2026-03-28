@@ -76,6 +76,7 @@ export class ConfigurarDispatcherComponent implements OnInit {
 
   saving = signal(false);
   savedSuccessfully = signal(false);
+  canCreateNext = signal(false);
   private editingEventoId = signal<string | null>(null);
 
   ngOnInit(): void {
@@ -112,6 +113,8 @@ export class ConfigurarDispatcherComponent implements OnInit {
   }
 
   onSalvar(): void {
+    const isNewEvento = !this.editingEventoId();
+
     const nomeProduto = this.form.controls.nomeProduto.value ?? '';
     if (!nomeProduto.trim()) {
       this.notif.warn('Informe o Nome do Produto');
@@ -163,6 +166,7 @@ export class ConfigurarDispatcherComponent implements OnInit {
         this.saving.set(false);
         this.editingEventoId.set(result.id);
         this.savedSuccessfully.set(true);
+        this.canCreateNext.set(isNewEvento);
         this.notif.success('Evento salvo com sucesso');
 
         const saved: DispatcherEventoItem = {
@@ -183,6 +187,24 @@ export class ConfigurarDispatcherComponent implements OnInit {
         this.saving.set(false);
         this.notif.error('Erro ao salvar evento');
       },
+    });
+  }
+
+  onCriarProximo(): void {
+    this.evento = null;
+    this.editingEventoId.set(null);
+    this.savedSuccessfully.set(false);
+    this.canCreateNext.set(false);
+
+    this.form.reset({
+      nomeProduto: '',
+      targetMicroservice: '',
+      tag: '',
+      messageModel: '',
+      messageType: '',
+      bandeira: '',
+      descricao: '',
+      eventoMessage: '',
     });
   }
 
