@@ -1,0 +1,200 @@
+<div class="disparar-panel">
+  <div class="page-header">
+    <div class="page-header-icon">
+      <mat-icon>bolt</mat-icon>
+    </div>
+    <div class="page-header-text">
+      <h1 class="page-title">Disparar evento</h1>
+      <span class="page-subtitle">Revise os dados e dispare o evento para o autorizador</span>
+    </div>
+  </div>
+
+  <!-- Dados do Evento -->
+  <div class="campos-section">
+    <div class="campos-header">
+      <div class="campos-title">
+        <mat-icon class="campos-icon">receipt_long</mat-icon>
+        <span>Dados do Evento</span>
+      </div>
+    </div>
+    <div class="campos-list">
+      <div class="cenario-grid">
+        <div class="header-row">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
+            <mat-label>Nome Produto</mat-label>
+            <input matInput [value]="evento.productName" readonly />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
+            <mat-label>Micro-serviço Alvo</mat-label>
+            <input matInput [value]="evento.targetMicroservice" readonly />
+          </mat-form-field>
+        </div>
+
+        <div class="inline-row">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input campo-tag">
+            <mat-label>Tag</mat-label>
+            <input matInput [value]="evento.tag" readonly />
+          </mat-form-field>
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
+            <mat-label>Descrição</mat-label>
+            <input matInput [value]="evento.description" readonly placeholder="—" />
+          </mat-form-field>
+        </div>
+
+        <div class="toggles-row">
+          <div class="toggle-group-field">
+            <span class="toggle-label">Bandeira</span>
+            <mat-button-toggle-group [value]="evento.paymentNetwork" class="itau-toggle-group" disabled>
+              <mat-button-toggle value="MASTERCARD">MASTERCARD</mat-button-toggle>
+              <mat-button-toggle value="VISA">VISA</mat-button-toggle>
+            </mat-button-toggle-group>
+          </div>
+          <div class="toggle-group-field">
+            <span class="toggle-label">Message Model</span>
+            <mat-button-toggle-group [value]="evento.messageModel" class="itau-toggle-group" disabled>
+              <mat-button-toggle value="SINGLE_MESSAGE">SINGLE_MESSAGE</mat-button-toggle>
+              <mat-button-toggle value="DUAL_MESSAGE">DUAL_MESSAGE</mat-button-toggle>
+            </mat-button-toggle-group>
+          </div>
+          <div class="toggle-group-field">
+            <span class="toggle-label">Tipo Mensagem</span>
+            <mat-button-toggle-group [value]="evento.messageType" class="itau-toggle-group" disabled>
+              <mat-button-toggle value="AUTORIZACAO">AUTORIZACAO</mat-button-toggle>
+              <mat-button-toggle value="CONCILIACAO">CONCILIACAO</mat-button-toggle>
+            </mat-button-toggle-group>
+          </div>
+        </div>
+      </div>
+
+      <div class="evento-input-row">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="evento-input-field">
+          <mat-label>Evento</mat-label>
+          <input matInput [value]="currentMessage()" readonly />
+        </mat-form-field>
+        <button
+          mat-icon-button
+          type="button"
+          class="visualizar-btn"
+          matTooltip="Visualizar / Editar JSON"
+          aria-label="Visualizar JSON"
+          (click)="onAbrirJsonViewer()"
+        >
+          <mat-icon>visibility</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Configurar Stages -->
+  <div class="campos-section stages-section">
+    <div class="campos-header">
+      <div class="campos-title">
+        <mat-icon class="campos-icon">stacked_line_chart</mat-icon>
+        <span>Configurar Stages</span>
+        <span class="campos-count">{{ stages().length }}</span>
+      </div>
+    </div>
+
+    <div class="stages-list">
+      <div class="stages-header-row">
+        <span class="stage-col-label">Duration (s)</span>
+        <span class="stage-col-label">TPS</span>
+        <span class="stage-col-action"></span>
+      </div>
+
+      @for (stage of stages(); track $index) {
+        <div class="stage-row">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="stage-field">
+            <input
+              matInput
+              type="number"
+              min="1"
+              [value]="stage.duration"
+              (input)="onStageDurationChange($index, +$any($event.target).value)"
+            />
+          </mat-form-field>
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="stage-field">
+            <input
+              matInput
+              type="number"
+              min="1"
+              [value]="stage.tps"
+              (input)="onStageTpsChange($index, +$any($event.target).value)"
+            />
+          </mat-form-field>
+          <div class="stage-actions">
+            <button
+              mat-icon-button
+              type="button"
+              class="stage-add-btn"
+              matTooltip="Adicionar stage"
+              aria-label="Adicionar stage"
+              (click)="onAdicionarStage()"
+            >
+              <mat-icon>add_circle_outline</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              type="button"
+              class="stage-remove-btn"
+              matTooltip="Remover stage"
+              aria-label="Remover stage"
+              [disabled]="stages().length <= 1"
+              (click)="onRemoverStage($index)"
+            >
+              <mat-icon>remove_circle_outline</mat-icon>
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Success overlay -->
+  @if (showSuccessOverlay()) {
+    <div class="success-overlay">
+      <div class="success-card">
+        <button mat-icon-button class="success-close-x" (click)="onFecharSuccessOverlay()" aria-label="Fechar">
+          <mat-icon>close</mat-icon>
+        </button>
+        <div class="success-icon-circle">
+          <mat-icon class="success-check-icon">check</mat-icon>
+        </div>
+        <p class="success-message">O evento foi disparado com sucesso. Verificar logs</p>
+        <div class="countdown-container">
+          <svg class="countdown-ring" viewBox="0 0 48 48">
+            <circle class="countdown-ring-bg" cx="24" cy="24" r="20" />
+            <circle
+              class="countdown-ring-progress"
+              cx="24"
+              cy="24"
+              r="20"
+              [style.stroke-dashoffset]="125.6 - (125.6 * countdownSeconds() / 3)"
+            />
+          </svg>
+          <span class="countdown-number">{{ countdownSeconds() }}</span>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (executing()) {
+    <mat-progress-bar mode="indeterminate" class="loading-bar"></mat-progress-bar>
+  }
+
+  <div class="disparar-actions">
+    <button mat-raised-button color="primary" class="itau-btn" (click)="onVoltar()">Voltar</button>
+    <button
+      mat-raised-button
+      color="primary"
+      class="itau-btn"
+      [disabled]="executing()"
+      (click)="onDisparar()"
+    >
+      Disparar
+    </button>
+    <button mat-raised-button color="primary" class="itau-btn" (click)="onEditar()">Editar</button>
+    <button mat-raised-button color="primary" class="itau-btn" (click)="onExcluir()">Excluir</button>
+  </div>
+</div>
