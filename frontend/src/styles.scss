@@ -6,8 +6,10 @@
 $itau-navy: #003366;
 $itau-orange: #ec7000;
 
+// ─── Light theme (default) ──────────────────────────────────────────────────
 html {
   height: 100%;
+
   @include mat.theme((
     color: (
       primary: mat.$azure-palette,
@@ -17,15 +19,171 @@ html {
     density: 0,
   ));
 
-  --mdc-outlined-text-field-outline-color: #666;
-  --mdc-outlined-text-field-hover-outline-color: #444;
+  // ── App color tokens ────────────────────────────────────────────────────
+  --app-bg:                  #fafafa;
+  --app-surface:             #ffffff;
+  --app-surface-2:           #f7f7f7;
+  --app-surface-3:           #f5f5f5;
+  --app-border:              #e0e0e0;
+  --app-border-light:        #e8e8e8;
+  --app-text:                #1a1a1a;
+  --app-text-secondary:      #888888;
+  --app-text-muted:          rgba(0, 0, 0, 0.54);
+  --app-text-empty:          rgba(0, 0, 0, 0.38);
+  --app-text-navy:           #003159;
+  --app-tab-bg:              #f0f0f0;
+  --app-tab-active-bg:       #ffffff;
+  --app-tab-hover-bg:        #e8e8e8;
+  --app-tab-border:          #d0d0d0;
+  --app-tab-content-bg:      #ffffff;
+  --app-legend-bg:           #ffffff;
+  --app-toggle-bg:           #efefef;
+  --app-toggle-checked-bg:   #ffffff;
+  --app-toggle-label-bg:     #ffffff;
+  --app-toggle-label-color:  #666666;
+  --app-toggle-border:       #666666;
+  --app-transacao-row-bg:    #fafafa;
+  --app-transacao-row-hover: #f0f0f0;
+  --app-action-btn-bg:       #f0f0f0;
+  --app-action-btn-color:    #555555;
+  --app-action-btn-border:   #dddddd;
+  --app-success-card-bg:     #ffffff;
+  --app-countdown-ring-bg:   #e0e0e0;
+  --app-tag-bg:              #e8eaf6;
+  --app-tag-color:           #3949ab;
+  --app-status-ok-bg:        #e8f5e9;
+  --app-status-ok-color:     #2e7d32;
+  --app-status-err-bg:       #ffebee;
+  --app-status-err-color:    #c62828;
+  --app-msg-model-bg:        #fff3e0;
+  --app-msg-model-color:     #e65100;
+  --app-msg-type-bg:         #e3f2fd;
+  --app-msg-type-color:      #1565c0;
+  --app-bandeira-bg:         #e8f5e9;
+  --app-bandeira-color:      #2e7d32;
+
+  // Modelo Mensagem
+  --app-model-single-bg:     #e8f0fe;
+  --app-model-single-color:  #1a56db;
+  --app-model-dual-bg:       #f3e8ff;
+  --app-model-dual-color:    #6b21a8;
+
+  // Tipo Mensagem
+  --app-type-auth-bg:        #ecfdf5;
+  --app-type-auth-color:     #065f46;
+  --app-type-conc-bg:        #fff7ed;
+  --app-type-conc-color:     #9a3412;
+
+  --app-action-btn-idle-border: #c0c8d4;
+  --app-action-btn-idle-color:  #7a8899;
+
+  --app-btn-primary-bg:    #ec7000;
+  --app-btn-primary-hover: #d56500;
+  --app-btn-primary-text:  #fff;
+
+  // Material outlined field borders
+  --mdc-outlined-text-field-outline-color:          #666;
+  --mdc-outlined-text-field-hover-outline-color:    #444;
   --mdc-outlined-text-field-disabled-outline-color: #ccc;
 }
 
+// ─── Dark theme ─────────────────────────────────────────────────────────────
+html.dark-theme {
+  color-scheme: dark;
+
+  @include mat.theme((
+    color: (
+      primary: mat.$azure-palette,
+      tertiary: mat.$orange-palette,
+      theme-type: dark,
+    ),
+  ));
+
+  --app-bg:                  #111418;
+  --app-surface:             #181d25;
+  --app-surface-2:           #141920;
+  --app-surface-3:           #1e2530;
+  --app-border:              #29303d;
+  --app-border-light:        #29303d;
+  --app-text:                #dde3ec;
+  --app-text-secondary:      #8a96a8;
+  --app-text-muted:          rgba(255, 255, 255, 0.42);
+  --app-text-empty:          rgba(255, 255, 255, 0.28);
+  --app-text-navy:           #7db3db;
+  --app-tab-bg:              #1e2530;
+  --app-tab-active-bg:       #181d25;
+  --app-tab-hover-bg:        #29303d;
+  --app-tab-border:          #29303d;
+  --app-tab-content-bg:      #181d25;
+  --app-legend-bg:           #181d25;
+  --app-toggle-bg:           #1e2530;
+  --app-toggle-checked-bg:   #29303d;
+  --app-toggle-label-bg:     #181d25;
+  --app-toggle-label-color:  #8a96a8;
+  --app-toggle-border:       #3a4455;
+  --app-transacao-row-bg:    #181d25;
+  --app-transacao-row-hover: #1e2530;
+  --app-action-btn-bg:       #1e2530;
+  --app-action-btn-color:    #a0aab8;
+  --app-action-btn-border:   #3a4455;
+  --app-success-card-bg:     #181d25;
+  --app-countdown-ring-bg:   #3a4455;
+  --app-tag-bg:              rgba(57, 73, 171, 0.22);
+  --app-tag-color:           #8fa4d8;
+  --app-status-ok-bg:        rgba(46, 125, 50, 0.2);
+  --app-status-ok-color:     #7bce8c;
+  --app-status-err-bg:       rgba(198, 40, 40, 0.2);
+  --app-status-err-color:    #e07070;
+  --app-msg-model-bg:        rgba(230, 81, 0, 0.16);
+  --app-msg-model-color:     #f0985c;
+  --app-msg-type-bg:         rgba(21, 101, 192, 0.16);
+  --app-msg-type-color:      #7ab2e0;
+  --app-bandeira-bg:         rgba(46, 125, 50, 0.18);
+  --app-bandeira-color:      #7bce8c;
+
+  // Modelo Mensagem
+  --app-model-single-bg:     rgba(26, 86, 219, 0.16);
+  --app-model-single-color:  #7aadff;
+  --app-model-dual-bg:       rgba(157, 23, 77, 0.16);
+  --app-model-dual-color:    #f0a0c8;
+
+  // Tipo Mensagem
+  --app-type-auth-bg:        rgba(6, 95, 70, 0.18);
+  --app-type-auth-color:     #6ee7b7;
+  --app-type-conc-bg:        rgba(154, 52, 18, 0.18);
+  --app-type-conc-color:     #fdba74;
+
+  --app-action-btn-idle-border: #3a4455;
+  --app-action-btn-idle-color:  #6b7a8d;
+
+  --app-btn-primary-bg:    #FF6200;
+  --app-btn-primary-hover: #ec7000;
+  --app-btn-primary-text:  #ffffff;
+
+  --mdc-outlined-text-field-outline-color:          #3a4455;
+  --mdc-outlined-text-field-hover-outline-color:    #556070;
+  --mdc-outlined-text-field-disabled-outline-color: #29303d;
+}
+
+// OS-level preference (only when no explicit class set by JS yet)
+@media (prefers-color-scheme: dark) {
+  html:not(.light-theme):not(.dark-theme) {
+    color-scheme: dark;
+
+    @include mat.theme((
+      color: (
+        primary: mat.$azure-palette,
+        tertiary: mat.$orange-palette,
+        theme-type: dark,
+      ),
+    ));
+  }
+}
+
 body {
-  color-scheme: light;
-  background-color: #fafafa;
-  color: #1a1a1a;
+  color-scheme: inherit;
+  background-color: var(--app-bg);
+  color: var(--app-text);
   font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   font-size: 13px;
   margin: 0;
@@ -34,12 +192,12 @@ body {
 
 // Global Itaú overrides
 
-// Buttons — primary uses Itaú orange (like "Enviar avaliação")
+// Buttons — primary color switches between orange (light) and Itaú blue (dark)
 .mat-mdc-raised-button.mat-primary,
 .mat-mdc-flat-button.mat-primary,
 .mat-mdc-unelevated-button.mat-primary {
-  --mdc-filled-button-container-color: #{$itau-orange};
-  --mdc-filled-button-label-text-color: #fff;
+  --mdc-filled-button-container-color: var(--app-btn-primary-bg);
+  --mdc-filled-button-label-text-color: var(--app-btn-primary-text);
   border-radius: 20px !important;
   font-weight: 500;
   font-size: 13px;
@@ -113,16 +271,32 @@ body {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06) !important;
 }
 
+// Dark mode: .itau-btn switches to Itaú blue
+// (higher specificity than component-level .itau-btn { ...!important })
+html.dark-theme .itau-btn {
+  background-color: var(--app-btn-primary-bg) !important;
+  color: var(--app-btn-primary-text) !important;
+
+  &:hover {
+    background-color: var(--app-btn-primary-hover) !important;
+  }
+
+  &:disabled {
+    background-color: #3a4455 !important;
+    color: rgba(255, 255, 255, 0.38) !important;
+  }
+}
+
 // Page headings (h1)
 h1 {
-  color: $itau-navy;
+  color: var(--app-text-navy);
   font-weight: 600;
   font-size: 18px;
   letter-spacing: -0.2px;
 }
 
 h2 {
-  color: $itau-navy;
+  color: var(--app-text-navy);
   font-weight: 500;
   font-size: 15px;
 }
