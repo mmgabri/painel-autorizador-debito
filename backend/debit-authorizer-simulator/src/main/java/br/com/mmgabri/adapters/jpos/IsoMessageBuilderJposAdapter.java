@@ -38,6 +38,7 @@ public class IsoMessageBuilderJposAdapter implements IsoMessageBuilderAdapter {
             this.clearingPackager = loadPackager(CLEARING_PACKAGER_FILE);
             this.visaPackager = loadPackager(VISA_PACKAGER_FILE);
         } catch (Exception e) {
+            logger.error("Failed to load ISO packager. code=ISO_INIT_ERROR, detail={}", e.getMessage(), e);
             throw new ApplicationException("ISO_INIT_ERROR", "Falha ao carregar o packager ISO. Verifique os arquivos de configuração.");
         }
     }
@@ -53,6 +54,7 @@ public class IsoMessageBuilderJposAdapter implements IsoMessageBuilderAdapter {
         } catch (ApplicationException e) {
             throw e;
         } catch (Exception e) {
+            logger.error("Unexpected error building ISO message. code=ISO_EXECUTE_ERROR, detail={}", e.getMessage(), e);
             throw new ApplicationException("ISO_EXECUTE_ERROR", "Erro inesperado ao construir mensagem ISO: " + e.getMessage());
         }
     }
@@ -64,6 +66,7 @@ public class IsoMessageBuilderJposAdapter implements IsoMessageBuilderAdapter {
         try {
             isoMsg.setMTI(request.getMti());
         } catch (Exception e) {
+            logger.error("Invalid MTI. code=ISO_INVALID_MTI, mti={}", request.getMti());
             throw new ApplicationException("ISO_INVALID_MTI", "MTI inválido: " + request.getMti());
         }
 
@@ -80,6 +83,7 @@ public class IsoMessageBuilderJposAdapter implements IsoMessageBuilderAdapter {
                 } catch (ApplicationException e) {
                     throw e;
                 } catch (Exception e) {
+                    logger.error("Error setting field. code=ISO_FIELD_SET_ERROR, field={}, detail={}", field, e.getMessage(), e);
                     throw new ApplicationException("ISO_FIELD_SET_ERROR", "Erro ao definir campo " + field + ": " + e.getMessage());
                 }
             }
@@ -89,6 +93,7 @@ public class IsoMessageBuilderJposAdapter implements IsoMessageBuilderAdapter {
         try {
             packed = isoMsg.pack();
         } catch (Exception e) {
+            logger.error("Failed to build ISO message. code=ISO_BUILD_ERROR, detail={}", e.getMessage(), e);
             throw new ApplicationException("ISO_BUILD_ERROR",
                     "Falha ao construir a mensagem ISO. Verifique se os campos fornecidos são compatíveis com o packager selecionado.");
         }
@@ -112,6 +117,7 @@ public class IsoMessageBuilderJposAdapter implements IsoMessageBuilderAdapter {
 
     private byte[] hexToBytes(String hex) {
         if (hex == null || hex.isBlank()) {
+            logger.error("Binary field hex value is blank. code=ISO_BIN_FIELD_BLANK");
             throw new ApplicationException("ISO_BIN_FIELD_BLANK", "O valor hex não pode ser vazio para campo binário.");
         }
 
@@ -126,6 +132,7 @@ public class IsoMessageBuilderJposAdapter implements IsoMessageBuilderAdapter {
             int high = Character.digit(cleanHex.charAt(i), 16);
             int low = Character.digit(cleanHex.charAt(i + 1), 16);
             if (high == -1 || low == -1) {
+                logger.error("Invalid hex character in binary field. code=ISO_BIN_FIELD_INVALID_CHARS");
                 throw new ApplicationException("ISO_BIN_FIELD_INVALID_CHARS", "O campo binário contém caracteres não hexadecimais.");
             }
             data[i / 2] = (byte) ((high << 4) + low);
@@ -167,3 +174,4 @@ public class IsoMessageBuilderJposAdapter implements IsoMessageBuilderAdapter {
         return value.length() % 2 == 0 && EBCDIC_HEX_BYTES_PATTERN.matcher(value).matches();
     }
 }
+

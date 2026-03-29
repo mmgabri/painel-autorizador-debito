@@ -1,6 +1,8 @@
 package br.com.mmgabri.services;
 
 import br.com.mmgabri.exceptions.ApplicationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.Charset;
@@ -9,6 +11,7 @@ import java.util.Locale;
 @Service
 public class EbcdicConverterService {
 
+    private static final Logger logger = LoggerFactory.getLogger(EbcdicConverterService.class);
     private static final Charset EBCDIC_CHARSET = Charset.forName("Cp037");
 
     public String hexEbcdicToText(String rawHexInput) {
@@ -19,6 +22,7 @@ public class EbcdicConverterService {
 
     public String textToHexEbcdic(String text) {
         if (text == null || text.isBlank()) {
+            logger.error("Text for EBCDIC conversion is blank. code=EBCDIC_TEXT_BLANK");
             throw new ApplicationException("EBCDIC_TEXT_BLANK", "O texto para conversão não pode ser vazio.");
         }
 
@@ -28,6 +32,7 @@ public class EbcdicConverterService {
 
     private String normalizeHex(String rawHexInput) {
         if (rawHexInput == null || rawHexInput.isBlank()) {
+            logger.error("Hex EBCDIC input is blank. code=EBCDIC_HEX_BLANK");
             throw new ApplicationException("EBCDIC_HEX_BLANK", "O campo hexEbcdic não pode ser vazio.");
         }
 
@@ -42,10 +47,12 @@ public class EbcdicConverterService {
         String hex = value.replaceAll("\\s+", "").toUpperCase(Locale.ROOT);
 
         if (hex.isBlank()) {
+            logger.error("Hex EBCDIC input is blank after normalization. code=EBCDIC_HEX_BLANK");
             throw new ApplicationException("EBCDIC_HEX_BLANK", "O campo hexEbcdic não pode ser vazio.");
         }
 
         if (hex.length() % 2 != 0) {
+            logger.error("Invalid hex length (odd number of characters). code=EBCDIC_HEX_ODD_LENGTH, hex={}", hex);
             throw new ApplicationException("EBCDIC_HEX_ODD_LENGTH", "Hex inválido: número ímpar de caracteres.");
         }
 
@@ -53,6 +60,7 @@ public class EbcdicConverterService {
             char c = hex.charAt(i);
             boolean isHex = (c >= '0' && c <= '9') || (c >= 'A' && c <= 'F');
             if (!isHex) {
+                logger.error("Invalid hex character found. code=EBCDIC_HEX_INVALID_CHARS, char={}", c);
                 throw new ApplicationException("EBCDIC_HEX_INVALID_CHARS", "Hex inválido: contém caracteres não hexadecimais.");
             }
         }

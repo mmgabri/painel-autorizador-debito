@@ -50,17 +50,20 @@ public class TestDataService {
                 return row;
             }
         }
+        logger.error("Test data not found for update. code=MASSA_NOT_FOUND, id={}", id);
         throw new ApplicationException("MASSA_NOT_FOUND", "Massa de testes não encontrada para atualização. id=" + id);
     }
 
     public void deleteById(String id) {
         if (id == null || id.isBlank()) {
+            logger.error("Blank ID received for deletion. code=MASSA_BLANK_ID");
             throw new ApplicationException("MASSA_BLANK_ID", "O ID não pode ser vazio para exclusão.");
         }
         String idTrimmed = id.trim();
         List<TestDataCsvRow> all = csvAdapter.findAll();
         boolean removed = all.removeIf(row -> idTrimmed.equals(row.getId()));
         if (!removed) {
+            logger.error("Test data not found for deletion. code=MASSA_NOT_FOUND, id={}", idTrimmed);
             throw new ApplicationException("MASSA_NOT_FOUND", "Massa de testes não encontrada para exclusão. id=" + idTrimmed);
         }
         csvAdapter.replaceAll(all);
@@ -81,7 +84,10 @@ public class TestDataService {
         TestDataCsvRow testData = csvAdapter.findAll().stream()
                 .filter(row -> id.equals(row.getId()))
                 .findFirst()
-                .orElseThrow(() -> new ApplicationException("MASSA_NOT_FOUND", "Massa de testes não encontrada. id=" + id));
+                .orElseThrow(() -> {
+                    logger.error("Test data not found for loading. code=MASSA_NOT_FOUND, id={}", id);
+                    return new ApplicationException("MASSA_NOT_FOUND", "Massa de testes não encontrada. id=" + id);
+                });
         keyspacesAdapter.loadData(testData);
         logger.info("Test data loaded successfully into Keyspaces. id={}", id);
     }

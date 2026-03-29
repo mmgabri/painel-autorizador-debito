@@ -2,6 +2,8 @@ package br.com.mmgabri.adapters.csv;
 
 import br.com.mmgabri.domains.TestScenarioCsvRow;
 import br.com.mmgabri.exceptions.ApplicationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +17,8 @@ import java.util.List;
 
 @Component
 public class TestScenarioCsvAdapterImpl implements TestScenarioCsvAdapter {
+
+    private static final Logger logger = LoggerFactory.getLogger(TestScenarioCsvAdapterImpl.class);
 
     private static final String HEADER = "id,nome_produto,modelo_mensagem,tipo_mensagem,bandeira,tag,descricao,mensagem,updated_at";
 
@@ -33,6 +37,7 @@ public class TestScenarioCsvAdapterImpl implements TestScenarioCsvAdapter {
             Files.writeString(csvPath, toCsvLine(cenario) + System.lineSeparator(), StandardCharsets.UTF_8,
                     java.nio.file.StandardOpenOption.APPEND);
         } catch (IOException e) {
+            logger.error("Error writing to CSV file. code=CSV_WRITE_ERROR, path={}, detail={}", csvPath, e.getMessage(), e);
             throw new ApplicationException("CSV_WRITE_ERROR", "Erro ao escrever no arquivo CSV: " + csvPath);
         }
     }
@@ -52,6 +57,7 @@ public class TestScenarioCsvAdapterImpl implements TestScenarioCsvAdapter {
                     java.nio.file.StandardOpenOption.TRUNCATE_EXISTING,
                     java.nio.file.StandardOpenOption.WRITE);
         } catch (IOException e) {
+            logger.error("Error rewriting CSV file. code=CSV_REWRITE_ERROR, path={}, detail={}", csvPath, e.getMessage(), e);
             throw new ApplicationException("CSV_REWRITE_ERROR", "Erro ao reescrever o arquivo CSV: " + csvPath);
         }
     }
@@ -98,6 +104,7 @@ public class TestScenarioCsvAdapterImpl implements TestScenarioCsvAdapter {
             }
             return result;
         } catch (IOException e) {
+            logger.error("Error reading CSV file. code=CSV_READ_ERROR, path={}, detail={}", csvPath, e.getMessage(), e);
             throw new ApplicationException("CSV_READ_ERROR", "Erro ao ler o arquivo CSV: " + csvPath);
         }
     }
@@ -131,6 +138,7 @@ public class TestScenarioCsvAdapterImpl implements TestScenarioCsvAdapter {
                 Files.writeString(csvPath, HEADER + System.lineSeparator(), StandardCharsets.UTF_8);
             }
         } catch (IOException e) {
+            logger.error("Error initializing CSV file. code=CSV_INIT_ERROR, path={}, detail={}", csvPath, e.getMessage(), e);
             throw new ApplicationException("CSV_INIT_ERROR", "Erro ao inicializar o arquivo CSV: " + csvPath);
         }
     }
@@ -140,8 +148,11 @@ public class TestScenarioCsvAdapterImpl implements TestScenarioCsvAdapter {
             return "";
         }
 
-        String escaped = value.replace("\"", "\"\"");
-        if (escaped.contains(",") || escaped.contains("\"") || escaped.contains("\n") || escaped.contains("\r")) {
+        // Remove line breaks to ensure the value always stays on a single CSV line
+        String sanitized = value.replace("\r\n", " ").replace("\r", " ").replace("\n", " ");
+
+        String escaped = sanitized.replace("\"", "\"\"");
+        if (escaped.contains(",") || escaped.contains("\"")) {
             return "\"" + escaped + "\"";
         }
         return escaped;
