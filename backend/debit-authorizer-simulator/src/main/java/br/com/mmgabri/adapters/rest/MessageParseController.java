@@ -27,6 +27,7 @@ public class MessageParseController {
     @PostMapping("/parse")
     public ResponseEntity<?> parse(@RequestBody MessageParseRequest request) {
         try {
+            logger.debug("Request received to parse");
             var response = processMessage.parse(request);
             logger.info("Message parse successfully.");
             return ResponseEntity.ok(response);
@@ -41,6 +42,7 @@ public class MessageParseController {
     @PostMapping("/build")
     public ResponseEntity<?> build(@RequestBody MessageBuildRequest request) {
         try {
+            logger.debug("Request received to build");
             var response = processMessage.build(request);
             logger.info("Message built successfully.");
             return ResponseEntity.ok(response);

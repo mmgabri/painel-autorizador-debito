@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class DispatcherEventoExecutarRequest {
+public class DispatcherEventExecutionRequest {
 
     private String id;
     private String productName;
@@ -16,5 +16,5 @@ public class DispatcherEventoExecutarRequest {
     private String tag;
     private String description;
     private String message;
-    private List<DispatcherEventoStage> stages;
+    private List<DispatcherEventStage> stages;
 }

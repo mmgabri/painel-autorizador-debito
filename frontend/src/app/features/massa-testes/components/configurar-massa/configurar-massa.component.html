@@ -23,23 +23,23 @@
         <div class="toggles-row">
           <div class="toggle-group-field">
             <span class="toggle-label">Bandeira</span>
-            <mat-button-toggle-group formControlName="bandeira" class="itau-toggle-group">
+            <mat-button-toggle-group formControlName="paymentNetwork" class="itau-toggle-group">
               @for (opt of bandeiraOptions; track opt) {
                 <mat-button-toggle [value]="opt">{{ opt }}</mat-button-toggle>
               }
             </mat-button-toggle-group>
-            @if (form.controls.bandeira.touched && form.controls.bandeira.invalid) {
+            @if (form.controls.paymentNetwork.touched && form.controls.paymentNetwork.invalid) {
               <mat-error class="toggle-error">Selecione uma bandeira</mat-error>
             }
           </div>
           <div class="toggle-group-field">
             <span class="toggle-label">Modelo de Mensagem</span>
-            <mat-button-toggle-group formControlName="modeloMensagem" class="itau-toggle-group">
+            <mat-button-toggle-group formControlName="messageModel" class="itau-toggle-group">
               @for (opt of modeloMensagemOptions; track opt) {
                 <mat-button-toggle [value]="opt">{{ opt }}</mat-button-toggle>
               }
             </mat-button-toggle-group>
-            @if (form.controls.modeloMensagem.touched && form.controls.modeloMensagem.invalid) {
+            @if (form.controls.messageModel.touched && form.controls.messageModel.invalid) {
               <mat-error class="toggle-error">Selecione um modelo</mat-error>
             }
           </div>
@@ -56,7 +56,7 @@
 
           <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
             <mat-label>Descrição</mat-label>
-            <input matInput formControlName="descricao" />
+            <input matInput formControlName="description" />
           </mat-form-field>
         </div>
       </div>
@@ -73,68 +73,68 @@
       <div class="campos-list">
         <mat-form-field appearance="outline" class="campo-input">
           <mat-label>Cartão</mat-label>
-          <input matInput formControlName="cartao" placeholder="Número do cartão" maxlength="19" (input)="filterDigits($event, 'cartao')" />
-          @if (form.controls.cartao.hasError('required')) {
+          <input matInput formControlName="cardNumber" placeholder="Número do cartão" maxlength="19" (input)="filterDigits($event, 'cardNumber')" />
+          @if (form.controls.cardNumber.hasError('required')) {
             <mat-error>Campo obrigatório</mat-error>
-          } @else if (form.controls.cartao.hasError('maxlength')) {
+          } @else if (form.controls.cardNumber.hasError('maxlength')) {
             <mat-error>Máximo 19 dígitos</mat-error>
-          } @else if (form.controls.cartao.hasError('pattern')) {
+          } @else if (form.controls.cardNumber.hasError('pattern')) {
             <mat-error>Somente números</mat-error>
           }
         </mat-form-field>
 
         <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
           <mat-label>Data Vencimento</mat-label>
-          <input matInput formControlName="dataVencimento" placeholder="11-10-2035" />
-          @if (form.controls.dataVencimento.hasError('required')) {
+          <input matInput formControlName="expiryDate" placeholder="11-10-2035" />
+          @if (form.controls.expiryDate.hasError('required')) {
             <mat-error>Campo obrigatório</mat-error>
           }
         </mat-form-field>
 
         <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
           <mat-label>Código Funcionalidade Cartão</mat-label>
-          <input matInput formControlName="codigoFuncionalidadeCartao" />
-          @if (form.controls.codigoFuncionalidadeCartao.hasError('required')) {
+          <input matInput formControlName="cardFunctionalityCode" />
+          @if (form.controls.cardFunctionalityCode.hasError('required')) {
             <mat-error>Campo obrigatório</mat-error>
           }
         </mat-form-field>
 
         <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
           <mat-label>Código Serviço Primeiro Dígito</mat-label>
-          <input matInput formControlName="codigoServicoPrimeiroDigito" />
-          @if (form.controls.codigoServicoPrimeiroDigito.hasError('required')) {
+          <input matInput formControlName="firstDigitServiceCode" />
+          @if (form.controls.firstDigitServiceCode.hasError('required')) {
             <mat-error>Campo obrigatório</mat-error>
           }
         </mat-form-field>
 
         <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
           <mat-label>Código Situação</mat-label>
-          <input matInput formControlName="codigoSituacao" />
-          @if (form.controls.codigoSituacao.hasError('required')) {
+          <input matInput formControlName="situationCode" />
+          @if (form.controls.situationCode.hasError('required')) {
             <mat-error>Campo obrigatório</mat-error>
           }
         </mat-form-field>
 
         <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
           <mat-label>Código Status</mat-label>
-          <input matInput formControlName="codigoStatus" />
-          @if (form.controls.codigoStatus.hasError('required')) {
+          <input matInput formControlName="statusCode" />
+          @if (form.controls.statusCode.hasError('required')) {
             <mat-error>Campo obrigatório</mat-error>
           }
         </mat-form-field>
 
         <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
           <mat-label>Código Tecnologia</mat-label>
-          <input matInput formControlName="codigoTecnologia" />
-          @if (form.controls.codigoTecnologia.hasError('required')) {
+          <input matInput formControlName="technologyCode" />
+          @if (form.controls.technologyCode.hasError('required')) {
             <mat-error>Campo obrigatório</mat-error>
           }
         </mat-form-field>
 
         <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
           <mat-label>Código Tipo</mat-label>
-          <input matInput formControlName="codigoTipo" />
-          @if (form.controls.codigoTipo.hasError('required')) {
+          <input matInput formControlName="typeCode" />
+          @if (form.controls.typeCode.hasError('required')) {
             <mat-error>Campo obrigatório</mat-error>
           }
         </mat-form-field>
@@ -152,36 +152,36 @@
       <div class="campos-list">
         <mat-form-field appearance="outline" class="campo-input">
           <mat-label>ID Conta</mat-label>
-          <input matInput formControlName="idConta" maxlength="36" (input)="filterAlphanumeric($event, 'idConta')" />
-          @if (form.controls.idConta.hasError('required')) {
+          <input matInput formControlName="accountId" maxlength="36" (input)="filterAlphanumeric($event, 'accountId')" />
+          @if (form.controls.accountId.hasError('required')) {
             <mat-error>Campo obrigatório</mat-error>
-          } @else if (form.controls.idConta.hasError('maxlength')) {
+          } @else if (form.controls.accountId.hasError('maxlength')) {
             <mat-error>Máximo 36 caracteres</mat-error>
-          } @else if (form.controls.idConta.hasError('pattern')) {
+          } @else if (form.controls.accountId.hasError('pattern')) {
             <mat-error>Somente letras e números</mat-error>
           }
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="campo-input">
           <mat-label>Agência</mat-label>
-          <input matInput formControlName="agencia" maxlength="4" (input)="filterDigits($event, 'agencia')" />
-          @if (form.controls.agencia.hasError('required')) {
+          <input matInput formControlName="agency" maxlength="4" (input)="filterDigits($event, 'agency')" />
+          @if (form.controls.agency.hasError('required')) {
             <mat-error>Campo obrigatório</mat-error>
-          } @else if (form.controls.agencia.hasError('maxlength')) {
+          } @else if (form.controls.agency.hasError('maxlength')) {
             <mat-error>Máximo 4 dígitos</mat-error>
-          } @else if (form.controls.agencia.hasError('pattern')) {
+          } @else if (form.controls.agency.hasError('pattern')) {
             <mat-error>Somente números</mat-error>
           }
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="campo-input">
           <mat-label>Conta</mat-label>
-          <input matInput formControlName="conta" maxlength="7" (input)="filterDigits($event, 'conta')" />
-          @if (form.controls.conta.hasError('required')) {
+          <input matInput formControlName="account" maxlength="7" (input)="filterDigits($event, 'account')" />
+          @if (form.controls.account.hasError('required')) {
             <mat-error>Campo obrigatório</mat-error>
-          } @else if (form.controls.conta.hasError('maxlength')) {
+          } @else if (form.controls.account.hasError('maxlength')) {
             <mat-error>Máximo 7 dígitos</mat-error>
-          } @else if (form.controls.conta.hasError('pattern')) {
+          } @else if (form.controls.account.hasError('pattern')) {
             <mat-error>Somente números</mat-error>
           }
         </mat-form-field>
@@ -200,66 +200,66 @@
 
         <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
           <mat-label>Sufixo</mat-label>
-          <input matInput formControlName="sufixo" />
-          @if (form.controls.sufixo.hasError('required')) {
+          <input matInput formControlName="suffix" />
+          @if (form.controls.suffix.hasError('required')) {
             <mat-error>Campo obrigatório</mat-error>
           }
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="campo-input">
           <mat-label>Titular</mat-label>
-          <input matInput formControlName="titular" maxlength="6" (input)="filterDigits($event, 'titular')" />
-          @if (form.controls.titular.hasError('required')) {
+          <input matInput formControlName="accountHolder" maxlength="6" (input)="filterDigits($event, 'accountHolder')" />
+          @if (form.controls.accountHolder.hasError('required')) {
             <mat-error>Campo obrigatório</mat-error>
-          } @else if (form.controls.titular.hasError('maxlength')) {
+          } @else if (form.controls.accountHolder.hasError('maxlength')) {
             <mat-error>Máximo 6 dígitos</mat-error>
-          } @else if (form.controls.titular.hasError('pattern')) {
+          } @else if (form.controls.accountHolder.hasError('pattern')) {
             <mat-error>Somente números</mat-error>
           }
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="campo-input">
           <mat-label>ID Categoria</mat-label>
-          <input matInput formControlName="idCategoria" maxlength="3" (input)="filterDigits($event, 'idCategoria')" />
-          @if (form.controls.idCategoria.hasError('required')) {
+          <input matInput formControlName="categoryId" maxlength="3" (input)="filterDigits($event, 'categoryId')" />
+          @if (form.controls.categoryId.hasError('required')) {
             <mat-error>Campo obrigatório</mat-error>
-          } @else if (form.controls.idCategoria.hasError('maxlength')) {
+          } @else if (form.controls.categoryId.hasError('maxlength')) {
             <mat-error>Máximo 3 dígitos</mat-error>
-          } @else if (form.controls.idCategoria.hasError('pattern')) {
+          } @else if (form.controls.categoryId.hasError('pattern')) {
             <mat-error>Somente números</mat-error>
           }
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="campo-input">
           <mat-label>Código Segmento</mat-label>
-          <input matInput formControlName="codigoSegmento" maxlength="4" />
-          @if (form.controls.codigoSegmento.hasError('required')) {
+          <input matInput formControlName="segmentCode" maxlength="4" />
+          @if (form.controls.segmentCode.hasError('required')) {
             <mat-error>Campo obrigatório</mat-error>
-          } @else if (form.controls.codigoSegmento.hasError('maxlength')) {
+          } @else if (form.controls.segmentCode.hasError('maxlength')) {
             <mat-error>Máximo 4 caracteres</mat-error>
           }
         </mat-form-field>
 
         <div class="toggle-group-field toggle-standalone">
           <span class="toggle-label">Tipo Conta</span>
-          <mat-button-toggle-group formControlName="tipoConta" class="itau-toggle-group">
+          <mat-button-toggle-group formControlName="accountType" class="itau-toggle-group">
             @for (opt of tipoContaOptions; track opt) {
               <mat-button-toggle [value]="opt">{{ opt }}</mat-button-toggle>
             }
           </mat-button-toggle-group>
-          @if (form.controls.tipoConta.touched && form.controls.tipoConta.invalid) {
+          @if (form.controls.accountType.touched && form.controls.accountType.invalid) {
             <mat-error class="toggle-error">Selecione o tipo de conta</mat-error>
           }
         </div>
 
         <div class="toggle-group-field toggle-standalone">
           <span class="toggle-label">Código Tipo Pessoa</span>
-          <mat-button-toggle-group formControlName="codigoTipoPessoa" class="itau-toggle-group">
+          <mat-button-toggle-group formControlName="personTypeCode" class="itau-toggle-group">
             @for (opt of tipoPessoaOptions; track opt) {
               <mat-button-toggle [value]="opt">{{ opt }}</mat-button-toggle>
             }
           </mat-button-toggle-group>
-          @if (form.controls.codigoTipoPessoa.touched && form.controls.codigoTipoPessoa.invalid) {
+          @if (form.controls.personTypeCode.touched && form.controls.personTypeCode.invalid) {
             <mat-error class="toggle-error">Selecione o tipo de pessoa</mat-error>
           }
         </div>

@@ -48,7 +48,7 @@ Three services communicate as follows:
 ```
 Angular Frontend (4200)
   ├── apiBaseUrl       → Node.js/Express mock (3000)  [consulta-transacoes, dashboard-debito]
-  └── apiBaseUrlJava   → Spring Boot Java (8081)       [simulador-autorizador-debito, ISO 8583]
+  └── apiBaseUrlJava   → Spring Boot Java (8081)       [simulador-autorizador-debito, massa-testes, ISO 8583]
 ```
 
 Both URLs are configured in `frontend/src/app/environments/environment.ts`.
@@ -60,6 +60,7 @@ src/app/
 ├── shared/        # Reusable components, pipes, directives, validators
 └── features/
     ├── simulador-autorizador-debito/  # ISO 8583 simulator → Java backend
+    ├── massa-testes/                  # Test data (card/account) management → Java backend
     ├── consulta-transacoes/           # Transaction history → Node backend
     └── dashboard-debito/              # Metrics dashboard → Node backend
 ```
@@ -67,15 +68,32 @@ Each feature has `pages/`, `components/`, `services/`, `models/`, `routes.ts`. F
 
 ### Java Backend Structure (Spring Boot)
 Layered architecture:
-- **Adapters**: REST controllers, CSV parsers, ISO 8583 message builders/parsers (using JPOS 2.1.9)
-- **Services**: Business logic for message dispatching and scenario management
+- **Adapters**: REST controllers, CSV parsers, ISO 8583 message builders/parsers (JPOS 2.1.9), Keyspaces (Cassandra)
+- **Services**: Business logic for message dispatching, test scenario management, and test data management
 - **Domains**: Entity models and enums
-- Uses **Apache Camel 4.8.4** for message transformation, **Virtual Threads** (Java 25) for concurrency
+
+Key technical choices:
+- **Apache Camel 4.8.4** with `@CsvRecord`/`@DataField` (Bindy) for positional CSV parsing of ISO 8583 message types (T464 for Mastercard, TCR for Visa)
+- **Virtual Threads** enabled via `spring.threads.virtual.enabled: true` (Java 25)
+- **Cassandra (AWS Keyspaces)** is optional — toggled by `app.keyspaces.enabled` in `application.yml`. When disabled, a NoOp adapter is used so the app runs without any Cassandra connection.
+- `dev` profile connects to a **local Cassandra** (localhost:9042, no SSL/SigV4); `hom` profile connects to **AWS Keyspaces** (SSL + SigV4 via `ssl-enabled: true`).
+- To run a local Cassandra for dev: `docker compose -f infra/docker/docker-compose-keyspaces-local.yml up`
+
+### Backend Mock Structure (Node.js/Express)
+Routes prefixed with `/api`: `iso8583`, `transacao`, `consulta`, `dashboard`. Test data stored in-memory using `Map<string, Transacao>`. CORS restricted to `http://localhost:4200`.
 
 ### Data Persistence
-Test scenarios are stored in `cenarios_testes.csv` at the repo root. This file is Docker-volume-mounted into the Java container at `/app/data/cenarios_testes.csv`. Changes made via the UI are persisted directly to this CSV.
+Three CSV files are used for persistence, all at the repo root and Docker-volume-mounted into the Java container at `/app/data/`:
 
-CSV fields: `id`, `product_name`, `message_model` (SINGLE_MESSAGE/DUAL_MESSAGE), `message_type` (AUTORIZACAO/CONCILIACAO), `payment_network` (MASTERCARD/VISA), `tag`, `description`, `message` (ISO 8583 hex), `updated_at`.
+| File | Purpose |
+|------|---------|
+| `cenarios_testes.csv` | ISO 8583 test scenarios (main simulator) |
+| `massa_testes.csv` | Card/account test data for massa-testes feature |
+| `dispatcher_events.csv` | Dispatcher event definitions |
+
+**cenarios_testes.csv fields:** `id`, `product_name`, `message_model` (SINGLE_MESSAGE/DUAL_MESSAGE), `message_type` (AUTORIZACAO/CONCILIACAO), `payment_network` (MASTERCARD/VISA), `tag`, `description`, `message` (ISO 8583 hex), `updated_at`.
+
+**massa_testes.csv fields:** `id`, `payment_network`, `message_model`, `tag`, `description`, `card_number`, `expiry_date`, `card_functionality_code`, `first_digit_service_code`, `situation_code`, `status_code`, `technology_code`, `type_code`, `account_id`, `agency`, `account`, `dac`, `suffix`, `account_type`, `account_holder`, `category_id`, `segment_code`, `person_type_code`, `updated_at`.
 
 ## Frontend Coding Patterns
 
@@ -99,7 +117,12 @@ CSV fields: `id`, `product_name`, `message_model` (SINGLE_MESSAGE/DUAL_MESSAGE),
 
 **SCSS:** Global styles only in `src/styles.scss`. Component styles in their own `.scss` file.
 
-**Tests (Vitest):** Services with HTTP → use `HttpTestingController`. Components → basic render + main interaction. Every new feature needs at least one service test and one component test.
+**Formatting:** Prettier is configured (printWidth 100, singleQuote, angular HTML parser). Run `npx prettier --write` on changed files.
+
+**Tests (Vitest):**
+- Services with HTTP: use `provideHttpClient()` + `provideHttpClientTesting()` + `HttpTestingController`; call `httpMock.verify()` in `afterEach`
+- Components: add `provideNoopAnimations()` alongside HTTP providers; test render + key interactions
+- Every new feature needs at least one service test and one component test
 
 ## What NOT to Do (Frontend)
 

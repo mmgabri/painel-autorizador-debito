@@ -4,7 +4,6 @@ import br.com.mmgabri.domains.MessageBuildRequest;
 import br.com.mmgabri.domains.enuns.MessageParseTypeEnum;
 import br.com.mmgabri.exceptions.ApplicationException;
 import br.com.mmgabri.services.EbcdicConverterService;
-import lombok.SneakyThrows;
 import org.jpos.iso.ISOBasePackager;
 import org.jpos.iso.ISOFieldPackager;
 import org.jpos.iso.ISOMsg;
@@ -43,36 +42,45 @@ public class IsoMessageBuilderJposAdapter implements IsoMessageBuilderAdapter {
         }
     }
 
-    @SneakyThrows
     @Override
     public String execute(MessageBuildRequest request, MessageParseTypeEnum parseType) {
-        switch (parseType) {
-            case PARSE_ISO_VISA -> {
-                return executeWithPackager(request, visaPackager);
-            }
-            case PARSE_ISO_CLEARING -> {
-                return executeWithPackager(request, clearingPackager);
-            }
-            default -> {
-                return executeWithPackager(request, defaultPackager);
-            }
+        try {
+            return switch (parseType) {
+                case PARSE_ISO_VISA -> executeWithPackager(request, visaPackager);
+                case PARSE_ISO_CLEARING -> executeWithPackager(request, clearingPackager);
+                default -> executeWithPackager(request, defaultPackager);
+            };
+        } catch (ApplicationException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ApplicationException("ISO_EXECUTE_ERROR", "Erro inesperado ao construir mensagem ISO: " + e.getMessage());
         }
     }
 
     private String executeWithPackager(MessageBuildRequest request, ISOPackager selectedPackager) throws Exception {
         ISOMsg isoMsg = new ISOMsg();
         isoMsg.setPackager(selectedPackager);
-        isoMsg.setMTI(request.getMti());
+
+        try {
+            isoMsg.setMTI(request.getMti());
+        } catch (Exception e) {
+            throw new ApplicationException("ISO_INVALID_MTI", "MTI inválido: " + request.getMti());
+        }
 
         if (request.getFields() != null) {
             for (Map.Entry<String, String> entry : request.getFields().entrySet()) {
                 int field = Integer.parseInt(entry.getKey());
                 String value = normalizeVisaFieldValueIfNeeded(selectedPackager, field, entry.getValue());
-
-                if (isBinaryFieldPackager(selectedPackager, field)) {
-                    isoMsg.set(field, hexToBytes(value));
-                } else {
-                    isoMsg.set(field, value);
+                try {
+                    if (isBinaryFieldPackager(selectedPackager, field)) {
+                        isoMsg.set(field, hexToBytes(value));
+                    } else {
+                        isoMsg.set(field, value);
+                    }
+                } catch (ApplicationException e) {
+                    throw e;
+                } catch (Exception e) {
+                    throw new ApplicationException("ISO_FIELD_SET_ERROR", "Erro ao definir campo " + field + ": " + e.getMessage());
                 }
             }
         }

@@ -19,13 +19,13 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(value = "tbx0247_ctrl_cadl_cont")
-public class ContaEntity implements Serializable {
+public class AccountEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @PrimaryKey
-    private ContaEntityPK contaEntityPK;
+    private AccountEntityPK accountEntityPK;
 
     @Column(value = "txt_objt_cont")
-    private String payloadConta;
+    private String accountPayload;
 }

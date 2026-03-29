@@ -26,10 +26,10 @@ import { NotificationService } from '../../../../core/services/notification.serv
             <span>Dados</span>
           </div>
           <div class="fields-grid">
-            <div class="field-row"><span class="field-label">Bandeira</span><span class="field-value">{{ massa.bandeira }}</span></div>
-            <div class="field-row"><span class="field-label">Modelo Mensagem</span><span class="field-value">{{ massa.modeloMensagem }}</span></div>
+            <div class="field-row"><span class="field-label">Bandeira</span><span class="field-value">{{ massa.paymentNetwork }}</span></div>
+            <div class="field-row"><span class="field-label">Modelo Mensagem</span><span class="field-value">{{ massa.messageModel }}</span></div>
             <div class="field-row"><span class="field-label">Tag</span><span class="field-value tag-badge">{{ massa.tag }}</span></div>
-            <div class="field-row"><span class="field-label">Descrição</span><span class="field-value">{{ massa.descricao || '—' }}</span></div>
+            <div class="field-row"><span class="field-label">Descrição</span><span class="field-value">{{ massa.description || '—' }}</span></div>
           </div>
         </div>
 
@@ -40,14 +40,14 @@ import { NotificationService } from '../../../../core/services/notification.serv
             <span>Dados Cartão</span>
           </div>
           <div class="fields-grid">
-            <div class="field-row"><span class="field-label">Cartão</span><span class="field-value field-mono">{{ massa.cartao }}</span></div>
-            <div class="field-row"><span class="field-label">Data Vencimento</span><span class="field-value">{{ massa.dataVencimento }}</span></div>
-            <div class="field-row"><span class="field-label">Cód. Funcionalidade</span><span class="field-value">{{ massa.codigoFuncionalidadeCartao }}</span></div>
-            <div class="field-row"><span class="field-label">Cód. Serviço 1º Dígito</span><span class="field-value">{{ massa.codigoServicoPrimeiroDigito }}</span></div>
-            <div class="field-row"><span class="field-label">Cód. Situação</span><span class="field-value">{{ massa.codigoSituacao }}</span></div>
-            <div class="field-row"><span class="field-label">Cód. Status</span><span class="field-value">{{ massa.codigoStatus }}</span></div>
-            <div class="field-row"><span class="field-label">Cód. Tecnologia</span><span class="field-value">{{ massa.codigoTecnologia }}</span></div>
-            <div class="field-row"><span class="field-label">Cód. Tipo</span><span class="field-value">{{ massa.codigoTipo }}</span></div>
+            <div class="field-row"><span class="field-label">Cartão</span><span class="field-value field-mono">{{ massa.cardNumber }}</span></div>
+            <div class="field-row"><span class="field-label">Data Vencimento</span><span class="field-value">{{ massa.expiryDate }}</span></div>
+            <div class="field-row"><span class="field-label">Cód. Funcionalidade</span><span class="field-value">{{ massa.cardFunctionalityCode }}</span></div>
+            <div class="field-row"><span class="field-label">Cód. Serviço 1º Dígito</span><span class="field-value">{{ massa.firstDigitServiceCode }}</span></div>
+            <div class="field-row"><span class="field-label">Cód. Situação</span><span class="field-value">{{ massa.situationCode }}</span></div>
+            <div class="field-row"><span class="field-label">Cód. Status</span><span class="field-value">{{ massa.statusCode }}</span></div>
+            <div class="field-row"><span class="field-label">Cód. Tecnologia</span><span class="field-value">{{ massa.technologyCode }}</span></div>
+            <div class="field-row"><span class="field-label">Cód. Tipo</span><span class="field-value">{{ massa.typeCode }}</span></div>
           </div>
         </div>
 
@@ -58,16 +58,16 @@ import { NotificationService } from '../../../../core/services/notification.serv
             <span>Dados Conta Corrente</span>
           </div>
           <div class="fields-grid">
-            <div class="field-row"><span class="field-label">ID Conta</span><span class="field-value field-mono">{{ massa.idConta }}</span></div>
-            <div class="field-row"><span class="field-label">Agência</span><span class="field-value">{{ massa.agencia || '—' }}</span></div>
-            <div class="field-row"><span class="field-label">Conta</span><span class="field-value">{{ massa.conta || '—' }}</span></div>
+            <div class="field-row"><span class="field-label">ID Conta</span><span class="field-value field-mono">{{ massa.accountId }}</span></div>
+            <div class="field-row"><span class="field-label">Agência</span><span class="field-value">{{ massa.agency || '—' }}</span></div>
+            <div class="field-row"><span class="field-label">Conta</span><span class="field-value">{{ massa.account || '—' }}</span></div>
             <div class="field-row"><span class="field-label">DAC</span><span class="field-value">{{ massa.dac || '—' }}</span></div>
-            <div class="field-row"><span class="field-label">Sufixo</span><span class="field-value">{{ massa.sufixo }}</span></div>
-            <div class="field-row"><span class="field-label">Tipo Conta</span><span class="field-value">{{ massa.tipoConta }}</span></div>
-            <div class="field-row"><span class="field-label">Titular</span><span class="field-value">{{ massa.titular }}</span></div>
-            <div class="field-row"><span class="field-label">ID Categoria</span><span class="field-value">{{ massa.idCategoria }}</span></div>
-            <div class="field-row"><span class="field-label">Cód. Segmento</span><span class="field-value">{{ massa.codigoSegmento }}</span></div>
-            <div class="field-row"><span class="field-label">Cód. Tipo Pessoa</span><span class="field-value">{{ massa.codigoTipoPessoa }}</span></div>
+            <div class="field-row"><span class="field-label">Sufixo</span><span class="field-value">{{ massa.suffix }}</span></div>
+            <div class="field-row"><span class="field-label">Tipo Conta</span><span class="field-value">{{ massa.accountType }}</span></div>
+            <div class="field-row"><span class="field-label">Titular</span><span class="field-value">{{ massa.accountHolder }}</span></div>
+            <div class="field-row"><span class="field-label">ID Categoria</span><span class="field-value">{{ massa.categoryId }}</span></div>
+            <div class="field-row"><span class="field-label">Cód. Segmento</span><span class="field-value">{{ massa.segmentCode }}</span></div>
+            <div class="field-row"><span class="field-label">Cód. Tipo Pessoa</span><span class="field-value">{{ massa.personTypeCode }}</span></div>
           </div>
         </div>
       </div>

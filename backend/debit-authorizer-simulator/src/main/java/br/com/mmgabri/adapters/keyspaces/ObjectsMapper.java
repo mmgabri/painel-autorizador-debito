@@ -1,6 +1,6 @@
 package br.com.mmgabri.adapters.keyspaces;
 
-import br.com.mmgabri.domains.MassaTestesCsvRow;
+import br.com.mmgabri.domains.TestDataCsvRow;
 import br.com.mmgabri.exceptions.ApplicationException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,34 +19,34 @@ public class ObjectsMapper {
     private static final DateTimeFormatter PROCESSING_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
 
 
-    public String mapCartao(MassaTestesCsvRow massa, String idCartao) {
+    public String buildCardComplementText(TestDataCsvRow testData, String cardId) {
         LocalDateTime now = LocalDateTime.now();
 
         Map<String, String> payload = new LinkedHashMap<>();
-        payload.put("agencia", valorOuVazio(massa.getAgencia()));
-        payload.put("bandeira", mapearBandeira(valorOuVazio(massa.getBandeira())));
+        payload.put("agencia", valueOrEmpty(testData.getAgency()));
+        payload.put("bandeira", mapPaymentBrand(valueOrEmpty(testData.getPaymentNetwork())));
         payload.put("codigo_banco", "341");
-        payload.put("codigo_funcionalidade_cartao", valorOuVazio(massa.getCodigoFuncionalidadeCartao()));
-        payload.put("codigo_identificacao_cartao", idCartao);
+        payload.put("codigo_funcionalidade_cartao", valueOrEmpty(testData.getCardFunctionalityCode()));
+        payload.put("codigo_identificacao_cartao", cardId);
         payload.put("codigo_produto", "201341");
-        payload.put("codigo_servico_primeiro_digito", valorOuVazio(massa.getCodigoServicoPrimeiroDigito()));
-        payload.put("codigo_situacao", valorOuVazio(massa.getCodigoSituacao()));
+        payload.put("codigo_servico_primeiro_digito", valueOrEmpty(testData.getFirstDigitServiceCode()));
+        payload.put("codigo_situacao", valueOrEmpty(testData.getSituationCode()));
         payload.put("codigo_situacao_desbloqueio_modular", " ");
-        payload.put("codigo_status", valorOuVazio(massa.getCodigoStatus()));
-        payload.put("codigo_tecnologia", valorOuVazio(massa.getCodigoTecnologia()));
-        payload.put("codigo_tipo", valorOuVazio(massa.getCodigoTipo()));
-        payload.put("conta", valorOuVazio(massa.getConta()));
-        payload.put("dac", valorOuVazio(massa.getDac()));
+        payload.put("codigo_status", valueOrEmpty(testData.getStatusCode()));
+        payload.put("codigo_tecnologia", valueOrEmpty(testData.getTechnologyCode()));
+        payload.put("codigo_tipo", valueOrEmpty(testData.getTypeCode()));
+        payload.put("conta", valueOrEmpty(testData.getAccount()));
+        payload.put("dac", valueOrEmpty(testData.getDac()));
         payload.put("data_emissao", now.toLocalDate().format(EMISSION_DATE_FORMATTER));
         payload.put("data_hora_processamento", now.format(PROCESSING_DATE_TIME_FORMATTER));
-        payload.put("data_vencimento", valorOuVazio(massa.getDataVencimento()));
+        payload.put("data_vencimento", valueOrEmpty(testData.getExpiryDate()));
         payload.put("descricao_status", "Cartão ok");
         payload.put("empresa", "004");
         payload.put("nome_portador", "Antonio Coutinho");
-        payload.put("numero_cartao", valorOuVazio(massa.getCartao()));
+        payload.put("numero_cartao", valueOrEmpty(testData.getCardNumber()));
         payload.put("origem_dado", "DESCONHECIDO");
         payload.put("status_cartao", "OK");
-        payload.put("titularidade", valorOuVazio(massa.getSufixo()));
+        payload.put("titularidade", valueOrEmpty(testData.getSuffix()));
         payload.put("via_cartao", "0000");
 
         try {
@@ -56,24 +56,24 @@ public class ObjectsMapper {
         }
     }
 
-    public String mapConta(MassaTestesCsvRow massa, String idConta, String idCliente) {
+    public String buildAccountComplementText(TestDataCsvRow testData, String accountId, String customerId) {
         Map<String, String> payload = new LinkedHashMap<>();
-        payload.put("codigo_agencia", valorOuVazio(massa.getAgencia()));
+        payload.put("codigo_agencia", valueOrEmpty(testData.getAgency()));
         payload.put("codigo_banco", "4341");
-        payload.put("codigo_conta", valorOuVazio(massa.getConta()));
+        payload.put("codigo_conta", valueOrEmpty(testData.getAccount()));
         payload.put("codigo_conta_private", "");
         payload.put("codigo_conta_salario", "Z");
         payload.put("codigo_empresa", "004");
-        payload.put("codigo_segmento", valorOuVazio(massa.getCodigoSegmento()));
+        payload.put("codigo_segmento", valueOrEmpty(testData.getSegmentCode()));
         payload.put("codigo_tipo_atuacao_titularidade_conta", "0");
-        payload.put("codigo_tipo_pessoa", valorOuVazio(massa.getCodigoTipoPessoa()));
-        payload.put("codigo_titular", valorOuVazio(massa.getTitular()));
-        payload.put("dac", valorOuVazio(massa.getDac()));
-        payload.put("id_categoria", valorOuVazio(massa.getIdCategoria()));
-        payload.put("id_conta", idConta);
-        payload.put("numero_unico_cliente", idCliente);
-        payload.put("sufixo", valorOuVazio(massa.getSufixo()));
-        payload.put("tipo_conta", valorOuVazio(massa.getTipoConta()));
+        payload.put("codigo_tipo_pessoa", valueOrEmpty(testData.getPersonTypeCode()));
+        payload.put("codigo_titular", valueOrEmpty(testData.getAccountHolder()));
+        payload.put("dac", valueOrEmpty(testData.getDac()));
+        payload.put("id_categoria", valueOrEmpty(testData.getCategoryId()));
+        payload.put("id_conta", accountId);
+        payload.put("numero_unico_cliente", customerId);
+        payload.put("sufixo", valueOrEmpty(testData.getSuffix()));
+        payload.put("tipo_conta", valueOrEmpty(testData.getAccountType()));
 
         try {
             return OBJECT_MAPPER.writeValueAsString(payload);
@@ -82,11 +82,11 @@ public class ObjectsMapper {
         }
     }
 
-    private String mapearBandeira(String bandeira) {
-        return "MASTERCARD".equalsIgnoreCase(bandeira) ? "M" : "V";
+    private String mapPaymentBrand(String paymentNetwork) {
+        return "MASTERCARD".equalsIgnoreCase(paymentNetwork) ? "M" : "V";
     }
 
-    private String valorOuVazio(String valor) {
-        return valor == null ? "" : valor;
+    private String valueOrEmpty(String value) {
+        return value == null ? "" : value;
     }
 }

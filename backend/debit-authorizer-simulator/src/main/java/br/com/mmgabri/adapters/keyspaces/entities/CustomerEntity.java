@@ -20,14 +20,14 @@ public class CustomerEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @PrimaryKey(value = "cod_idef_tel_pess")
-    private String idPessoa;
+    private String personId;
 
     @Column(value = "cod_tipo_pess")
-    private String tipoPessoa;
+    private String personType;
 
     @Column(value = "num_cpf_cnpj")
-    private String numeroCpfCnpj;
+    private String taxIdNumber;
 
     @Column(value = "txt_objt_tel_pess")
-    private String payloadDadosCadastraisCliente;
+    private String customerRegistrationPayload;
 }

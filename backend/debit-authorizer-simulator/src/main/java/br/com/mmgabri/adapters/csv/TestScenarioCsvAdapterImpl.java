@@ -16,12 +16,12 @@ import java.util.List;
 @Component
 public class TestScenarioCsvAdapterImpl implements TestScenarioCsvAdapter {
 
-    private static final String HEADER = "id,product_name,message_model,message_type,payment_network,tag,description,message,updated_at";
+    private static final String HEADER = "id,nome_produto,modelo_mensagem,tipo_mensagem,bandeira,tag,descricao,mensagem,updated_at";
 
     private final Path csvPath;
 
     public TestScenarioCsvAdapterImpl(
-            @Value("${app.csv.cenarios-file:src/main/resources/cenarios_testes.csv}") String csvFile) {
+            @Value("${app.csv.cenarios-file:../../files_csv/cenarios_testes_simulador.csv}") String csvFile) {
         this.csvPath = Paths.get(csvFile);
         ensureFileExists();
     }

@@ -1,17 +1,17 @@
 package br.com.mmgabri.services;
 
-import br.com.mmgabri.domains.DispatcherEventoExecutarRequest;
+import br.com.mmgabri.domains.DispatcherEventExecutionRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
-public class DispatcherEventoExecutionService {
+public class DispatcherEventExecutionService {
 
-    private static final Logger logger = LoggerFactory.getLogger(DispatcherEventoExecutionService.class);
+    private static final Logger logger = LoggerFactory.getLogger(DispatcherEventExecutionService.class);
 
-    public void execute(DispatcherEventoExecutarRequest request) {
-        logger.info("Executing dispatcher event. productName={}, messageModel={}, messageType={}, paymentNetwork={}",
+    public void execute(DispatcherEventExecutionRequest request) {
+        logger.debug("Executing dispatcher event. productName={}, messageModel={}, messageType={}, paymentNetwork={}",
                 request.getProductName(), request.getMessageModel(), request.getMessageType(), request.getPaymentNetwork());
 
         if (request.getStages() != null) {

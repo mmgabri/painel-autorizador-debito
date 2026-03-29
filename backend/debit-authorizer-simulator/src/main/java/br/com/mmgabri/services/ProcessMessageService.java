@@ -7,7 +7,6 @@ import br.com.mmgabri.domains.MessageBuildResponse;
 import br.com.mmgabri.domains.MessageParseRequest;
 import br.com.mmgabri.domains.MessageParseResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -29,7 +28,6 @@ public class ProcessMessageService {
     private final PositionalMessageParseService positionalParser;
     private final PositionalMessageBuildService positionalBuilder;
 
-    @SneakyThrows
     public MessageParseResponse parse(MessageParseRequest request) {
         if (isVisaNetwork(request.getPaymentNetwork())) {
             logger.debug("VISA ISO message received for parsing.");

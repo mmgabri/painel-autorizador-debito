@@ -1,8 +1,8 @@
 package br.com.mmgabri.adapters.keyspaces;
 
-import br.com.mmgabri.domains.MassaTestesCsvRow;
+import br.com.mmgabri.domains.TestDataCsvRow;
 
 public interface KeyspacesAdapter {
 
-    void carregarDados(MassaTestesCsvRow massa);
+    void loadData(TestDataCsvRow testData);
 }

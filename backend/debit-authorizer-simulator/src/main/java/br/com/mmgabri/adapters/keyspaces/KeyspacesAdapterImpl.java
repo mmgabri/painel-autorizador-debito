@@ -2,10 +2,10 @@ package br.com.mmgabri.adapters.keyspaces;
 
 import br.com.mmgabri.adapters.keyspaces.entities.*;
 import br.com.mmgabri.adapters.keyspaces.repositories.AprxRepository;
-import br.com.mmgabri.adapters.keyspaces.repositories.CartaoRepository;
-import br.com.mmgabri.adapters.keyspaces.repositories.ContaRepository;
+import br.com.mmgabri.adapters.keyspaces.repositories.CardRepository;
+import br.com.mmgabri.adapters.keyspaces.repositories.AccountRepository;
 import br.com.mmgabri.adapters.keyspaces.repositories.CustomerRepository;
-import br.com.mmgabri.domains.MassaTestesCsvRow;
+import br.com.mmgabri.domains.TestDataCsvRow;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,83 +22,82 @@ public class KeyspacesAdapterImpl implements KeyspacesAdapter {
     private static final Logger logger = LoggerFactory.getLogger(KeyspacesAdapterImpl.class);
     private final ObjectsMapper map;
 
-    private final CartaoRepository cartaoRepository;
+    private final CardRepository cardRepository;
     private final CustomerRepository customerRepository;
-    private final ContaRepository contaRepository;
+    private final AccountRepository accountRepository;
     private final AprxRepository aprxRepository;
 
 
     @Override
-    public void carregarDados(MassaTestesCsvRow massa) {
-        String idCartao = UUID.randomUUID().toString();
-        String idConta = UUID.randomUUID().toString();
-        String idCliente = UUID.randomUUID().toString();
-        salvarCartao(massa, idCartao);
-        salvarCliente(massa, idCliente);
-        salvarConta(massa, idConta, idCliente);
-        salvarAprx(massa);
+    public void loadData(TestDataCsvRow testData) {
+        String cardId = UUID.randomUUID().toString();
+        String accountId = UUID.randomUUID().toString();
+        String customerId = UUID.randomUUID().toString();
+        saveCard(testData, cardId);
+        saveCustomer(testData, customerId);
+        saveAccount(testData, accountId, customerId);
+        saveAprx(testData);
     }
 
-    private void salvarCartao(MassaTestesCsvRow massa, String idCartao) {
-        if (massa.getCartao() == null || massa.getCartao().isBlank()) {
-            logger.warn("Cartão não informado na massa id={}. Pulando tbx0244.", massa.getId());
+    private void saveCard(TestDataCsvRow testData, String cardId) {
+        if (testData.getCardNumber() == null || testData.getCardNumber().isBlank()) {
+            logger.warn("Card number not provided in test data id={}. Skipping tbx0244.", testData.getId());
             return;
         }
 
-        CartaoEntity entity = CartaoEntity.builder()
-                .numeroCartao("000" + massa.getCartao())
-                .textoComplementoCartao(map.mapCartao(massa, idCartao))
+        CardEntity entity = CardEntity.builder()
+                .cardNumber("000" + testData.getCardNumber())
+                .cardComplementText(map.buildCardComplementText(testData, cardId))
                 .build();
-        cartaoRepository.save(entity);
-        logger.info("CartaoEntity salvo. num_crto={} idCartao={}", massa.getCartao(), idCartao);
+        cardRepository.save(entity);
+        logger.info("CardEntity saved. num_crto={} cardId={}", testData.getCardNumber(), cardId);
     }
 
 
-    private void salvarCliente(MassaTestesCsvRow massa, String idCliente) {
-        if (massa.getIdConta() == null || massa.getIdConta().isBlank()) {
-            logger.warn("idConta não informado na massa id={}. Pulando tbx0246.", massa.getId());
+    private void saveCustomer(TestDataCsvRow testData, String customerId) {
+        if (testData.getAccountId() == null || testData.getAccountId().isBlank()) {
+            logger.warn("accountId not provided in test data id={}. Skipping tbx0246.", testData.getId());
             return;
         }
         CustomerEntity entity = CustomerEntity.builder()
-                .idPessoa(idCliente)
-                .tipoPessoa(massa.getCodigoTipoPessoa())
+                .personId(customerId)
+                .personType(testData.getPersonTypeCode())
                 .build();
         customerRepository.save(entity);
-        logger.info("CustomerEntity salvo. cod_idef_tel_pess={}", idCliente);
+        logger.info("CustomerEntity saved. cod_idef_tel_pess={}", customerId);
     }
 
-    private void salvarConta(MassaTestesCsvRow massa, String idConta, String idCliente) {
-        if (massa.getAgencia() == null || massa.getAgencia().isBlank()
-                || massa.getConta() == null || massa.getConta().isBlank()) {
-            logger.warn("Agência ou conta não informados na massa id={}. Pulando tbx0247.", massa.getId());
+    private void saveAccount(TestDataCsvRow testData, String accountId, String customerId) {
+        if (testData.getAgency() == null || testData.getAgency().isBlank()
+                || testData.getAccount() == null || testData.getAccount().isBlank()) {
+            logger.warn("Agency or account not provided in test data id={}. Skipping tbx0247.", testData.getId());
             return;
         }
-        ContaEntityPK pk = ContaEntityPK.builder()
-                .empresa("004")
-                .codigoBanco("341")
-                .agencia(massa.getAgencia())
-                .conta(massa.getConta())
-                .digitoVerificador(massa.getDac())
-                .titularidade(massa.getSufixo() != null && !massa.getSufixo().isBlank() ? Integer.parseInt(massa.getSufixo()) : null)
+        AccountEntityPK pk = AccountEntityPK.builder()
+                .company("004")
+                .bankCode("341")
+                .agency(testData.getAgency())
+                .account(testData.getAccount())
+                .checkDigit(testData.getDac())
+                .ownership(testData.getSuffix() != null && !testData.getSuffix().isBlank() ? Integer.parseInt(testData.getSuffix()) : null)
                 .build();
-        ContaEntity entity = ContaEntity.builder()
-                .contaEntityPK(pk)
-                .payloadConta(map.mapConta(massa, idConta, idCliente))
+        AccountEntity entity = AccountEntity.builder()
+                .accountEntityPK(pk)
+                .accountPayload(map.buildAccountComplementText(testData, accountId, customerId))
                 .build();
-        contaRepository.save(entity);
-        logger.info("ContaEntity salva. agencia={} conta={} idConta={}", massa.getAgencia(), massa.getConta(), idConta);
+        accountRepository.save(entity);
+        logger.info("AccountEntity saved. agency={} account={} accountId={}", testData.getAgency(), testData.getAccount(), accountId);
     }
 
-
-    private void salvarAprx(MassaTestesCsvRow massa) {
-        if (massa.getCartao() == null || massa.getCartao().isBlank()) {
-            logger.warn("Cartão não informado na massa id={}. Pulando tbx0245.", massa.getId());
+    private void saveAprx(TestDataCsvRow testData) {
+        if (testData.getCardNumber() == null || testData.getCardNumber().isBlank()) {
+            logger.warn("Card number not provided in test data id={}. Skipping tbx0245.", testData.getId());
             return;
         }
         AprxEntity entity = AprxEntity.builder()
-                .codigoUnicoReferenciaCartao(massa.getCartao())
+                .uniqueCardReferenceCode(testData.getCardNumber())
                 .build();
         aprxRepository.save(entity);
-        logger.info("AprxEntity salvo. cod_unic_rfrc_crto={}", massa.getCartao());
+        logger.info("AprxEntity saved. cod_unic_rfrc_crto={}", testData.getCardNumber());
     }
 }

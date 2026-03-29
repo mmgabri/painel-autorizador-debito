@@ -29,7 +29,7 @@ public class TestScenarioController {
     @PostMapping("/salvar")
     public ResponseEntity<?> save(@RequestBody TestScenarioCsvRequest request) {
         try {
-            logger.info("Request received to save test scenario.");
+            logger.debug("Request received to save test scenario.");
             var saved = testScenarioService.save(request);
             logger.info("Test scenario saved successfully.");
             if (request.getId() != null) {
@@ -67,7 +67,7 @@ public class TestScenarioController {
             @RequestParam(required = false) String paymentNetwork,
             @RequestParam(required = false) String messageType) {
         try {
-            logger.info("Request received to list test scenarios with filters: productName={}, tag={}, paymentNetwork={}, messageType={}",
+            logger.debug("Request received to list test scenarios with filters: productName={}, tag={}, paymentNetwork={}, messageType={}",
                     productName, tag, paymentNetwork, messageType);
             var resp = testScenarioService.findByFilters(productName, tag, paymentNetwork, messageType);
             logger.info("Test scenarios listed successfully. count={}", resp.size());
@@ -83,7 +83,7 @@ public class TestScenarioController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable String id) {
         try {
-            logger.info("Request received to delete scenario with id: {}", id);
+            logger.debug("Request received to delete scenario with id: {}", id);
             testScenarioService.deleteById(id);
             logger.info("Test scenario deleted successfully.");
             return ResponseEntity.noContent().build();

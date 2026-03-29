@@ -15,13 +15,13 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(value = "tbx0244_ctrl_autr_crto_debt")
-public class CartaoEntity implements Serializable {
+public class CardEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @PrimaryKey("num_crto")
-    private String numeroCartao;
+    private String cardNumber;
 
     @Column(value = "txt_objt_crto")
-    private String textoComplementoCartao;
+    private String cardComplementText;
 }

@@ -3,7 +3,6 @@ package br.com.mmgabri.adapters.jpos;
 import br.com.mmgabri.domains.MessageParseResponse;
 import br.com.mmgabri.domains.enuns.MessageParseTypeEnum;
 import br.com.mmgabri.exceptions.ApplicationException;
-import lombok.SneakyThrows;
 import org.jpos.iso.ISOMsg;
 import org.jpos.iso.ISOPackager;
 import org.jpos.iso.packager.GenericPackager;
@@ -39,19 +38,18 @@ public class IsoMessageParserJposAdapter implements IsoMessageParserAdapter {
     }
 
 
-    @SneakyThrows
     @Override
     public MessageParseResponse execute(String isoMessage, MessageParseTypeEnum parseType) {
-        switch (parseType) {
-            case PARSE_ISO_VISA -> {
-                return executeWithPackager(isoMessage, visaPackager);
-            }
-            case PARSE_ISO_CLEARING -> {
-                return executeWithPackager(isoMessage, clearingPackager);
-            }
-            default -> {
-                return executeWithPackager(isoMessage, defaultPackager);
-            }
+        try {
+            return switch (parseType) {
+                case PARSE_ISO_VISA -> executeWithPackager(isoMessage, visaPackager);
+                case PARSE_ISO_CLEARING -> executeWithPackager(isoMessage, clearingPackager);
+                default -> executeWithPackager(isoMessage, defaultPackager);
+            };
+        } catch (ApplicationException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ApplicationException("ISO_EXECUTE_ERROR", "Erro inesperado ao processar mensagem ISO: " + e.getMessage());
         }
     }
 
@@ -72,13 +70,16 @@ public class IsoMessageParserJposAdapter implements IsoMessageParserAdapter {
         validateUnpackConsistency(messageBytes.length, consumedBytes, isoMsg);
 
         Map<String, String> fields = new LinkedHashMap<>();
-        for (int i = 1; i <= 128; i++) {
-            if (isoMsg.hasField(i)) {
-                fields.put(String.valueOf(i), isoMsg.getString(i));
+        try {
+            for (int i = 1; i <= 128; i++) {
+                if (isoMsg.hasField(i)) {
+                    fields.put(String.valueOf(i), isoMsg.getString(i));
+                }
             }
+            return new MessageParseResponse(isoMsg.getMTI(), fields);
+        } catch (Exception e) {
+            throw new ApplicationException("ISO_FIELD_READ_ERROR", "Erro ao ler campos da mensagem ISO: " + e.getMessage());
         }
-
-        return new MessageParseResponse(isoMsg.getMTI(), fields);
     }
 
     // Fails fast when message body contains bytes not consumed by the bitmap-defined fields.

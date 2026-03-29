@@ -3,7 +3,7 @@ package br.com.mmgabri.domains;
 import lombok.Data;
 
 @Data
-public class DispatcherEventoCsvRow {
+public class DispatcherEventCsvRow {
 
     private String id;
     private String productName;

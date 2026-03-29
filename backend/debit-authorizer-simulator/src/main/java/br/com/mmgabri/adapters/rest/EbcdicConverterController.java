@@ -28,7 +28,7 @@ public class EbcdicConverterController {
     @PostMapping("/to-text")
     public ResponseEntity<?> toText(@Valid @RequestBody EbcdicHexToTextRequest request) {
         try {
-            logger.info("Request received to convert EBCDIC hex to text.");
+            logger.debug("Request received to convert EBCDIC hex to text.");
             String text = ebcdicConverterService.hexEbcdicToText(request.getHexEbcdic());
             logger.info("EBCDIC hex converted to text successfully.");
             return ResponseEntity.ok(new EbcdicHexToTextResponse(text));
@@ -43,7 +43,7 @@ public class EbcdicConverterController {
     @PostMapping("/to-hex")
     public ResponseEntity<?> toHex(@Valid @RequestBody EbcdicTextToHexRequest request) {
         try {
-            logger.info("Request received to convert text to EBCDIC hex.");
+            logger.debug("Request received to convert text to EBCDIC hex.");
             String hex = ebcdicConverterService.textToHexEbcdic(request.getText());
             logger.info("Text converted to EBCDIC hex successfully.");
             return ResponseEntity.ok(new EbcdicTextToHexResponse(hex));

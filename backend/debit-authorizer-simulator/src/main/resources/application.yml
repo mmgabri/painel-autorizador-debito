@@ -3,7 +3,7 @@ server:
 
 logging:
   level:
-    br.com.mmgabri: info
+    br.com.mmgabri: debug
 
 spring:
   config:

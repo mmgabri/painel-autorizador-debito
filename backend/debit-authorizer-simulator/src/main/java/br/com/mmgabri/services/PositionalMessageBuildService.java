@@ -25,21 +25,21 @@ public class PositionalMessageBuildService {
     public MessageBuildResponse execute(MessageBuildRequest request) {
         validateRequest(request);
 
-        logger.info("Building positional message. paymentNetwork={}, messageModel={}, messageType={}, fieldCount={}", request.getPaymentNetwork(), request.getMessageModel(), request.getMessageType(), request.getFields() == null ? 0 : request.getFields().size());
+        logger.debug("Building positional message. paymentNetwork={}, messageModel={}, messageType={}, fieldCount={}", request.getPaymentNetwork(), request.getMessageModel(), request.getMessageType(), request.getFields() == null ? 0 : request.getFields().size());
 
         String positionalText;
 
         if (request.getPaymentNetwork().equals(MASTERCARD.toString())) {
-            logger.info("Routing build to T464 (Mastercard) positional layout.");
+            logger.debug("Routing build to T464 (Mastercard) positional layout.");
             positionalText = builderT464.build(request.getFields(), request.getMti());
         } else {
-            logger.info("Routing build to TCR (Visa) positional layout.");
+            logger.debug("Routing build to TCR (Visa) positional layout.");
             positionalText = builderTcr.build(request.getFields(), request.getMti());
         }
 
         String hexEbcdic = ebcdicConverter.textToHexEbcdic(positionalText);
 
-        logger.info("Positional message built successfully. outputLength={}", hexEbcdic.length());
+        logger.debug("Positional message built successfully. outputLength={}", hexEbcdic.length());
         return new MessageBuildResponse(hexEbcdic);
     }
 

@@ -3,7 +3,7 @@ package br.com.mmgabri.services;
 import br.com.mmgabri.domains.MessageParseRequest;
 import br.com.mmgabri.exceptions.ApplicationException;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
+import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +25,7 @@ public class TestScenarioExecutionService {
         }
 
         if (request.getMessageType().equals(CONCILIACAO.toString())) {
-            executeConciliacao(request.getMessage());
+            executeReconciliation(request.getMessage());
             return;
         }
 
@@ -40,29 +40,41 @@ public class TestScenarioExecutionService {
         }
     }
 
-    @SneakyThrows
     private void executeMastercardSingleMessage(String isoMessage) {
-        var isoMessageWithHeader = HEADER_CICS_MASTERCARD + isoMessage;
-        var hexEbcdic = Hex.decodeHex(isoMessageWithHeader);
-        // Implement logic for executing Mastercard Single Message scenario
+        try {
+            var isoMessageWithHeader = HEADER_CICS_MASTERCARD + isoMessage;
+            Hex.decodeHex(isoMessageWithHeader);
+            // Implement logic for executing Mastercard Single Message scenario
+        } catch (DecoderException e) {
+            throw new ApplicationException("CENARIO_HEX_INVALID", "Mensagem hex inválida para Mastercard Single Message: " + e.getMessage());
+        }
     }
 
-    @SneakyThrows
     private void executeMastercardDualMessage(String isoMessage) {
-        var hexEbcdic = Hex.decodeHex(isoMessage);
-        // Implement logic for executing Mastercard Single Message scenario
+        try {
+            Hex.decodeHex(isoMessage);
+            // Implement logic for executing Mastercard Single Message scenario
+        } catch (DecoderException e) {
+            throw new ApplicationException("CENARIO_HEX_INVALID", "Mensagem hex inválida para Mastercard Dual Message: " + e.getMessage());
+        }
     }
 
-    @SneakyThrows
     private void executeVisa(String isoMessage) {
-        var isoMessageWithHeader = HEADER_CICS_VISA + isoMessage;
-        var hexEbcdic = Hex.decodeHex(isoMessageWithHeader);
-        // Implement logic for executing Mastercard Single Message scenario
+        try {
+            var isoMessageWithHeader = HEADER_CICS_VISA + isoMessage;
+            Hex.decodeHex(isoMessageWithHeader);
+            // Implement logic for executing Mastercard Single Message scenario
+        } catch (DecoderException e) {
+            throw new ApplicationException("CENARIO_HEX_INVALID", "Mensagem hex inválida para Visa: " + e.getMessage());
+        }
     }
 
-    @SneakyThrows
-    private void executeConciliacao(String isoMessage) {
-        var hexEbcdic = Hex.decodeHex(isoMessage);
-        // Implement logic for executing Mastercard Single Message scenario
+    private void executeReconciliation(String isoMessage) {
+        try {
+            Hex.decodeHex(isoMessage);
+            // Implement logic for executing Mastercard Single Message scenario
+        } catch (DecoderException e) {
+            throw new ApplicationException("CENARIO_HEX_INVALID", "Mensagem hex inválida para Reconciliation: " + e.getMessage());
+        }
     }
 }

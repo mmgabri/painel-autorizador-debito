@@ -17,25 +17,25 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @PrimaryKeyClass
-public class ContaEntityPK implements Serializable {
+public class AccountEntityPK implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @PrimaryKeyColumn(value = "tpempres", ordinal = 0, type = PrimaryKeyType.PARTITIONED)
-    private String empresa;
+    private String company;
 
     @PrimaryKeyColumn(value = "codbanco", ordinal = 1, type = PrimaryKeyType.PARTITIONED)
-    private String codigoBanco;
+    private String bankCode;
 
     @PrimaryKeyColumn(value = "agencia", ordinal = 2, type = PrimaryKeyType.PARTITIONED)
-    private String agencia;
+    private String agency;
 
     @PrimaryKeyColumn(value = "conta", ordinal = 3, type = PrimaryKeyType.PARTITIONED)
-    private String conta;
+    private String account;
 
     @PrimaryKeyColumn(value = "dac10", ordinal = 4, type = PrimaryKeyType.PARTITIONED)
-    private String digitoVerificador;
+    private String checkDigit;
 
     @PrimaryKeyColumn(value = "num_titr_cont", ordinal = 5, type = PrimaryKeyType.PARTITIONED)
-    private Integer titularidade;
+    private Integer ownership;
 }

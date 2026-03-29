@@ -3,7 +3,7 @@ package br.com.mmgabri.domains;
 import lombok.Data;
 
 @Data
-public class DispatcherEventoFiltroRequest {
+public class DispatcherEventFilterRequest {
     private String productName;
     private String targetMicroservice;
     private String tag;

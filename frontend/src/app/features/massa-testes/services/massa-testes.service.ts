@@ -5,62 +5,62 @@ import { environment } from '../../../environments/environment';
 
 export interface MassaTestesItem {
   id: string;
-  bandeira: string;
-  modeloMensagem: string;
+  paymentNetwork: string;
+  messageModel: string;
   tag: string;
-  descricao: string;
-  cartao: string;
-  dataVencimento: string;
-  codigoFuncionalidadeCartao: string;
-  codigoServicoPrimeiroDigito: string;
-  codigoSituacao: string;
-  codigoStatus: string;
-  codigoTecnologia: string;
-  codigoTipo: string;
-  idConta: string;
-  agencia: string;
-  conta: string;
+  description: string;
+  cardNumber: string;
+  expiryDate: string;
+  cardFunctionalityCode: string;
+  firstDigitServiceCode: string;
+  situationCode: string;
+  statusCode: string;
+  technologyCode: string;
+  typeCode: string;
+  accountId: string;
+  agency: string;
+  account: string;
   dac: string;
-  sufixo: string;
-  tipoConta: string;
-  titular: string;
-  idCategoria: string;
-  codigoSegmento: string;
-  codigoTipoPessoa: string;
+  suffix: string;
+  accountType: string;
+  accountHolder: string;
+  categoryId: string;
+  segmentCode: string;
+  personTypeCode: string;
   updatedAt: string;
 }
 
 export interface SalvarMassaTestesRequest {
   id?: string;
-  bandeira: string;
-  modeloMensagem: string;
+  paymentNetwork: string;
+  messageModel: string;
   tag: string;
-  descricao: string;
-  cartao: string;
-  dataVencimento: string;
-  codigoFuncionalidadeCartao: string;
-  codigoServicoPrimeiroDigito: string;
-  codigoSituacao: string;
-  codigoStatus: string;
-  codigoTecnologia: string;
-  codigoTipo: string;
-  idConta: string;
-  agencia: string;
-  conta: string;
+  description: string;
+  cardNumber: string;
+  expiryDate: string;
+  cardFunctionalityCode: string;
+  firstDigitServiceCode: string;
+  situationCode: string;
+  statusCode: string;
+  technologyCode: string;
+  typeCode: string;
+  accountId: string;
+  agency: string;
+  account: string;
   dac: string;
-  sufixo: string;
-  tipoConta: string;
-  titular: string;
-  idCategoria: string;
-  codigoSegmento: string;
-  codigoTipoPessoa: string;
+  suffix: string;
+  accountType: string;
+  accountHolder: string;
+  categoryId: string;
+  segmentCode: string;
+  personTypeCode: string;
 }
 
 export interface MassaTestesFiltro {
-  cartao?: string;
-  idConta?: string;
-  bandeira?: string;
-  modeloMensagem?: string;
+  cardNumber?: string;
+  accountId?: string;
+  paymentNetwork?: string;
+  messageModel?: string;
   tag?: string;
 }
 
@@ -76,10 +76,10 @@ export class MassaTestesService {
 
   consultar(filtro?: MassaTestesFiltro): Observable<MassaTestesItem[]> {
     let params = new HttpParams();
-    if (filtro?.cartao) params = params.set('cartao', filtro.cartao);
-    if (filtro?.idConta) params = params.set('idConta', filtro.idConta);
-    if (filtro?.bandeira) params = params.set('bandeira', filtro.bandeira);
-    if (filtro?.modeloMensagem) params = params.set('modeloMensagem', filtro.modeloMensagem);
+    if (filtro?.cardNumber) params = params.set('cardNumber', filtro.cardNumber);
+    if (filtro?.accountId) params = params.set('accountId', filtro.accountId);
+    if (filtro?.paymentNetwork) params = params.set('paymentNetwork', filtro.paymentNetwork);
+    if (filtro?.messageModel) params = params.set('messageModel', filtro.messageModel);
     if (filtro?.tag) params = params.set('tag', filtro.tag);
     return this.http.get<MassaTestesItem[]>(`${this.baseUrl}/api/massa-testes`, { params });
   }

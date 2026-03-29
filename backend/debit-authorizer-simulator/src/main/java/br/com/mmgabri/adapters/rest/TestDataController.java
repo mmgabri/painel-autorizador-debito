@@ -1,10 +1,10 @@
 package br.com.mmgabri.adapters.rest;
 
 import br.com.mmgabri.domains.ErrorResponse;
-import br.com.mmgabri.domains.MassaTestesCsvRequest;
-import br.com.mmgabri.domains.MassaTestesCsvRow;
+import br.com.mmgabri.domains.TestDataCsvRequest;
+import br.com.mmgabri.domains.TestDataCsvRow;
 import br.com.mmgabri.exceptions.ApplicationException;
-import br.com.mmgabri.services.MassaTestesService;
+import br.com.mmgabri.services.TestDataService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,18 +18,18 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/massa-testes")
 @RequiredArgsConstructor
-public class MassaTestesController {
+public class TestDataController {
 
-    private static final Logger logger = LoggerFactory.getLogger(MassaTestesController.class);
+    private static final Logger logger = LoggerFactory.getLogger(TestDataController.class);
 
-    private final MassaTestesService massaTestesService;
+    private final TestDataService testDataService;
 
     @PostMapping("/salvar")
-    public ResponseEntity<?> save(@RequestBody MassaTestesCsvRequest request) {
+    public ResponseEntity<?> save(@RequestBody TestDataCsvRequest request) {
         try {
-            logger.info("Request received to save massa de testes.");
-            var saved = massaTestesService.save(request);
-            logger.info("Massa de testes saved successfully. id={}", saved.getId());
+            logger.debug("Request received to save test data.");
+            var saved = testDataService.save(request);
+            logger.info("Test data saved successfully. id={}", saved.getId());
             if (request.getId() != null && !request.getId().isBlank()) {
                 return ResponseEntity.status(HttpStatus.OK).body(saved);
             } else {
@@ -38,28 +38,28 @@ public class MassaTestesController {
         } catch (ApplicationException e) {
             return ResponseEntity.badRequest().body(new ErrorResponse(e.getCode(), e.getDescription()));
         } catch (Exception e) {
-            logger.error("Unexpected error on save massa de testes", e);
+            logger.error("Unexpected error on save test data", e);
             return ResponseEntity.internalServerError().body(new ErrorResponse("INTERNAL_ERROR", "Erro interno inesperado."));
         }
     }
 
     @GetMapping
     public ResponseEntity<?> list(
-            @RequestParam(required = false) String cartao,
-            @RequestParam(required = false) String idConta,
-            @RequestParam(required = false) String bandeira,
-            @RequestParam(required = false) String modeloMensagem,
+            @RequestParam(required = false) String cardNumber,
+            @RequestParam(required = false) String accountId,
+            @RequestParam(required = false) String paymentNetwork,
+            @RequestParam(required = false) String messageModel,
             @RequestParam(required = false) String tag) {
         try {
-            logger.info("Request received to list massa de testes with filters: cartao={}, idConta={}, bandeira={}, modeloMensagem={}, tag={}",
-                    cartao, idConta, bandeira, modeloMensagem, tag);
-            var resp = massaTestesService.findByFilters(cartao, idConta, bandeira, modeloMensagem, tag);
-            logger.info("Massa de testes listed successfully. count={}", resp.size());
+            logger.debug("Request received to list test data with filters: cardNumber={}, accountId={}, paymentNetwork={}, messageModel={}, tag={}",
+                    cardNumber, accountId, paymentNetwork, messageModel, tag);
+            var resp = testDataService.findByFilters(cardNumber, accountId, paymentNetwork, messageModel, tag);
+            logger.info("Test data listed successfully. count={}", resp.size());
             return ResponseEntity.ok(resp);
         } catch (ApplicationException e) {
             return ResponseEntity.badRequest().body(new ErrorResponse(e.getCode(), e.getDescription()));
         } catch (Exception e) {
-            logger.error("Unexpected error on list massa de testes", e);
+            logger.error("Unexpected error on list test data", e);
             return ResponseEntity.internalServerError().body(new ErrorResponse("INTERNAL_ERROR", "Erro interno inesperado."));
         }
     }
@@ -67,29 +67,29 @@ public class MassaTestesController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable String id) {
         try {
-            logger.info("Request received to delete massa de testes with id: {}", id);
-            massaTestesService.deleteById(id);
-            logger.info("Massa de testes deleted successfully.");
+            logger.debug("Request received to delete test data with id: {}", id);
+            testDataService.deleteById(id);
+            logger.info("Test data deleted successfully.");
             return ResponseEntity.noContent().build();
         } catch (ApplicationException e) {
             return ResponseEntity.badRequest().body(new ErrorResponse(e.getCode(), e.getDescription()));
         } catch (Exception e) {
-            logger.error("Unexpected error on delete massa de testes", e);
+            logger.error("Unexpected error on delete test data", e);
             return ResponseEntity.internalServerError().body(new ErrorResponse("INTERNAL_ERROR", "Erro interno inesperado."));
         }
     }
 
     @PostMapping("/{id}/carregar-dadinho")
-    public ResponseEntity<?> carregarDadinho(@PathVariable String id) {
+    public ResponseEntity<?> loadTestData(@PathVariable String id) {
         try {
-            logger.info("Request received to carregar dadinho for massa de testes. id={}", id);
-            massaTestesService.carregarDadinho(id);
-            logger.info("Carregar dadinho executed successfully. id={}", id);
+            logger.debug("Request received to load test data into Keyspaces. id={}", id);
+            testDataService.loadTestData(id);
+            logger.info("Test data loaded successfully. id={}", id);
             return ResponseEntity.ok(Map.of("message", "success"));
         } catch (ApplicationException e) {
             return ResponseEntity.badRequest().body(new ErrorResponse(e.getCode(), e.getDescription()));
         } catch (Exception e) {
-            logger.error("Unexpected error on carregar dadinho", e);
+            logger.error("Unexpected error on load test data", e);
             return ResponseEntity.internalServerError().body(new ErrorResponse("INTERNAL_ERROR", "Erro interno inesperado."));
         }
     }

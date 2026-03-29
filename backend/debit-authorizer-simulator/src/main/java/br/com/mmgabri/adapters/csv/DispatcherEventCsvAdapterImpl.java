@@ -1,6 +1,6 @@
 package br.com.mmgabri.adapters.csv;
 
-import br.com.mmgabri.domains.DispatcherEventoCsvRow;
+import br.com.mmgabri.domains.DispatcherEventCsvRow;
 import br.com.mmgabri.exceptions.ApplicationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -14,22 +14,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class DispatcherEventoCsvAdapterImpl implements DispatcherEventoCsvAdapter {
+public class DispatcherEventCsvAdapterImpl implements DispatcherEventCsvAdapter {
 
-    private static final String HEADER = "id,product_name,target_microservice,message_model,message_type,payment_network,tag,description,message,updated_at";
+    private static final String HEADER = "id,nome_produto,microservico_destino,modelo_mensagem,tipo_mensagem,bandeira,tag,descricao,mensagem,updated_at";
 
     private final Path csvPath;
 
-    public DispatcherEventoCsvAdapterImpl(
-            @Value("${app.csv.dispatcher-eventos-file:src/main/resources/dispatcher_eventos.csv}") String csvFile) {
+    public DispatcherEventCsvAdapterImpl(
+            @Value("${app.csv.dispatcher-eventos-file:../../files_csv/dispatcher_events.csv}") String csvFile) {
         this.csvPath = Paths.get(csvFile);
         ensureFileExists();
     }
 
     @Override
-    public synchronized void append(DispatcherEventoCsvRow evento) {
+    public synchronized void append(DispatcherEventCsvRow event) {
         try {
-            Files.writeString(csvPath, toCsvLine(evento) + System.lineSeparator(), StandardCharsets.UTF_8,
+            Files.writeString(csvPath, toCsvLine(event) + System.lineSeparator(), StandardCharsets.UTF_8,
                     java.nio.file.StandardOpenOption.APPEND);
         } catch (IOException e) {
             throw new ApplicationException("CSV_WRITE_ERROR", "Erro ao escrever no arquivo CSV: " + csvPath);
@@ -37,12 +37,12 @@ public class DispatcherEventoCsvAdapterImpl implements DispatcherEventoCsvAdapte
     }
 
     @Override
-    public synchronized void replaceAll(List<DispatcherEventoCsvRow> eventos) {
+    public synchronized void replaceAll(List<DispatcherEventCsvRow> events) {
         StringBuilder content = new StringBuilder();
         content.append(HEADER).append(System.lineSeparator());
 
-        for (DispatcherEventoCsvRow evento : eventos) {
-            content.append(toCsvLine(evento)).append(System.lineSeparator());
+        for (DispatcherEventCsvRow event : events) {
+            content.append(toCsvLine(event)).append(System.lineSeparator());
         }
 
         try {
@@ -56,11 +56,11 @@ public class DispatcherEventoCsvAdapterImpl implements DispatcherEventoCsvAdapte
     }
 
     @Override
-    public synchronized List<DispatcherEventoCsvRow> findAll() {
+    public synchronized List<DispatcherEventCsvRow> findAll() {
         try {
             ensureFileExists();
             List<String> lines = Files.readAllLines(csvPath, StandardCharsets.UTF_8);
-            List<DispatcherEventoCsvRow> result = new ArrayList<>();
+            List<DispatcherEventCsvRow> result = new ArrayList<>();
 
             for (int i = 1; i < lines.size(); i++) {
                 String line = lines.get(i);
@@ -73,7 +73,7 @@ public class DispatcherEventoCsvAdapterImpl implements DispatcherEventoCsvAdapte
                     continue;
                 }
 
-                DispatcherEventoCsvRow row = new DispatcherEventoCsvRow();
+                DispatcherEventCsvRow row = new DispatcherEventCsvRow();
                 row.setId(values.get(0));
                 row.setProductName(values.get(1));
                 row.setTargetMicroservice(values.get(2));
@@ -92,18 +92,18 @@ public class DispatcherEventoCsvAdapterImpl implements DispatcherEventoCsvAdapte
         }
     }
 
-    private String toCsvLine(DispatcherEventoCsvRow evento) {
+    private String toCsvLine(DispatcherEventCsvRow event) {
         return String.join(",",
-                escape(evento.getId()),
-                escape(evento.getProductName()),
-                escape(evento.getTargetMicroservice()),
-                escape(evento.getMessageModel()),
-                escape(evento.getMessageType()),
-                escape(evento.getPaymentNetwork()),
-                escape(evento.getTag()),
-                escape(evento.getDescription()),
-                escape(evento.getMessage()),
-                escape(evento.getUpdatedAt())
+                escape(event.getId()),
+                escape(event.getProductName()),
+                escape(event.getTargetMicroservice()),
+                escape(event.getMessageModel()),
+                escape(event.getMessageType()),
+                escape(event.getPaymentNetwork()),
+                escape(event.getTag()),
+                escape(event.getDescription()),
+                escape(event.getMessage()),
+                escape(event.getUpdatedAt())
         );
     }
 
@@ -131,8 +131,11 @@ public class DispatcherEventoCsvAdapterImpl implements DispatcherEventoCsvAdapte
             return "";
         }
 
-        String escaped = value.replace("\"", "\"\"");
-        if (escaped.contains(",") || escaped.contains("\"") || escaped.contains("\n") || escaped.contains("\r")) {
+        // Remove line breaks to ensure the value always stays on a single CSV line
+        String sanitized = value.replace("\r\n", " ").replace("\r", " ").replace("\n", " ");
+
+        String escaped = sanitized.replace("\"", "\"\"");
+        if (escaped.contains(",") || escaped.contains("\"")) {
             return "\"" + escaped + "\"";
         }
         return escaped;

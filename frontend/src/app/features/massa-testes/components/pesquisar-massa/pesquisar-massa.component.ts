@@ -48,7 +48,7 @@ export class PesquisarMassaComponent implements OnInit {
   loading = signal(false);
   massas = signal<MassaTestesItem[]>([]);
 
-  readonly displayedColumns = ['cartao', 'idConta', 'agencia', 'conta', 'dac', 'bandeira', 'modeloMensagem', 'tag', 'acoes'];
+  readonly displayedColumns = ['cardNumber', 'accountId', 'agency', 'account', 'dac', 'paymentNetwork', 'messageModel', 'tag', 'acoes'];
   readonly bandeiraOptions = ['MASTERCARD', 'VISA'];
   readonly modeloMensagemOptions = ['SINGLE_MESSAGE', 'DUAL_MESSAGE'];
 
@@ -107,10 +107,10 @@ export class PesquisarMassaComponent implements OnInit {
   carregar(): void {
     this.loading.set(true);
     this.massaTestesService.consultar({
-      cartao: this.filtroCartao || undefined,
-      idConta: this.filtroIdConta || undefined,
-      bandeira: this.filtroBandeira || undefined,
-      modeloMensagem: this.filtroModeloMensagem || undefined,
+      cardNumber: this.filtroCartao || undefined,
+      accountId: this.filtroIdConta || undefined,
+      paymentNetwork: this.filtroBandeira || undefined,
+      messageModel: this.filtroModeloMensagem || undefined,
       tag: this.filtroTag || undefined,
     }).subscribe({
       next: (list) => { this.loading.set(false); this.massas.set(list); },
