@@ -45,22 +45,27 @@ public class PositionalMessageBuildService {
 
     private void validateRequest(MessageBuildRequest request) {
         if (request == null) {
+            logger.error("Build request is null. code=BUILD_REQUEST_NULL");
             throw new ApplicationException("BUILD_REQUEST_NULL", "O request não pode ser nulo.");
         }
 
         if (request.getPaymentNetwork() == null || request.getPaymentNetwork().isBlank()) {
+            logger.error("paymentNetwork is blank. code=BUILD_PAYMENT_NETWORK_BLANK");
             throw new ApplicationException("BUILD_PAYMENT_NETWORK_BLANK", "O campo paymentNetwork não pode ser vazio.");
         }
 
         if (request.getMessageModel() == null || request.getMessageModel().isBlank()) {
+            logger.error("messageModel is blank. code=BUILD_MESSAGE_MODEL_BLANK");
             throw new ApplicationException("BUILD_MESSAGE_MODEL_BLANK", "O campo messageModel não pode ser vazio.");
         }
 
         if (request.getMessageType() == null || request.getMessageType().isBlank()) {
+            logger.error("messageType is blank. code=BUILD_MESSAGE_TYPE_BLANK");
             throw new ApplicationException("BUILD_MESSAGE_TYPE_BLANK", "O campo messageType não pode ser vazio.");
         }
 
         if (request.getFields() == null || request.getFields().isEmpty()) {
+            logger.error("fields are empty. code=BUILD_FIELDS_EMPTY");
             throw new ApplicationException("BUILD_FIELDS_EMPTY", "Os campos (fields) não podem ser nulos ou vazios.");
         }
     }

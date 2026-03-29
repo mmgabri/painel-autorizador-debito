@@ -4,6 +4,8 @@ import br.com.mmgabri.adapters.csv.DispatcherEventCsvAdapter;
 import br.com.mmgabri.domains.DispatcherEventCsvRequest;
 import br.com.mmgabri.domains.DispatcherEventCsvRow;
 import br.com.mmgabri.exceptions.ApplicationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -13,6 +15,8 @@ import java.util.UUID;
 
 @Service
 public class DispatcherEventService {
+
+    private static final Logger logger = LoggerFactory.getLogger(DispatcherEventService.class);
 
     private final DispatcherEventCsvAdapter csvAdapter;
 
@@ -62,11 +66,13 @@ public class DispatcherEventService {
             }
         }
 
+        logger.error("Dispatcher event not found for update. code=DISPATCHER_NOT_FOUND, id={}", id);
         throw new ApplicationException("DISPATCHER_NOT_FOUND", "Dispatcher event não encontrado para atualização. id=" + id);
     }
 
     public void deleteById(String id) {
         if (id == null || id.isBlank()) {
+            logger.error("Blank ID received for deletion. code=DISPATCHER_BLANK_ID");
             throw new ApplicationException("DISPATCHER_BLANK_ID", "O ID não pode ser vazio para exclusão.");
         }
 
@@ -75,6 +81,7 @@ public class DispatcherEventService {
         boolean removed = events.removeIf(event -> idTrimmed.equals(event.getId()));
 
         if (!removed) {
+            logger.error("Dispatcher event not found for deletion. code=DISPATCHER_NOT_FOUND, id={}", idTrimmed);
             throw new ApplicationException("DISPATCHER_NOT_FOUND", "Dispatcher event não encontrado para exclusão. id=" + idTrimmed);
         }
 

@@ -4,6 +4,8 @@ import br.com.mmgabri.domains.TestDataCsvRow;
 import br.com.mmgabri.exceptions.ApplicationException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -14,6 +16,7 @@ import java.util.Map;
 @Component
 public class ObjectsMapper {
 
+    private static final Logger logger = LoggerFactory.getLogger(ObjectsMapper.class);
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final DateTimeFormatter EMISSION_DATE_FORMATTER = DateTimeFormatter.ofPattern("dd-MM-yyyy");
     private static final DateTimeFormatter PROCESSING_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
@@ -52,6 +55,7 @@ public class ObjectsMapper {
         try {
             return OBJECT_MAPPER.writeValueAsString(payload);
         } catch (JsonProcessingException ex) {
+            logger.error("Failed to serialize card complement payload. code=KEYSPACES_SERIALIZE_ERROR, detail={}", ex.getMessage(), ex);
             throw new ApplicationException("KEYSPACES_SERIALIZE_ERROR", "Falha ao serializar o payload do complemento do cartão.");
         }
     }
@@ -78,6 +82,7 @@ public class ObjectsMapper {
         try {
             return OBJECT_MAPPER.writeValueAsString(payload);
         } catch (JsonProcessingException ex) {
+            logger.error("Failed to serialize account complement payload. code=KEYSPACES_SERIALIZE_ERROR, detail={}", ex.getMessage(), ex);
             throw new ApplicationException("KEYSPACES_SERIALIZE_ERROR", "Falha ao serializar o payload da conta.");
         }
     }

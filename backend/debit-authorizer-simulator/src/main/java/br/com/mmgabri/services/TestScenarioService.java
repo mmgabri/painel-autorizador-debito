@@ -5,6 +5,8 @@ import br.com.mmgabri.domains.TestScenarioCsvRow;
 import br.com.mmgabri.domains.TestScenarioCsvRequest;
 import br.com.mmgabri.domains.MessageParseRequest;
 import br.com.mmgabri.exceptions.ApplicationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -14,6 +16,8 @@ import java.util.UUID;
 
 @Service
 public class TestScenarioService {
+
+    private static final Logger logger = LoggerFactory.getLogger(TestScenarioService.class);
 
     private final TestScenarioCsvAdapter csvAdapter;
 
@@ -62,11 +66,13 @@ public class TestScenarioService {
             }
         }
 
+        logger.error("Scenario not found for update. code=CENARIO_NOT_FOUND, id={}", id);
         throw new ApplicationException("CENARIO_NOT_FOUND", "Cenário não encontrado para atualização. id=" + id);
     }
 
     public void deleteById(String id) {
         if (id == null || id.isBlank()) {
+            logger.error("Blank ID received for deletion. code=CENARIO_BLANK_ID");
             throw new ApplicationException("CENARIO_BLANK_ID", "O ID não pode ser vazio para exclusão.");
         }
 
@@ -75,6 +81,7 @@ public class TestScenarioService {
         boolean removed = cenarios.removeIf(cenario -> idTrimmed.equals(cenario.getId()));
 
         if (!removed) {
+            logger.error("Scenario not found for deletion. code=CENARIO_NOT_FOUND, id={}", idTrimmed);
             throw new ApplicationException("CENARIO_NOT_FOUND", "Cenário não encontrado para exclusão. id=" + idTrimmed);
         }
 
@@ -87,6 +94,7 @@ public class TestScenarioService {
 
     public void execute(MessageParseRequest request) {
         if (request.getMessage() == null || request.getMessage().isBlank()) {
+            logger.error("ISO message is blank for execution. code=CENARIO_ISO_MSG_BLANK");
             throw new ApplicationException("CENARIO_ISO_MSG_BLANK", "A mensagem ISO não pode ser vazia para execução.");
         }
 

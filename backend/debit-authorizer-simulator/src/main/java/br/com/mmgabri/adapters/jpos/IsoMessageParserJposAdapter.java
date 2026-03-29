@@ -33,6 +33,7 @@ public class IsoMessageParserJposAdapter implements IsoMessageParserAdapter {
             this.clearingPackager = loadPackager(CLEARING_PACKAGER_FILE);
             this.visaPackager = loadPackager(VISA_PACKAGER_FILE);
         } catch (Exception e) {
+            logger.error("Failed to load ISO packager. code=ISO_INIT_ERROR, detail={}", e.getMessage(), e);
             throw new ApplicationException("ISO_INIT_ERROR", "Falha ao carregar o packager ISO. Verifique os arquivos de configuração.");
         }
     }
@@ -49,6 +50,7 @@ public class IsoMessageParserJposAdapter implements IsoMessageParserAdapter {
         } catch (ApplicationException e) {
             throw e;
         } catch (Exception e) {
+            logger.error("Unexpected error parsing ISO message. code=ISO_EXECUTE_ERROR, detail={}", e.getMessage(), e);
             throw new ApplicationException("ISO_EXECUTE_ERROR", "Erro inesperado ao processar mensagem ISO: " + e.getMessage());
         }
     }
@@ -63,6 +65,7 @@ public class IsoMessageParserJposAdapter implements IsoMessageParserAdapter {
         try {
             consumedBytes = isoMsg.unpack(messageBytes);
         } catch (Exception e) {
+            logger.error("Failed to unpack ISO message. code=ISO_UNPACK_ERROR, detail={}", e.getMessage(), e);
             throw new ApplicationException("ISO_UNPACK_ERROR",
                     "Falha ao desempacotar a mensagem ISO. Verifique se o packager é compatível com os campos presentes no bitmap.");
         }
@@ -78,13 +81,14 @@ public class IsoMessageParserJposAdapter implements IsoMessageParserAdapter {
             }
             return new MessageParseResponse(isoMsg.getMTI(), fields);
         } catch (Exception e) {
+            logger.error("Error reading ISO message fields. code=ISO_FIELD_READ_ERROR, detail={}", e.getMessage(), e);
             throw new ApplicationException("ISO_FIELD_READ_ERROR", "Erro ao ler campos da mensagem ISO: " + e.getMessage());
         }
     }
 
-    // Fails fast when message body contains bytes not consumed by the bitmap-defined fields.
     private void validateUnpackConsistency(int messageLength, int consumedBytes, ISOMsg isoMsg) {
         if (consumedBytes != messageLength) {
+            logger.error("Inconsistent ISO message. code=ISO_INCONSISTENT_MSG, consumed={}, received={}", consumedBytes, messageLength);
             throw new ApplicationException("ISO_INCONSISTENT_MSG",
                     "Mensagem ISO inconsistente: bitmap/campos não consomem todos os bytes. "
                             + "Bytes consumidos=" + consumedBytes
@@ -94,6 +98,7 @@ public class IsoMessageParserJposAdapter implements IsoMessageParserAdapter {
 
         String processingCode = isoMsg.hasField(3) ? isoMsg.getString(3) : null;
         if (processingCode != null && !processingCode.matches("\\d{6}")) {
+            logger.error("Invalid field 3 after parsing. code=ISO_INVALID_FIELD3, value={}", processingCode);
             throw new ApplicationException("ISO_INVALID_FIELD3",
                     "Campo 3 (processing code) inválido após o parsing: '" + processingCode + "'. "
                             + "Possível desalinhamento de payload devido a bitmap incorreto.");
@@ -107,6 +112,7 @@ public class IsoMessageParserJposAdapter implements IsoMessageParserAdapter {
 
     private byte[] hexToBytes(String hex) {
         if (hex == null || hex.isBlank()) {
+            logger.error("ISO hex message is blank. code=ISO_HEX_BLANK");
             throw new ApplicationException("ISO_HEX_BLANK", "A mensagem hex não pode ser vazia.");
         }
 
@@ -114,6 +120,7 @@ public class IsoMessageParserJposAdapter implements IsoMessageParserAdapter {
         int len = cleanHex.length();
 
         if (len % 2 != 0) {
+            logger.error("Invalid hex length (odd). code=ISO_HEX_ODD_LENGTH");
             throw new ApplicationException("ISO_HEX_ODD_LENGTH", "Hex inválido: número ímpar de caracteres.");
         }
 
@@ -124,6 +131,7 @@ public class IsoMessageParserJposAdapter implements IsoMessageParserAdapter {
             int low = Character.digit(cleanHex.charAt(i + 1), 16);
 
             if (high == -1 || low == -1) {
+                logger.error("Invalid hex character in ISO message. code=ISO_HEX_INVALID_CHARS");
                 throw new ApplicationException("ISO_HEX_INVALID_CHARS", "Hex inválido: contém caracteres não hexadecimais.");
             }
 
