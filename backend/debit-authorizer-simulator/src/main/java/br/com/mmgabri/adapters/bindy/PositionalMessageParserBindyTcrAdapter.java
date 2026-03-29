@@ -1,6 +1,7 @@
 package br.com.mmgabri.adapters.bindy;
 
 import br.com.mmgabri.domains.PositionalMessageT464Record;
+import br.com.mmgabri.exceptions.ApplicationException;
 import jakarta.annotation.PreDestroy;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
@@ -27,7 +28,7 @@ public class PositionalMessageParserBindyTcrAdapter implements PositionalMessage
         try {
             this.camelContext.start();
         } catch (Exception e) {
-            throw new IllegalStateException("Failed to initialize Camel context for Bindy parser.", e);
+            throw new ApplicationException("BINDY_INIT_ERROR", "Falha ao inicializar o contexto Camel para o parser TCR.");
         }
     }
 
@@ -42,7 +43,7 @@ public class PositionalMessageParserBindyTcrAdapter implements PositionalMessage
 
             return toFieldsMap(extractRecord(result));
         } catch (Exception e) {
-            throw new IllegalArgumentException("Failed to parse positional message with Bindy.", e);
+            throw new ApplicationException("BINDY_PARSE_ERROR", "Falha ao fazer o parse da mensagem posicional TCR.");
         }
     }
 
@@ -81,7 +82,7 @@ public class PositionalMessageParserBindyTcrAdapter implements PositionalMessage
             }
         }
 
-        throw new IllegalArgumentException("Bindy parser returned an unsupported output format.");
+        throw new ApplicationException("BINDY_PARSE_ERROR", "O parser Bindy retornou um formato de saída não suportado.");
     }
 
     private PositionalMessageT464Record tryExtract(Object value) {

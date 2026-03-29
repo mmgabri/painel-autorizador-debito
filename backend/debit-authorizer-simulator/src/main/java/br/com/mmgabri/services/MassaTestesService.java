@@ -4,6 +4,7 @@ import br.com.mmgabri.adapters.csv.MassaTestesCsvAdapter;
 import br.com.mmgabri.adapters.keyspaces.KeyspacesAdapter;
 import br.com.mmgabri.domains.MassaTestesCsvRequest;
 import br.com.mmgabri.domains.MassaTestesCsvRow;
+import br.com.mmgabri.exceptions.ApplicationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -49,18 +50,18 @@ public class MassaTestesService {
                 return row;
             }
         }
-        throw new IllegalArgumentException("Massa de testes not found for update. id=" + id);
+        throw new ApplicationException("MASSA_NOT_FOUND", "Massa de testes não encontrada para atualização. id=" + id);
     }
 
     public void deleteById(String id) {
         if (id == null || id.isBlank()) {
-            throw new IllegalArgumentException("ID cannot be blank for deletion.");
+            throw new ApplicationException("MASSA_BLANK_ID", "O ID não pode ser vazio para exclusão.");
         }
         String idTrimmed = id.trim();
         List<MassaTestesCsvRow> all = csvAdapter.findAll();
         boolean removed = all.removeIf(row -> idTrimmed.equals(row.getId()));
         if (!removed) {
-            throw new IllegalArgumentException("Massa de testes not found for deletion. id=" + idTrimmed);
+            throw new ApplicationException("MASSA_NOT_FOUND", "Massa de testes não encontrada para exclusão. id=" + idTrimmed);
         }
         csvAdapter.replaceAll(all);
     }
@@ -80,7 +81,7 @@ public class MassaTestesService {
         MassaTestesCsvRow massa = csvAdapter.findAll().stream()
                 .filter(row -> id.equals(row.getId()))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Massa de testes não encontrada. id=" + id));
+                .orElseThrow(() -> new ApplicationException("MASSA_NOT_FOUND", "Massa de testes não encontrada. id=" + id));
         keyspacesAdapter.carregarDados(massa);
         logger.info("Dadinho carregado com sucesso no Keyspaces. id={}", id);
     }

@@ -185,7 +185,6 @@ export class ConfigurarDispatcherComponent implements OnInit {
       },
       error: () => {
         this.saving.set(false);
-        this.notif.error('Erro ao salvar evento');
       },
     });
   }

@@ -128,7 +128,6 @@ export class DispararEventoComponent implements OnInit {
       },
       error: () => {
         this.executing.set(false);
-        this.notif.error('Erro ao disparar evento');
       },
     });
   }
@@ -166,9 +165,7 @@ export class DispararEventoComponent implements OnInit {
           this.notif.success('Evento excluído com sucesso');
           this.excluiu.emit();
         },
-        error: () => {
-          this.notif.error('Erro ao excluir evento');
-        },
+        error: () => {},
       });
     });
   }

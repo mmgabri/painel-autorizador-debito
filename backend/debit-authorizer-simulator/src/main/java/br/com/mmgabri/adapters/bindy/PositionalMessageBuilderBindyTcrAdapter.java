@@ -1,6 +1,7 @@
 package br.com.mmgabri.adapters.bindy;
 
 import br.com.mmgabri.domains.PositionalMessageTcrRecord;
+import br.com.mmgabri.exceptions.ApplicationException;
 import jakarta.annotation.PreDestroy;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
@@ -22,7 +23,7 @@ public class PositionalMessageBuilderBindyTcrAdapter implements PositionalMessag
         try {
             this.camelContext.start();
         } catch (Exception e) {
-            throw new IllegalStateException("Failed to initialize Camel context for Bindy TCR builder.", e);
+            throw new ApplicationException("BINDY_INIT_ERROR", "Falha ao inicializar o contexto Camel para o builder TCR.");
         }
     }
 
@@ -37,7 +38,7 @@ public class PositionalMessageBuilderBindyTcrAdapter implements PositionalMessag
 
             return output.toString();
         } catch (Exception e) {
-            throw new IllegalArgumentException("Failed to build positional TCR message with Bindy.", e);
+            throw new ApplicationException("BINDY_BUILD_ERROR", "Falha ao montar a mensagem posicional TCR.");
         }
     }
 

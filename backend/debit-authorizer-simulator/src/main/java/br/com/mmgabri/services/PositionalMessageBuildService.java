@@ -4,6 +4,7 @@ import br.com.mmgabri.adapters.bindy.PositionalMessageBuilderBindyT464Adapter;
 import br.com.mmgabri.adapters.bindy.PositionalMessageBuilderBindyTcrAdapter;
 import br.com.mmgabri.domains.MessageBuildRequest;
 import br.com.mmgabri.domains.MessageBuildResponse;
+import br.com.mmgabri.exceptions.ApplicationException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,23 +45,23 @@ public class PositionalMessageBuildService {
 
     private void validateRequest(MessageBuildRequest request) {
         if (request == null) {
-            throw new IllegalArgumentException("request cannot be null.");
+            throw new ApplicationException("BUILD_REQUEST_NULL", "O request não pode ser nulo.");
         }
 
         if (request.getPaymentNetwork() == null || request.getPaymentNetwork().isBlank()) {
-            throw new IllegalArgumentException("paymentNetwork cannot be blank for positional build.");
+            throw new ApplicationException("BUILD_PAYMENT_NETWORK_BLANK", "O campo paymentNetwork não pode ser vazio.");
         }
 
         if (request.getMessageModel() == null || request.getMessageModel().isBlank()) {
-            throw new IllegalArgumentException("messageModel cannot be blank for positional build.");
+            throw new ApplicationException("BUILD_MESSAGE_MODEL_BLANK", "O campo messageModel não pode ser vazio.");
         }
 
         if (request.getMessageType() == null || request.getMessageType().isBlank()) {
-            throw new IllegalArgumentException("messageType cannot be blank for positional build.");
+            throw new ApplicationException("BUILD_MESSAGE_TYPE_BLANK", "O campo messageType não pode ser vazio.");
         }
 
         if (request.getFields() == null || request.getFields().isEmpty()) {
-            throw new IllegalArgumentException("fields cannot be null or empty for positional build.");
+            throw new ApplicationException("BUILD_FIELDS_EMPTY", "Os campos (fields) não podem ser nulos ou vazios.");
         }
     }
 }

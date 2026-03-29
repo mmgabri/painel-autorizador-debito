@@ -35,22 +35,26 @@ public class CassandraConfig {
     @Value("${app.keyspaces.aws-region:us-east-1}")
     private String awsRegion;
 
+    @Value("${app.keyspaces.ssl-enabled:true}")
+    private boolean sslEnabled;
+
     @Bean
     public CqlSessionFactoryBean cassandraSession() throws Exception {
-        SigV4AuthProvider authProvider = new SigV4AuthProvider(awsRegion);
-        SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
-        sslContext.init(null, null, null);
-
-        SessionBuilderConfigurer configurer = builder -> builder
-                .withAuthProvider(authProvider)
-                .withSslContext(sslContext);
-
         CqlSessionFactoryBean session = new CqlSessionFactoryBean();
         session.setContactPoints(contactPoints);
         session.setPort(port);
         session.setKeyspaceName(keyspaceName);
         session.setLocalDatacenter(localDatacenter);
-        session.setSessionBuilderConfigurer(configurer);
+
+        if (sslEnabled) {
+            SigV4AuthProvider authProvider = new SigV4AuthProvider(awsRegion);
+            SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
+            sslContext.init(null, null, null);
+            session.setSessionBuilderConfigurer(builder -> builder
+                    .withAuthProvider(authProvider)
+                    .withSslContext(sslContext));
+        }
+
         return session;
     }
 

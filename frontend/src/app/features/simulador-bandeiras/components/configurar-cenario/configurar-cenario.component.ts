@@ -136,7 +136,6 @@ export class ConfigurarCenarioComponent implements OnInit {
       },
       error: () => {
         this.loading.set(false);
-        this.notif.error('Erro ao carregar campos');
       },
     });
   }
@@ -259,7 +258,6 @@ export class ConfigurarCenarioComponent implements OnInit {
         },
         error: () => {
           this.saving.set(false);
-          this.notif.error('Erro ao salvar transação');
         },
       });
   }

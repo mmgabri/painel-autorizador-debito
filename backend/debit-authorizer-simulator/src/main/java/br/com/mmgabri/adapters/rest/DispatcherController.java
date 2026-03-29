@@ -4,6 +4,8 @@ import br.com.mmgabri.domains.DispatcherEventoCsvRequest;
 import br.com.mmgabri.domains.DispatcherEventoCsvRow;
 import br.com.mmgabri.domains.DispatcherEventoExecutarRequest;
 import br.com.mmgabri.domains.DispatcherEventoFiltroRequest;
+import br.com.mmgabri.domains.ErrorResponse;
+import br.com.mmgabri.exceptions.ApplicationException;
 import br.com.mmgabri.services.DispatcherEventoExecutionService;
 import br.com.mmgabri.services.DispatcherEventoService;
 import lombok.RequiredArgsConstructor;
@@ -27,44 +29,72 @@ public class DispatcherController {
     private final DispatcherEventoExecutionService dispatcherEventoExecutionService;
 
     @PostMapping("/salvar")
-    public ResponseEntity<DispatcherEventoCsvRow> save(@RequestBody DispatcherEventoCsvRequest request) {
-        logger.info("Request received to save dispatcher event.");
-        var saved = dispatcherEventoService.save(request);
-        logger.info("Dispatcher event saved successfully. id={}", saved.getId());
-        if (request.getId() != null && !request.getId().isBlank()) {
-            return ResponseEntity.status(HttpStatus.OK).body(saved);
-        } else {
-            return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+    public ResponseEntity<?> save(@RequestBody DispatcherEventoCsvRequest request) {
+        try {
+            logger.info("Request received to save dispatcher event.");
+            var saved = dispatcherEventoService.save(request);
+            logger.info("Dispatcher event saved successfully. id={}", saved.getId());
+            if (request.getId() != null && !request.getId().isBlank()) {
+                return ResponseEntity.status(HttpStatus.OK).body(saved);
+            } else {
+                return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+            }
+        } catch (ApplicationException e) {
+            return ResponseEntity.badRequest().body(new ErrorResponse(e.getCode(), e.getDescription()));
+        } catch (Exception e) {
+            logger.error("Unexpected error on save dispatcher event", e);
+            return ResponseEntity.internalServerError().body(new ErrorResponse("INTERNAL_ERROR", "Erro interno inesperado."));
         }
     }
 
     @PostMapping
-    public ResponseEntity<List<DispatcherEventoCsvRow>> list(@RequestBody(required = false) DispatcherEventoFiltroRequest filtro) {
-        String productName = filtro != null ? filtro.getProductName() : null;
-        String targetMicroservice = filtro != null ? filtro.getTargetMicroservice() : null;
-        String tag = filtro != null ? filtro.getTag() : null;
-        String paymentNetwork = filtro != null ? filtro.getPaymentNetwork() : null;
-        String messageType = filtro != null ? filtro.getMessageType() : null;
-        logger.info("Request received to list dispatcher events with filters: productName={}, targetMicroservice={}, tag={}, paymentNetwork={}, messageType={}",
-            productName, targetMicroservice, tag, paymentNetwork, messageType);
-        var resp = dispatcherEventoService.findByFilters(productName, targetMicroservice, tag, paymentNetwork, messageType);
-        logger.info("Dispatcher events listed successfully. count={}", resp.size());
-        return ResponseEntity.ok(resp);
+    public ResponseEntity<?> list(@RequestBody(required = false) DispatcherEventoFiltroRequest filtro) {
+        try {
+            String productName = filtro != null ? filtro.getProductName() : null;
+            String targetMicroservice = filtro != null ? filtro.getTargetMicroservice() : null;
+            String tag = filtro != null ? filtro.getTag() : null;
+            String paymentNetwork = filtro != null ? filtro.getPaymentNetwork() : null;
+            String messageType = filtro != null ? filtro.getMessageType() : null;
+            logger.info("Request received to list dispatcher events with filters: productName={}, targetMicroservice={}, tag={}, paymentNetwork={}, messageType={}",
+                productName, targetMicroservice, tag, paymentNetwork, messageType);
+            var resp = dispatcherEventoService.findByFilters(productName, targetMicroservice, tag, paymentNetwork, messageType);
+            logger.info("Dispatcher events listed successfully. count={}", resp.size());
+            return ResponseEntity.ok(resp);
+        } catch (ApplicationException e) {
+            return ResponseEntity.badRequest().body(new ErrorResponse(e.getCode(), e.getDescription()));
+        } catch (Exception e) {
+            logger.error("Unexpected error on list dispatcher events", e);
+            return ResponseEntity.internalServerError().body(new ErrorResponse("INTERNAL_ERROR", "Erro interno inesperado."));
+        }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable String id) {
-        logger.info("Request received to delete dispatcher event with id: {}", id);
-        dispatcherEventoService.deleteById(id);
-        logger.info("Dispatcher event deleted successfully.");
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<?> delete(@PathVariable String id) {
+        try {
+            logger.info("Request received to delete dispatcher event with id: {}", id);
+            dispatcherEventoService.deleteById(id);
+            logger.info("Dispatcher event deleted successfully.");
+            return ResponseEntity.noContent().build();
+        } catch (ApplicationException e) {
+            return ResponseEntity.badRequest().body(new ErrorResponse(e.getCode(), e.getDescription()));
+        } catch (Exception e) {
+            logger.error("Unexpected error on delete dispatcher event", e);
+            return ResponseEntity.internalServerError().body(new ErrorResponse("INTERNAL_ERROR", "Erro interno inesperado."));
+        }
     }
 
     @PostMapping("/executar")
-    public ResponseEntity<Map<String, String>> execute(@RequestBody DispatcherEventoExecutarRequest request) {
-        logger.info("Request received to execute dispatcher event. productName={}, targetMicroservice={}",
-            request.getProductName(), request.getTargetMicroservice());
-        dispatcherEventoExecutionService.execute(request);
-        return ResponseEntity.ok(Map.of("message", "success"));
+    public ResponseEntity<?> execute(@RequestBody DispatcherEventoExecutarRequest request) {
+        try {
+            logger.info("Request received to execute dispatcher event. productName={}, targetMicroservice={}",
+                request.getProductName(), request.getTargetMicroservice());
+            dispatcherEventoExecutionService.execute(request);
+            return ResponseEntity.ok(Map.of("message", "success"));
+        } catch (ApplicationException e) {
+            return ResponseEntity.badRequest().body(new ErrorResponse(e.getCode(), e.getDescription()));
+        } catch (Exception e) {
+            logger.error("Unexpected error on execute dispatcher event", e);
+            return ResponseEntity.internalServerError().body(new ErrorResponse("INTERNAL_ERROR", "Erro interno inesperado."));
+        }
     }
 }

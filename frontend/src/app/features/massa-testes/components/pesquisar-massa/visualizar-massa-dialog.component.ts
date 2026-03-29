@@ -188,7 +188,6 @@ export class VisualizarMassaDialogComponent {
       },
       error: () => {
         this.carregando.set(false);
-        this.notif.error('Erro ao carregar dadinho');
       },
     });
   }

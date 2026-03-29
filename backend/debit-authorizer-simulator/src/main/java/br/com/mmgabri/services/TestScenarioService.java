@@ -4,6 +4,7 @@ import br.com.mmgabri.adapters.csv.TestScenarioCsvAdapter;
 import br.com.mmgabri.domains.TestScenarioCsvRow;
 import br.com.mmgabri.domains.TestScenarioCsvRequest;
 import br.com.mmgabri.domains.MessageParseRequest;
+import br.com.mmgabri.exceptions.ApplicationException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -61,12 +62,12 @@ public class TestScenarioService {
             }
         }
 
-        throw new IllegalArgumentException("Scenario not found for update. id=" + id);
+        throw new ApplicationException("CENARIO_NOT_FOUND", "Cenário não encontrado para atualização. id=" + id);
     }
 
     public void deleteById(String id) {
         if (id == null || id.isBlank()) {
-            throw new IllegalArgumentException("ID cannot be blank for deletion.");
+            throw new ApplicationException("CENARIO_BLANK_ID", "O ID não pode ser vazio para exclusão.");
         }
 
         String idTrimmed = id.trim();
@@ -74,7 +75,7 @@ public class TestScenarioService {
         boolean removed = cenarios.removeIf(cenario -> idTrimmed.equals(cenario.getId()));
 
         if (!removed) {
-            throw new IllegalArgumentException("Scenario not found for deletion. id=" + idTrimmed);
+            throw new ApplicationException("CENARIO_NOT_FOUND", "Cenário não encontrado para exclusão. id=" + idTrimmed);
         }
 
         csvAdapter.replaceAll(cenarios);
@@ -86,7 +87,7 @@ public class TestScenarioService {
 
     public void execute(MessageParseRequest request) {
         if (request.getMessage() == null || request.getMessage().isBlank()) {
-            throw new IllegalArgumentException("isoMessage cannot be blank for execution.");
+            throw new ApplicationException("CENARIO_ISO_MSG_BLANK", "A mensagem ISO não pode ser vazia para execução.");
         }
 
     }

@@ -2,6 +2,7 @@ package br.com.mmgabri.adapters.jpos;
 
 import br.com.mmgabri.domains.MessageParseResponse;
 import br.com.mmgabri.domains.enuns.MessageParseTypeEnum;
+import br.com.mmgabri.exceptions.ApplicationException;
 import lombok.SneakyThrows;
 import org.jpos.iso.ISOMsg;
 import org.jpos.iso.ISOPackager;
@@ -33,7 +34,7 @@ public class IsoMessageParserJposAdapter implements IsoMessageParserAdapter {
             this.clearingPackager = loadPackager(CLEARING_PACKAGER_FILE);
             this.visaPackager = loadPackager(VISA_PACKAGER_FILE);
         } catch (Exception e) {
-            throw new IllegalStateException("Failed to load ISO EBCDIC packager.", e);
+            throw new ApplicationException("ISO_INIT_ERROR", "Falha ao carregar o packager ISO. Verifique os arquivos de configuração.");
         }
     }
 
@@ -64,10 +65,8 @@ public class IsoMessageParserJposAdapter implements IsoMessageParserAdapter {
         try {
             consumedBytes = isoMsg.unpack(messageBytes);
         } catch (Exception e) {
-            throw new IllegalStateException(
-                    "Failed to unpack ISO message. Check whether the packager is compatible with the fields present in the bitmap.",
-                    e
-            );
+            throw new ApplicationException("ISO_UNPACK_ERROR",
+                    "Falha ao desempacotar a mensagem ISO. Verifique se o packager é compatível com os campos presentes no bitmap.");
         }
 
         validateUnpackConsistency(messageBytes.length, consumedBytes, isoMsg);
@@ -85,20 +84,18 @@ public class IsoMessageParserJposAdapter implements IsoMessageParserAdapter {
     // Fails fast when message body contains bytes not consumed by the bitmap-defined fields.
     private void validateUnpackConsistency(int messageLength, int consumedBytes, ISOMsg isoMsg) {
         if (consumedBytes != messageLength) {
-            throw new IllegalArgumentException(
-                    "Inconsistent ISO message: bitmap/fields do not consume all message bytes. "
-                            + "Bytes consumed=" + consumedBytes
-                            + ", bytes received=" + messageLength
-                            + ". Check whether the bitmap signals all sent fields (e.g., field 2 LLVAR/PAN)."
-            );
+            throw new ApplicationException("ISO_INCONSISTENT_MSG",
+                    "Mensagem ISO inconsistente: bitmap/campos não consomem todos os bytes. "
+                            + "Bytes consumidos=" + consumedBytes
+                            + ", bytes recebidos=" + messageLength
+                            + ". Verifique se o bitmap sinaliza todos os campos enviados (ex: campo 2 LLVAR/PAN).");
         }
 
         String processingCode = isoMsg.hasField(3) ? isoMsg.getString(3) : null;
         if (processingCode != null && !processingCode.matches("\\d{6}")) {
-            throw new IllegalArgumentException(
-                    "Invalid field 3 (processing code) after parsing: '" + processingCode + "'. "
-                            + "Possible payload misalignment due to an incorrect bitmap."
-            );
+            throw new ApplicationException("ISO_INVALID_FIELD3",
+                    "Campo 3 (processing code) inválido após o parsing: '" + processingCode + "'. "
+                            + "Possível desalinhamento de payload devido a bitmap incorreto.");
         }
     }
 
@@ -109,14 +106,14 @@ public class IsoMessageParserJposAdapter implements IsoMessageParserAdapter {
 
     private byte[] hexToBytes(String hex) {
         if (hex == null || hex.isBlank()) {
-            throw new IllegalArgumentException("Hex message cannot be blank.");
+            throw new ApplicationException("ISO_HEX_BLANK", "A mensagem hex não pode ser vazia.");
         }
 
         String cleanHex = hex.replaceAll("\\s+", "");
         int len = cleanHex.length();
 
         if (len % 2 != 0) {
-            throw new IllegalArgumentException("Invalid hex: odd number of characters.");
+            throw new ApplicationException("ISO_HEX_ODD_LENGTH", "Hex inválido: número ímpar de caracteres.");
         }
 
         byte[] data = new byte[len / 2];
@@ -126,7 +123,7 @@ public class IsoMessageParserJposAdapter implements IsoMessageParserAdapter {
             int low = Character.digit(cleanHex.charAt(i + 1), 16);
 
             if (high == -1 || low == -1) {
-                throw new IllegalArgumentException("Invalid hex: contains non-hexadecimal characters.");
+                throw new ApplicationException("ISO_HEX_INVALID_CHARS", "Hex inválido: contém caracteres não hexadecimais.");
             }
 
             data[i / 2] = (byte) ((high << 4) + low);

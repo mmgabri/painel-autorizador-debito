@@ -1,7 +1,9 @@
 package br.com.mmgabri.adapters.rest;
 
+import br.com.mmgabri.domains.ErrorResponse;
 import br.com.mmgabri.domains.NumberGeneratorRequest;
 import br.com.mmgabri.domains.NumberGeneratorResponse;
+import br.com.mmgabri.exceptions.ApplicationException;
 import br.com.mmgabri.services.NumberGeneratorOrchestrationService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
@@ -27,14 +29,19 @@ public class NumberGeneratorController {
     private final NumberGeneratorOrchestrationService numberGeneratorOrchestrationService;
 
     @PostMapping("/generate")
-    public ResponseEntity<NumberGeneratorResponse> generate(
+    public ResponseEntity<?> generate(
             @RequestParam @Min(1) @Max(20) int digits,
             @Valid @RequestBody NumberGeneratorRequest request) {
-
-        logger.info("Request received to generate a number. digits={}", digits);
-        NumberGeneratorResponse response = numberGeneratorOrchestrationService.execute(request, digits);
-        logger.info("Number generated successfully. digits={}", digits);
-        return ResponseEntity.ok(response);
+        try {
+            logger.info("Request received to generate a number. digits={}", digits);
+            NumberGeneratorResponse response = numberGeneratorOrchestrationService.execute(request, digits);
+            logger.info("Number generated successfully. digits={}", digits);
+            return ResponseEntity.ok(response);
+        } catch (ApplicationException e) {
+            return ResponseEntity.badRequest().body(new ErrorResponse(e.getCode(), e.getDescription()));
+        } catch (Exception e) {
+            logger.error("Unexpected error on number generation", e);
+            return ResponseEntity.internalServerError().body(new ErrorResponse("INTERNAL_ERROR", "Erro interno inesperado."));
+        }
     }
 }
-

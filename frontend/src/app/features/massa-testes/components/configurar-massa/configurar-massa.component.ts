@@ -165,7 +165,6 @@ export class ConfigurarMassaComponent implements OnInit {
       },
       error: () => {
         this.saving.set(false);
-        this.notif.error('Erro ao salvar massa de testes');
       },
     });
   }
@@ -206,7 +205,7 @@ export class ConfigurarMassaComponent implements OnInit {
     if (!id) return;
     this.massaTestesService.carregarDadinho(id).subscribe({
       next: () => { this.notif.success('Dadinho carregado com sucesso'); },
-      error: () => { this.notif.error('Erro ao carregar dadinho'); },
+      error: () => {},
     });
   }
 }

@@ -134,7 +134,6 @@ export class DispararTransacaoComponent implements OnInit {
         },
         error: () => {
           this.loading.set(false);
-          this.notif.error('Erro ao carregar campos da transação');
         },
       });
   }
@@ -268,7 +267,6 @@ export class DispararTransacaoComponent implements OnInit {
           console.error('Erro ao executar transação:', err);
           this.executing.set(false);
           this.onFecharInterimOverlay();
-          this.notif.error('Erro ao executar transação');
         },
       });
   }
@@ -380,9 +378,7 @@ export class DispararTransacaoComponent implements OnInit {
           this.notif.success(result?.message ?? 'Cenário excluído com sucesso');
           this.excluiu.emit();
         },
-        error: () => {
-          this.notif.error('Erro ao excluir transação');
-        },
+        error: () => {},
       });
     });
   }
@@ -524,7 +520,6 @@ export class DispararTransacaoComponent implements OnInit {
         },
         error: () => {
           this.estornoLoading.set(false);
-          this.notif.error('Erro ao carregar campos do estorno');
         },
       });
   }
@@ -586,7 +581,6 @@ export class DispararTransacaoComponent implements OnInit {
         },
         error: () => {
           this.conciliacaoLoading.set(false);
-          this.notif.error('Erro ao carregar campos da conciliação');
         },
       });
   }

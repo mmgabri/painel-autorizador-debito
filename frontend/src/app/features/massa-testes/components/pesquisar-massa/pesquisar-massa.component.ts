@@ -84,7 +84,7 @@ export class PesquisarMassaComponent implements OnInit {
   onCarregarDadinho(item: MassaTestesItem): void {
     this.massaTestesService.carregarDadinho(item.id).subscribe({
       next: () => { this.notif.success('Dadinho carregado com sucesso'); },
-      error: () => { this.notif.error('Erro ao carregar dadinho'); },
+      error: () => {},
     });
   }
 
@@ -99,7 +99,7 @@ export class PesquisarMassaComponent implements OnInit {
           this.notif.success('Massa de testes excluída com sucesso');
           this.massas.set(this.massas().filter((m) => m.id !== item.id));
         },
-        error: () => { this.notif.error('Erro ao excluir massa de testes'); },
+        error: () => {},
       });
     });
   }

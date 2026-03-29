@@ -98,9 +98,7 @@ export class BuscarCenariosComponent implements OnInit {
           this.notif.success(result?.message ?? 'Cenário excluído com sucesso');
           this.transacoes.set(this.transacoes().filter((t) => t.id !== item.id));
         },
-        error: () => {
-          this.notif.error('Erro ao excluir cenário');
-        },
+        error: () => {},
       });
     });
   }

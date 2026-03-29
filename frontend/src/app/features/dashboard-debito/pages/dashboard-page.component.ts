@@ -87,7 +87,6 @@ export class DashboardPageComponent {
       },
       error: () => {
         this.loadingDia.set(false);
-        this.notif.error('Erro ao carregar Acumulado do Dia');
       },
     });
   }
@@ -105,7 +104,6 @@ export class DashboardPageComponent {
       },
       error: () => {
         this.loadingA1.set(false);
-        this.notif.error('Erro ao carregar Acumulado A-1');
       },
     });
   }
@@ -119,7 +117,6 @@ export class DashboardPageComponent {
       },
       error: () => {
         this.loadingRecorde.set(false);
-        this.notif.error('Erro ao carregar Recordes');
       },
     });
   }
@@ -136,7 +133,6 @@ export class DashboardPageComponent {
       },
       error: () => {
         this.loadingSemana.set(false);
-        this.notif.error('Erro ao carregar Acumulado da Semana');
       },
     });
   }

@@ -1,6 +1,7 @@
 package br.com.mmgabri.adapters.csv;
 
 import br.com.mmgabri.domains.TestScenarioCsvRow;
+import br.com.mmgabri.exceptions.ApplicationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -32,7 +33,7 @@ public class TestScenarioCsvAdapterImpl implements TestScenarioCsvAdapter {
             Files.writeString(csvPath, toCsvLine(cenario) + System.lineSeparator(), StandardCharsets.UTF_8,
                     java.nio.file.StandardOpenOption.APPEND);
         } catch (IOException e) {
-            throw new IllegalStateException("Error writing to CSV file: " + csvPath, e);
+            throw new ApplicationException("CSV_WRITE_ERROR", "Erro ao escrever no arquivo CSV: " + csvPath);
         }
     }
 
@@ -51,7 +52,7 @@ public class TestScenarioCsvAdapterImpl implements TestScenarioCsvAdapter {
                     java.nio.file.StandardOpenOption.TRUNCATE_EXISTING,
                     java.nio.file.StandardOpenOption.WRITE);
         } catch (IOException e) {
-            throw new IllegalStateException("Error rewriting CSV file: " + csvPath, e);
+            throw new ApplicationException("CSV_REWRITE_ERROR", "Erro ao reescrever o arquivo CSV: " + csvPath);
         }
     }
 
@@ -97,7 +98,7 @@ public class TestScenarioCsvAdapterImpl implements TestScenarioCsvAdapter {
             }
             return result;
         } catch (IOException e) {
-            throw new IllegalStateException("Error reading CSV file: " + csvPath, e);
+            throw new ApplicationException("CSV_READ_ERROR", "Erro ao ler o arquivo CSV: " + csvPath);
         }
     }
 
@@ -130,7 +131,7 @@ public class TestScenarioCsvAdapterImpl implements TestScenarioCsvAdapter {
                 Files.writeString(csvPath, HEADER + System.lineSeparator(), StandardCharsets.UTF_8);
             }
         } catch (IOException e) {
-            throw new IllegalStateException("Error initializing CSV file: " + csvPath, e);
+            throw new ApplicationException("CSV_INIT_ERROR", "Erro ao inicializar o arquivo CSV: " + csvPath);
         }
     }
 

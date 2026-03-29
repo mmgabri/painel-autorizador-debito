@@ -4,6 +4,7 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { ThemeService } from '../../services/theme.service';
+import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 
 @Component({
   selector: 'app-shell',
@@ -15,6 +16,7 @@ import { ThemeService } from '../../services/theme.service';
     MatSidenavModule,
     MatListModule,
     MatIconModule,
+    LoadingSpinnerComponent,
   ],
   templateUrl: './shell.component.html',
   styleUrl: './shell.component.scss',

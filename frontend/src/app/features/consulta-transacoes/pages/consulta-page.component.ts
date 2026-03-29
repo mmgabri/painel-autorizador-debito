@@ -98,7 +98,6 @@ export class ConsultaPageComponent {
       },
       error: () => {
         this.loading.set(false);
-        this.notif.error('Erro ao buscar transacoes');
       },
     });
   }
@@ -111,9 +110,7 @@ export class ConsultaPageComponent {
           data: { title, fields, loading: false, rawMessage: hexMessage } as IsoMessageDialogData,
         });
       },
-      error: () => {
-        this.notif.error('Erro ao parsear mensagem ISO');
-      },
+      error: () => {},
     });
   }
 
@@ -125,9 +122,7 @@ export class ConsultaPageComponent {
           data: { detalhes } as DetalhesTransacaoDialogData,
         });
       },
-      error: () => {
-        this.notif.error('Erro ao buscar detalhes da transacao');
-      },
+      error: () => {},
     });
   }
 }

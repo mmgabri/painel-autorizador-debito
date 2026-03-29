@@ -3,6 +3,7 @@ package br.com.mmgabri.services;
 import br.com.mmgabri.adapters.csv.DispatcherEventoCsvAdapter;
 import br.com.mmgabri.domains.DispatcherEventoCsvRequest;
 import br.com.mmgabri.domains.DispatcherEventoCsvRow;
+import br.com.mmgabri.exceptions.ApplicationException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -61,12 +62,12 @@ public class DispatcherEventoService {
             }
         }
 
-        throw new IllegalArgumentException("Dispatcher event not found for update. id=" + id);
+        throw new ApplicationException("DISPATCHER_NOT_FOUND", "Dispatcher event não encontrado para atualização. id=" + id);
     }
 
     public void deleteById(String id) {
         if (id == null || id.isBlank()) {
-            throw new IllegalArgumentException("ID cannot be blank for deletion.");
+            throw new ApplicationException("DISPATCHER_BLANK_ID", "O ID não pode ser vazio para exclusão.");
         }
 
         String idTrimmed = id.trim();
@@ -74,7 +75,7 @@ public class DispatcherEventoService {
         boolean removed = eventos.removeIf(evento -> idTrimmed.equals(evento.getId()));
 
         if (!removed) {
-            throw new IllegalArgumentException("Dispatcher event not found for deletion. id=" + idTrimmed);
+            throw new ApplicationException("DISPATCHER_NOT_FOUND", "Dispatcher event não encontrado para exclusão. id=" + idTrimmed);
         }
 
         csvAdapter.replaceAll(eventos);

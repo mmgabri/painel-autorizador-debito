@@ -1,25 +1,3 @@
-spring:
-  config:
-    activate:
-      on-profile: dev
-
-  threads:
-    virtual:
-      enabled: true
-
-  cassandra:
-    keyspace-name: presentekeyspaces
-    contact-points: cassandra.us-east-1.amazonaws.com
-    port: 9142
-    local-datacenter: us-east-1
-    schema-action: none
-    request:
-      timeout: 5s
-      consistency: LOCAL_QUORUM
-    connection:
-      connect-timeout: 5s
-      init-query-timeout: 5s
-
 server:
   port: 8081
 
@@ -27,10 +5,39 @@ logging:
   level:
     br.com.mmgabri: info
 
+spring:
+  config:
+    activate:
+      on-profile: dev
+  threads:
+    virtual:
+      enabled: true
+  cassandra:
+    contact-points: localhost
+    port: 9042
+    local-datacenter: us-east-1
+    keyspace-name: presentekeyspaces
+    username: cassandra
+    password: cassandra
+#  cassandra:
+#    keyspace-name: presentekeyspaces
+#    contact-points: cassandra.us-east-1.amazonaws.com
+#    port: 9142
+#    local-datacenter: us-east-1
+#    schema-action: none
+#    request:
+#      timeout: 5s
+#      consistency: LOCAL_QUORUM
+#    connection:
+#      connect-timeout: 5s
+#      init-query-timeout: 5s
+
 app:
   keyspaces:
-    # false = app sobe sem Cassandra (NoOp adapter). true = conecta no AWS Keyspaces (requer credenciais AWS configuradas)
+    # false = app sobe sem Cassandra (NoOp adapter). true = conecta no Cassandra/Keyspaces
     enabled: true
+    # false = sem SSL/SigV4 (Cassandra local). true = SSL + SigV4 (AWS Keyspaces)
+    ssl-enabled: false
     aws-region: us-east-1
     default-codbanco: "341"
     default-tpempres: "01"

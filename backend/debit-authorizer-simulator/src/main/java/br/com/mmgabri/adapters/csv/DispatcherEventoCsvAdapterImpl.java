@@ -1,6 +1,7 @@
 package br.com.mmgabri.adapters.csv;
 
 import br.com.mmgabri.domains.DispatcherEventoCsvRow;
+import br.com.mmgabri.exceptions.ApplicationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -31,7 +32,7 @@ public class DispatcherEventoCsvAdapterImpl implements DispatcherEventoCsvAdapte
             Files.writeString(csvPath, toCsvLine(evento) + System.lineSeparator(), StandardCharsets.UTF_8,
                     java.nio.file.StandardOpenOption.APPEND);
         } catch (IOException e) {
-            throw new IllegalStateException("Error writing to dispatcher CSV file: " + csvPath, e);
+            throw new ApplicationException("CSV_WRITE_ERROR", "Erro ao escrever no arquivo CSV: " + csvPath);
         }
     }
 
@@ -50,7 +51,7 @@ public class DispatcherEventoCsvAdapterImpl implements DispatcherEventoCsvAdapte
                     java.nio.file.StandardOpenOption.TRUNCATE_EXISTING,
                     java.nio.file.StandardOpenOption.WRITE);
         } catch (IOException e) {
-            throw new IllegalStateException("Error rewriting dispatcher CSV file: " + csvPath, e);
+            throw new ApplicationException("CSV_REWRITE_ERROR", "Erro ao reescrever o arquivo CSV: " + csvPath);
         }
     }
 
@@ -87,7 +88,7 @@ public class DispatcherEventoCsvAdapterImpl implements DispatcherEventoCsvAdapte
             }
             return result;
         } catch (IOException e) {
-            throw new IllegalStateException("Error reading dispatcher CSV file: " + csvPath, e);
+            throw new ApplicationException("CSV_READ_ERROR", "Erro ao ler o arquivo CSV: " + csvPath);
         }
     }
 
@@ -121,7 +122,7 @@ public class DispatcherEventoCsvAdapterImpl implements DispatcherEventoCsvAdapte
                 Files.writeString(csvPath, HEADER + System.lineSeparator(), StandardCharsets.UTF_8);
             }
         } catch (IOException e) {
-            throw new IllegalStateException("Error initializing dispatcher CSV file: " + csvPath, e);
+            throw new ApplicationException("CSV_INIT_ERROR", "Erro ao inicializar o arquivo CSV: " + csvPath);
         }
     }
 

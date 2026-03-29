@@ -1,6 +1,7 @@
 package br.com.mmgabri.services;
 
 import br.com.mmgabri.domains.MessageParseRequest;
+import br.com.mmgabri.exceptions.ApplicationException;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.commons.codec.binary.Hex;
@@ -20,7 +21,7 @@ public class TestScenarioExecutionService {
 
     public void execute(MessageParseRequest request) {
         if (request.getMessage() == null || request.getMessage().isBlank()) {
-            throw new IllegalArgumentException("isoMessage cannot be blank for execution.");
+            throw new ApplicationException("CENARIO_ISO_MSG_BLANK", "A mensagem ISO não pode ser vazia para execução.");
         }
 
         if (request.getMessageType().equals(CONCILIACAO.toString())) {

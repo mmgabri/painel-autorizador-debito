@@ -1,6 +1,7 @@
 package br.com.mmgabri.adapters.bindy;
 
 import br.com.mmgabri.domains.PositionalMessageT464Record;
+import br.com.mmgabri.exceptions.ApplicationException;
 import jakarta.annotation.PreDestroy;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
@@ -24,7 +25,7 @@ public class PositionalMessageBuilderBindyT464Adapter implements PositionalMessa
         try {
             this.camelContext.start();
         } catch (Exception e) {
-            throw new IllegalStateException("Failed to initialize Camel context for Bindy T464 builder.", e);
+            throw new ApplicationException("BINDY_INIT_ERROR", "Falha ao inicializar o contexto Camel para o builder T464.");
         }
     }
 
@@ -39,7 +40,7 @@ public class PositionalMessageBuilderBindyT464Adapter implements PositionalMessa
 
             return normalizeMessage(output.toString());
         } catch (Exception e) {
-            throw new IllegalArgumentException("Failed to build positional T464 message with Bindy.", e);
+            throw new ApplicationException("BINDY_BUILD_ERROR", "Falha ao montar a mensagem posicional T464.");
         }
     }
 

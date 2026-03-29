@@ -10,6 +10,7 @@ import br.com.mmgabri.adapters.keyspaces.repositories.CartaoRepository;
 import br.com.mmgabri.adapters.keyspaces.repositories.ContaRepository;
 import br.com.mmgabri.adapters.keyspaces.repositories.CustomerRepository;
 import br.com.mmgabri.domains.MassaTestesCsvRow;
+import br.com.mmgabri.exceptions.ApplicationException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -97,7 +98,7 @@ public class KeyspacesAdapterImpl implements KeyspacesAdapter {
         try {
             return OBJECT_MAPPER.writeValueAsString(payload);
         } catch (JsonProcessingException ex) {
-            throw new IllegalStateException("Could not serialize card complemento payload", ex);
+            throw new ApplicationException("KEYSPACES_SERIALIZE_ERROR", "Falha ao serializar o payload do complemento do cartão.");
         }
     }
 

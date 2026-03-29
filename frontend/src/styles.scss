@@ -316,6 +316,7 @@ h2 {
 // Dialog Itaú — remove o padding padrão do Material para header edge-to-edge
 .itau-dialog-panel .mdc-dialog__surface {
   padding: 0 !important;
+  background-color: var(--app-surface) !important;
 }
 .itau-dialog-panel mat-dialog-content,
 .itau-dialog-panel .mat-mdc-dialog-content {

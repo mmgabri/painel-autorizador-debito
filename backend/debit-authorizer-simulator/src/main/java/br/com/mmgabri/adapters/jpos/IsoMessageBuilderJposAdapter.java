@@ -2,6 +2,7 @@ package br.com.mmgabri.adapters.jpos;
 
 import br.com.mmgabri.domains.MessageBuildRequest;
 import br.com.mmgabri.domains.enuns.MessageParseTypeEnum;
+import br.com.mmgabri.exceptions.ApplicationException;
 import br.com.mmgabri.services.EbcdicConverterService;
 import lombok.SneakyThrows;
 import org.jpos.iso.ISOBasePackager;
@@ -38,7 +39,7 @@ public class IsoMessageBuilderJposAdapter implements IsoMessageBuilderAdapter {
             this.clearingPackager = loadPackager(CLEARING_PACKAGER_FILE);
             this.visaPackager = loadPackager(VISA_PACKAGER_FILE);
         } catch (Exception e) {
-            throw new IllegalStateException("Failed to load ISO EBCDIC packager.", e);
+            throw new ApplicationException("ISO_INIT_ERROR", "Falha ao carregar o packager ISO. Verifique os arquivos de configuração.");
         }
     }
 
@@ -80,10 +81,8 @@ public class IsoMessageBuilderJposAdapter implements IsoMessageBuilderAdapter {
         try {
             packed = isoMsg.pack();
         } catch (Exception e) {
-            throw new IllegalStateException(
-                    "Failed to build ISO message. Check whether the provided fields are compatible with the selected packager.",
-                    e
-            );
+            throw new ApplicationException("ISO_BUILD_ERROR",
+                    "Falha ao construir a mensagem ISO. Verifique se os campos fornecidos são compatíveis com o packager selecionado.");
         }
 
         return bytesToHex(packed);
@@ -105,7 +104,7 @@ public class IsoMessageBuilderJposAdapter implements IsoMessageBuilderAdapter {
 
     private byte[] hexToBytes(String hex) {
         if (hex == null || hex.isBlank()) {
-            throw new IllegalArgumentException("Hex value cannot be blank for binary field.");
+            throw new ApplicationException("ISO_BIN_FIELD_BLANK", "O valor hex não pode ser vazio para campo binário.");
         }
 
         String cleanHex = hex.replaceAll("\\s+", "");
@@ -119,7 +118,7 @@ public class IsoMessageBuilderJposAdapter implements IsoMessageBuilderAdapter {
             int high = Character.digit(cleanHex.charAt(i), 16);
             int low = Character.digit(cleanHex.charAt(i + 1), 16);
             if (high == -1 || low == -1) {
-                throw new IllegalArgumentException("Binary field contains non-hexadecimal characters.");
+                throw new ApplicationException("ISO_BIN_FIELD_INVALID_CHARS", "O campo binário contém caracteres não hexadecimais.");
             }
             data[i / 2] = (byte) ((high << 4) + low);
         }

@@ -110,9 +110,7 @@ export class BuscarDispatcherComponent implements OnInit {
           this.notif.success('Evento excluído com sucesso');
           this.eventos.set(this.eventos().filter((e) => e.id !== item.id));
         },
-        error: () => {
-          this.notif.error('Erro ao excluir evento');
-        },
+        error: () => {},
       });
     });
   }

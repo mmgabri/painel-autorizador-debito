@@ -1,5 +1,6 @@
 package br.com.mmgabri.services;
 
+import br.com.mmgabri.exceptions.ApplicationException;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.Charset;
@@ -18,7 +19,7 @@ public class EbcdicConverterService {
 
     public String textToHexEbcdic(String text) {
         if (text == null || text.isBlank()) {
-            throw new IllegalArgumentException("text cannot be blank.");
+            throw new ApplicationException("EBCDIC_TEXT_BLANK", "O texto para conversão não pode ser vazio.");
         }
 
         byte[] bytes = text.getBytes(EBCDIC_CHARSET);
@@ -27,7 +28,7 @@ public class EbcdicConverterService {
 
     private String normalizeHex(String rawHexInput) {
         if (rawHexInput == null || rawHexInput.isBlank()) {
-            throw new IllegalArgumentException("hexEbcdic cannot be blank.");
+            throw new ApplicationException("EBCDIC_HEX_BLANK", "O campo hexEbcdic não pode ser vazio.");
         }
 
         String value = rawHexInput.trim();
@@ -41,18 +42,18 @@ public class EbcdicConverterService {
         String hex = value.replaceAll("\\s+", "").toUpperCase(Locale.ROOT);
 
         if (hex.isBlank()) {
-            throw new IllegalArgumentException("hexEbcdic cannot be blank.");
+            throw new ApplicationException("EBCDIC_HEX_BLANK", "O campo hexEbcdic não pode ser vazio.");
         }
 
         if (hex.length() % 2 != 0) {
-            throw new IllegalArgumentException("Invalid hex: odd number of characters.");
+            throw new ApplicationException("EBCDIC_HEX_ODD_LENGTH", "Hex inválido: número ímpar de caracteres.");
         }
 
         for (int i = 0; i < hex.length(); i++) {
             char c = hex.charAt(i);
             boolean isHex = (c >= '0' && c <= '9') || (c >= 'A' && c <= 'F');
             if (!isHex) {
-                throw new IllegalArgumentException("Invalid hex: contains non-hexadecimal characters.");
+                throw new ApplicationException("EBCDIC_HEX_INVALID_CHARS", "Hex inválido: contém caracteres não hexadecimais.");
             }
         }
 
@@ -77,4 +78,3 @@ public class EbcdicConverterService {
         return sb.toString();
     }
 }
-

@@ -4,6 +4,8 @@ import br.com.mmgabri.domains.EbcdicHexToTextRequest;
 import br.com.mmgabri.domains.EbcdicHexToTextResponse;
 import br.com.mmgabri.domains.EbcdicTextToHexRequest;
 import br.com.mmgabri.domains.EbcdicTextToHexResponse;
+import br.com.mmgabri.domains.ErrorResponse;
+import br.com.mmgabri.exceptions.ApplicationException;
 import br.com.mmgabri.services.EbcdicConverterService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,19 +26,32 @@ public class EbcdicConverterController {
     private final EbcdicConverterService ebcdicConverterService;
 
     @PostMapping("/to-text")
-    public ResponseEntity<EbcdicHexToTextResponse> toText(@Valid @RequestBody EbcdicHexToTextRequest request) {
-        logger.info("Request received to convert EBCDIC hex to text.");
-        String text = ebcdicConverterService.hexEbcdicToText(request.getHexEbcdic());
-        logger.info("EBCDIC hex converted to text successfully.");
-        return ResponseEntity.ok(new EbcdicHexToTextResponse(text));
+    public ResponseEntity<?> toText(@Valid @RequestBody EbcdicHexToTextRequest request) {
+        try {
+            logger.info("Request received to convert EBCDIC hex to text.");
+            String text = ebcdicConverterService.hexEbcdicToText(request.getHexEbcdic());
+            logger.info("EBCDIC hex converted to text successfully.");
+            return ResponseEntity.ok(new EbcdicHexToTextResponse(text));
+        } catch (ApplicationException e) {
+            return ResponseEntity.badRequest().body(new ErrorResponse(e.getCode(), e.getDescription()));
+        } catch (Exception e) {
+            logger.error("Unexpected error on EBCDIC to text conversion", e);
+            return ResponseEntity.internalServerError().body(new ErrorResponse("INTERNAL_ERROR", "Erro interno inesperado."));
+        }
     }
 
     @PostMapping("/to-hex")
-    public ResponseEntity<EbcdicTextToHexResponse> toHex(@Valid @RequestBody EbcdicTextToHexRequest request) {
-        logger.info("Request received to convert text to EBCDIC hex.");
-        String hex = ebcdicConverterService.textToHexEbcdic(request.getText());
-        logger.info("Text converted to EBCDIC hex successfully.");
-        return ResponseEntity.ok(new EbcdicTextToHexResponse(hex));
+    public ResponseEntity<?> toHex(@Valid @RequestBody EbcdicTextToHexRequest request) {
+        try {
+            logger.info("Request received to convert text to EBCDIC hex.");
+            String hex = ebcdicConverterService.textToHexEbcdic(request.getText());
+            logger.info("Text converted to EBCDIC hex successfully.");
+            return ResponseEntity.ok(new EbcdicTextToHexResponse(hex));
+        } catch (ApplicationException e) {
+            return ResponseEntity.badRequest().body(new ErrorResponse(e.getCode(), e.getDescription()));
+        } catch (Exception e) {
+            logger.error("Unexpected error on text to EBCDIC conversion", e);
+            return ResponseEntity.internalServerError().body(new ErrorResponse("INTERNAL_ERROR", "Erro interno inesperado."));
+        }
     }
 }
-
