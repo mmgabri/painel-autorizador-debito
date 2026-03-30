@@ -23,7 +23,7 @@
         <div class="toggles-row">
           <div class="toggle-group-field">
             <span class="toggle-label">Bandeira</span>
-            <mat-button-toggle-group formControlName="paymentNetwork" class="itau-toggle-group">
+            <mat-button-toggle-group formControlName="paymentNetwork" class="itau-toggle-group" (change)="onBandeiraChange($event.value)">
               @for (opt of bandeiraOptions; track opt) {
                 <mat-button-toggle [value]="opt">{{ opt }}</mat-button-toggle>
               }
@@ -36,7 +36,7 @@
             <span class="toggle-label">Modelo de Mensagem</span>
             <mat-button-toggle-group formControlName="messageModel" class="itau-toggle-group">
               @for (opt of modeloMensagemOptions; track opt) {
-                <mat-button-toggle [value]="opt">{{ opt }}</mat-button-toggle>
+                <mat-button-toggle [value]="opt" [disabled]="opt === 'SINGLE_MESSAGE' && form.controls.paymentNetwork.value === 'VISA'">{{ opt }}</mat-button-toggle>
               }
             </mat-button-toggle-group>
             @if (form.controls.messageModel.touched && form.controls.messageModel.invalid) {

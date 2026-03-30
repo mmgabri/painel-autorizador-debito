@@ -37,7 +37,7 @@
         <div class="toggles-row">
           <div class="toggle-group-field">
             <span class="toggle-label">Bandeira</span>
-            <mat-button-toggle-group formControlName="bandeira" class="itau-toggle-group">
+            <mat-button-toggle-group formControlName="bandeira" class="itau-toggle-group" (change)="onBandeiraChange($event.value)">
               @for (opt of bandeiraOptions; track opt) {
                 <mat-button-toggle [value]="opt">{{ opt }}</mat-button-toggle>
               }
@@ -48,7 +48,7 @@
             <span class="toggle-label">Message Model</span>
             <mat-button-toggle-group formControlName="messageModel" class="itau-toggle-group">
               @for (opt of messageModelOptions; track opt) {
-                <mat-button-toggle [value]="opt">{{ opt }}</mat-button-toggle>
+                <mat-button-toggle [value]="opt" [disabled]="opt === 'SINGLE_MESSAGE' && incluirForm.controls.bandeira.value === 'VISA'">{{ opt }}</mat-button-toggle>
               }
             </mat-button-toggle-group>
           </div>
@@ -116,7 +116,7 @@
         @for (key of sortedKeys(); track key) {
           <div class="campo-row">
             <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
-              <mat-label>{{ key === '00' ? 'MTI' : 'Bit ' + key }}</mat-label>
+              <mat-label>{{ getFieldLabel(key) }}</mat-label>
               <input matInput [formControlName]="key" />
             </mat-form-field>
             <button

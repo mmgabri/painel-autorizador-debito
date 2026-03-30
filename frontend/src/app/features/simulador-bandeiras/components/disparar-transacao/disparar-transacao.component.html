@@ -104,7 +104,7 @@
             @for (key of sortedKeys(); track key) {
               <div class="campo-row">
                 <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
-                  <mat-label>{{ showBitLabel() ? 'Bit ' + key : key }}</mat-label>
+                  <mat-label>{{ getFieldLabel(key) }}</mat-label>
                   <input matInput [formControlName]="key" (blur)="onFieldChanged()" />
                 </mat-form-field>
               </div>
@@ -236,7 +236,7 @@
             @for (key of conciliacaoSortedKeys(); track key) {
               <div class="campo-row">
                 <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo-input">
-                  <mat-label>{{ showConciliacaoBitLabel() ? 'Bit ' + key : key }}</mat-label>
+                  <mat-label>{{ getConciliacaoFieldLabel(key) }}</mat-label>
                   <input matInput [formControlName]="key" (blur)="onConciliacaoFieldChanged()" />
                 </mat-form-field>
               </div>

@@ -37,5 +37,5 @@ public class AccountEntityPK implements Serializable {
     private String checkDigit;
 
     @PrimaryKeyColumn(value = "num_titr_cont", ordinal = 5, type = PrimaryKeyType.PARTITIONED)
-    private Integer ownership;
+    private Integer accountHolder;
 }

@@ -14,15 +14,15 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Component
-public class ObjectsMapper {
+public class ComplementTextMapper {
 
-    private static final Logger logger = LoggerFactory.getLogger(ObjectsMapper.class);
+    private static final Logger logger = LoggerFactory.getLogger(ComplementTextMapper.class);
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final DateTimeFormatter EMISSION_DATE_FORMATTER = DateTimeFormatter.ofPattern("dd-MM-yyyy");
     private static final DateTimeFormatter PROCESSING_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
 
 
-    public String buildCardComplementText(TestDataCsvRow testData, String cardId) {
+    public String buildCard(TestDataCsvRow testData, String cardId) {
         LocalDateTime now = LocalDateTime.now();
 
         Map<String, String> payload = new LinkedHashMap<>();
@@ -60,7 +60,7 @@ public class ObjectsMapper {
         }
     }
 
-    public String buildAccountComplementText(TestDataCsvRow testData, String accountId, String customerId) {
+    public String buildAccount(TestDataCsvRow testData, String accountId, String customerId) {
         Map<String, String> payload = new LinkedHashMap<>();
         payload.put("codigo_agencia", valueOrEmpty(testData.getAgency()));
         payload.put("codigo_banco", "4341");
@@ -79,6 +79,29 @@ public class ObjectsMapper {
         payload.put("sufixo", valueOrEmpty(testData.getSuffix()));
         payload.put("tipo_conta", valueOrEmpty(testData.getAccountType()));
 
+        try {
+            return OBJECT_MAPPER.writeValueAsString(payload);
+        } catch (JsonProcessingException ex) {
+            logger.error("Failed to serialize account complement payload. code=KEYSPACES_SERIALIZE_ERROR, detail={}", ex.getMessage(), ex);
+            throw new ApplicationException("KEYSPACES_SERIALIZE_ERROR", "Falha ao serializar o payload da conta.");
+        }
+    }
+
+    public String buildCustomer(TestDataCsvRow testData, String customerId) {
+        Map<String, String> payload = new LinkedHashMap<>();
+        payload.put("numero_unico_cliente", customerId);
+        try {
+            return OBJECT_MAPPER.writeValueAsString(payload);
+        } catch (JsonProcessingException ex) {
+            logger.error("Failed to serialize account complement payload. code=KEYSPACES_SERIALIZE_ERROR, detail={}", ex.getMessage(), ex);
+            throw new ApplicationException("KEYSPACES_SERIALIZE_ERROR", "Falha ao serializar o payload da conta.");
+        }
+    }
+
+    public String buildAprx(TestDataCsvRow testData, String cardId) {
+        Map<String, String> payload = new LinkedHashMap<>();
+        payload.put("codigo_identificacao_cartao", cardId);
+        payload.put("indicador_funcao_contactless_ativa", "S");
         try {
             return OBJECT_MAPPER.writeValueAsString(payload);
         } catch (JsonProcessingException ex) {

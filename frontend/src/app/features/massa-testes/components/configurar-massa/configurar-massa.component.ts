@@ -116,6 +116,12 @@ export class ConfigurarMassaComponent implements OnInit {
     this.form.get(controlName)?.setValue(filtered, { emitEvent: false });
   }
 
+  onBandeiraChange(value: string): void {
+    if (value === 'VISA' && this.form.controls.messageModel.value !== 'DUAL_MESSAGE') {
+      this.form.controls.messageModel.setValue('DUAL_MESSAGE');
+    }
+  }
+
   onSalvar(): void {
     this.form.markAllAsTouched();
     if (this.form.invalid) {
