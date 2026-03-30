@@ -67,8 +67,74 @@ export class ConfigurarCenarioComponent implements OnInit {
 
   private editingTransacaoId = signal<string | null>(null);
 
+  private readonly MASTERCARD_SINGLE_CONCILIACAO_BIT_LABELS: Record<string, string> = {
+    switchSerialNumber: 'Bit 63.03',
+    processorId: 'Bit 33',
+    transactionDate: 'Bit 13',
+    transactionTime: 'Bit 12',
+    pan: 'Bit 2',
+    processingCode: 'Bit 3',
+    traceNumber: 'Bit 11',
+    merchantType: 'Bit 18',
+    posEntry: 'Bit 22',
+    referenceNumber: 'Bit 37',
+    acquirerInstitutionId: 'Bit 32',
+    terminalId: 'Bit 41',
+    responseCode: 'Bit 39',
+    brand: 'Bit 63.01',
+    adviceReasonCode: 'Bit 60',
+    intraCurrencyAgreementCode: 'Bit 50',
+    authorizationId: 'Bit 38',
+    currencyCodeTransaction: 'Bit 49',
+    completedAmountTransaction: 'Bit 4',
+    cashBackAmount: 'Bit 54.05',
+    currencyCodeSettlement: 'Bit 50',
+    conversionRateSettlement: 'Bit 9',
+    servicelevelIndicator: 'Bit 123.01.01',
+    responseCode2: 'Bit 123.01.02',
+    atmSurchargeFree: 'Bit 48.95',
+    crossBorderIndicator: 'Bit 123.03',
+    crossBorderCurrencyIndicator: 'Bit 126.04',
+    isFeeIndicator: 'Bit 110.04',
+    traceNumberAdjustment: 'Bit 90.02',
+    posData: 'Bit 61',
+    cardAcceptorNameAdress: 'Bit 43.01',
+    cardAcceptorCity: 'Bit 43.03',
+    cardAcceptorStateCountryCode: 'Bit 43.05',
+    merchantId: 'Bit 42',
+    amountCardholderBilling: 'Bit 6',
+    currencyCodeCardholderBilling: 'Bit 51',
+    paymentTupeIndicator: 'Bit 48.77',
+    paymentFacilitatorId: 'Bit 48.01',
+    independentSalesOrgId: 'Bit 48.02',
+    subMerchantId: 'Bit 48.03',
+  };
+
+  onBandeiraChange(value: string): void {
+    if (value === 'VISA' && this.incluirForm.controls.messageModel.value !== 'DUAL_MESSAGE') {
+      this.incluirForm.controls.messageModel.setValue('DUAL_MESSAGE');
+    }
+  }
+
   isConciliacaoIncluir(): boolean {
     return (this.incluirForm.controls.messageType.value ?? '') === 'CONCILIACAO';
+  }
+
+  isMastercardSingleConciliacaoIncluir(): boolean {
+    return (
+      this.incluirForm.controls.bandeira.value === 'MASTERCARD' &&
+      this.incluirForm.controls.messageModel.value === 'SINGLE_MESSAGE' &&
+      this.incluirForm.controls.messageType.value === 'CONCILIACAO'
+    );
+  }
+
+  getFieldLabel(key: string): string {
+    if (key === '00') return 'MTI';
+    if (this.isMastercardSingleConciliacaoIncluir()) {
+      const prefix = this.MASTERCARD_SINGLE_CONCILIACAO_BIT_LABELS[key];
+      return prefix ? `${prefix} - ${key}` : `Bit ${key}`;
+    }
+    return `Bit ${key}`;
   }
 
   ngOnInit(): void {

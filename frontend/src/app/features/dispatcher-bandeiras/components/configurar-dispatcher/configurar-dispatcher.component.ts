@@ -112,6 +112,12 @@ export class ConfigurarDispatcherComponent implements OnInit {
     });
   }
 
+  onBandeiraChange(value: string): void {
+    if (value === 'VISA' && this.form.controls.messageModel.value !== 'DUAL_MESSAGE') {
+      this.form.controls.messageModel.setValue('DUAL_MESSAGE');
+    }
+  }
+
   onSalvar(): void {
     const isNewEvento = !this.editingEventoId();
 
