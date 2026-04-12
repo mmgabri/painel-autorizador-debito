@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ISO 8583 Parser</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f0f0f;
+  --surface:#1a1a1a;
+  --surface2:#242424;
+  --border:#2e2e2e;
+  --border2:#3d3d3d;
+  --text:#f0ede8;
+  --text2:#a89f94;
+  --text3:#5c5550;
+  --accent:#4169e1;
+  --accent-dim:#0d1e4f;
+  --accent-glow:rgba(65,105,225,0.15);
+  --danger:#ef4444;
+  --danger-dim:#3d1212;
+  --success:#10b981;
+  --mono:'JetBrains Mono',monospace;
+  --sans:'DM Sans',sans-serif;
+  --radius:10px;
+  --radius-sm:6px;
+}
+html{background:var(--bg)}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;min-height:100vh;line-height:1.5}
+
+/* Layout */
+.app{max-width:1100px;margin:0 auto;padding:2rem 1.5rem}
+
+/* Header */
+.hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:2rem;gap:1rem}
+.hdr-left{}
+.logo{display:flex;align-items:center;gap:.75rem;margin-bottom:.25rem}
+.logo-badge{background:var(--accent);color:#fff;font-family:var(--mono);font-size:11px;font-weight:600;padding:4px 10px;border-radius:var(--radius-sm);letter-spacing:.08em}
+.logo-title{font-family:var(--mono);font-size:20px;font-weight:600;color:var(--text)}
+.hdr-sub{font-size:13px;color:var(--text3);font-family:var(--mono)}
+
+/* Input section */
+.input-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-bottom:1.5rem}
+.section-label{font-family:var(--mono);font-size:11px;font-weight:500;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem}
+.section-label::before{content:'';display:inline-block;width:6px;height:6px;background:var(--accent);border-radius:50%}
+textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:var(--mono);font-size:12px;padding:.75rem 1rem;resize:vertical;min-height:80px;outline:none;line-height:1.7;transition:border-color .2s}
+textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+textarea::placeholder{color:var(--text3)}
+.input-footer{display:flex;align-items:center;gap:.625rem;margin-top:.875rem;flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:12px;font-weight:500;padding:7px 16px;border-radius:var(--radius-sm);cursor:pointer;border:1px solid transparent;transition:all .15s;letter-spacing:.03em}
+.btn-primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn-primary:hover{background:#2563eb}
+.btn-ghost{background:transparent;color:var(--text2);border-color:var(--border2)}
+.btn-ghost:hover{border-color:var(--border2);color:var(--text);background:var(--surface2)}
+.char-count{font-family:var(--mono);font-size:11px;color:var(--text3);margin-left:auto}
+
+/* Bitmap */
+.bitmap-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-bottom:1.25rem;display:none}
+.bitmap-grid{display:flex;flex-wrap:wrap;gap:4px;margin-top:.75rem}
+.bit-cell{width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:9px;font-weight:500;border-radius:5px;border:1px solid var(--border);color:var(--text3);background:var(--bg);transition:all .15s}
+.bit-cell.on{background:var(--accent-dim);color:#93c5fd;border-color:var(--accent)}
+.bit-cell.on:hover{background:#1e40af;color:#bfdbfe}
+
+/* Toolbar */
+.toolbar{display:none;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.75rem}
+.results-meta{font-family:var(--mono);font-size:12px;color:var(--text3)}
+.results-meta span{color:var(--text2)}
+.view-toggle{display:flex;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden}
+.vbtn{width:34px;height:30px;display:flex;align-items:center;justify-content:center;background:transparent;border:none;cursor:pointer;color:var(--text3);transition:all .15s}
+.vbtn:hover{color:var(--text2);background:var(--surface2)}
+.vbtn.active{background:var(--accent);color:#fff}
+.vbtn+.vbtn{border-left:1px solid var(--border)}
+
+/* Cards */
+.cards-list{display:flex;flex-direction:column;gap:.5rem}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:.625rem}
+
+.de-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:border-color .2s}
+.de-card:hover{border-color:var(--border2)}
+.de-card.invalid-card{border-color:var(--danger)}
+.de-card.invalid-card .card-icon{background:rgba(239,68,68,.12)}
+
+/* List layout */
+.layout-list{display:flex;align-items:stretch}
+.card-icon{width:48px;min-width:48px;display:flex;align-items:center;justify-content:center;background:var(--surface2);border-right:1px solid var(--border);font-size:18px;transition:background .2s}
+.card-body{flex:1;padding:.625rem 1rem;display:flex;align-items:center;gap:1rem;min-width:0}
+.card-meta{flex:0 0 220px;min-width:0}
+.de-badge{font-family:var(--mono);font-size:10px;font-weight:600;color:var(--accent);letter-spacing:.06em;margin-bottom:2px}
+.de-type{font-family:var(--mono);font-size:9px;color:var(--text3)}
+.de-name{font-family:var(--sans);font-size:12px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-value{flex:1;display:flex;align-items:center;gap:.5rem;min-width:0}
+.field-input{font-family:var(--mono);font-size:12px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:5px 10px;flex:1;min-width:0;outline:none;transition:all .2s}
+.field-input:focus{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-glow)}
+.field-input.over{border-color:var(--danger);background:var(--danger-dim)}
+.len-badge{font-family:var(--mono);font-size:10px;color:var(--text3);flex:0 0 52px;text-align:right;white-space:nowrap}
+.len-badge.over{color:var(--danger)}
+
+/* Grid layout */
+.layout-grid{display:flex;flex-direction:column}
+.layout-grid .card-icon{width:100%;min-width:unset;height:38px;border-right:none;border-bottom:1px solid var(--border);flex-direction:row;justify-content:flex-start;padding:0 .875rem;gap:.625rem;font-size:16px}
+.layout-grid .card-body{flex-direction:column;align-items:flex-start;gap:.5rem;padding:.75rem .875rem}
+.layout-grid .card-meta{flex:none;min-width:unset;width:100%}
+.layout-grid .de-name{max-width:100%;white-space:normal}
+.layout-grid .card-value{flex:none;width:100%;min-width:unset}
+.layout-grid .field-input{flex:none;width:100%}
+.layout-grid .len-badge{display:none}
+
+/* Empty */
+.empty{text-align:center;padding:4rem 2rem;color:var(--text3)}
+.empty-icon{font-size:40px;margin-bottom:1rem;opacity:.5}
+.empty-text{font-family:var(--mono);font-size:13px}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--text3)}
+
+/* Fade-in */
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.de-card{animation:fadeUp .2s ease both}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="hdr">
+    <div class="hdr-left">
+      <div class="logo">
+        <div class="logo-badge">ISO 8583</div>
+        <div class="logo-title">Parser</div>
+      </div>
+      <div class="hdr-sub">Insira a mensagem · inspecione · edite os data elements</div>
+    </div>
+  </div>
+
+  <div class="input-section">
+    <div class="section-label">Mensagem ISO 8583</div>
+    <textarea id="isoInput" placeholder="Cole aqui a mensagem ISO 8583 (hex, ASCII ou DE:valor)&#10;Exemplo: 0200 DE2:4111111111111111 DE3:000000 DE4:000000010000 ..."></textarea>
+    <div class="input-footer">
+      <button class="btn btn-primary" onclick="parseISO()">▶ Parsear</button>
+      <button class="btn btn-ghost" onclick="loadSample()">Carregar exemplo</button>
+      <button class="btn btn-ghost" onclick="clearAll()">Limpar</button>
+      <span class="char-count" id="charCount"></span>
+    </div>
+  </div>
+
+  <div class="bitmap-section" id="bitmapSection">
+    <div class="section-label">Bitmap — posições ativas</div>
+    <div class="bitmap-grid" id="bitmapCells"></div>
+  </div>
+
+  <div class="toolbar" id="toolbar">
+    <div class="results-meta" id="resultsMeta"></div>
+    <div class="view-toggle">
+      <button class="vbtn active" id="btnList" onclick="setView('list')" title="Lista">
+        <svg width="14" height="14" viewBox="0 0 14 14"><rect x="1" y="2" width="12" height="2" rx="1" fill="currentColor"/><rect x="1" y="6" width="12" height="2" rx="1" fill="currentColor"/><rect x="1" y="10" width="12" height="2" rx="1" fill="currentColor"/></svg>
+      </button>
+      <button class="vbtn" id="btnGrid" onclick="setView('grid')" title="Grid">
+        <svg width="14" height="14" viewBox="0 0 14 14"><rect x="1" y="1" width="5" height="5" rx="1" fill="currentColor"/><rect x="8" y="1" width="5" height="5" rx="1" fill="currentColor"/><rect x="1" y="8" width="5" height="5" rx="1" fill="currentColor"/><rect x="8" y="8" width="5" height="5" rx="1" fill="currentColor"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div id="results">
+    <div class="empty">
+      <div class="empty-icon">🗂️</div>
+      <div class="empty-text">Cole uma mensagem ISO 8583 e clique em Parsear</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const DE_MAP = {
+  1:  {name:"Secondary Bitmap",           icon:"🗺️", type:"B",   maxLen:16, fixed:true},
+  2:  {name:"Primary Account Number",     icon:"💳", type:"N",   maxLen:19},
+  3:  {name:"Processing Code",            icon:"⚙️", type:"N",   maxLen:6,  fixed:true},
+  4:  {name:"Transaction Amount",         icon:"💰", type:"N",   maxLen:12, fixed:true},
+  5:  {name:"Settlement Amount",          icon:"🏦", type:"N",   maxLen:12, fixed:true},
+  6:  {name:"Cardholder Bill Amount",     icon:"🧾", type:"N",   maxLen:12, fixed:true},
+  7:  {name:"Transmission Date/Time",     icon:"🕐", type:"N",   maxLen:10, fixed:true},
+  8:  {name:"Cardholder Bill Fee",        icon:"💲", type:"N",   maxLen:8,  fixed:true},
+  9:  {name:"Settlement Conv Rate",       icon:"🔄", type:"N",   maxLen:8,  fixed:true},
+  10: {name:"Cardholder Bill Conv Rate",  icon:"💱", type:"N",   maxLen:8,  fixed:true},
+  11: {name:"System Trace Audit Number",  icon:"🔢", type:"N",   maxLen:6,  fixed:true},
+  12: {name:"Local Transaction Time",     icon:"⏰", type:"N",   maxLen:6,  fixed:true},
+  13: {name:"Local Transaction Date",     icon:"📅", type:"N",   maxLen:4,  fixed:true},
+  14: {name:"Expiration Date",            icon:"📆", type:"N",   maxLen:4,  fixed:true},
+  15: {name:"Settlement Date",            icon:"🗓️", type:"N",   maxLen:4,  fixed:true},
+  16: {name:"Currency Conv Date",         icon:"📋", type:"N",   maxLen:4,  fixed:true},
+  17: {name:"Capture Date",               icon:"📸", type:"N",   maxLen:4,  fixed:true},
+  18: {name:"Merchant Type (MCC)",        icon:"🏪", type:"N",   maxLen:4,  fixed:true},
+  19: {name:"Acquiring Country Code",     icon:"🌍", type:"N",   maxLen:3,  fixed:true},
+  20: {name:"PAN Extended Country Code",  icon:"🗺️", type:"N",   maxLen:3,  fixed:true},
+  21: {name:"Forwarding Country Code",    icon:"📡", type:"N",   maxLen:3,  fixed:true},
+  22: {name:"POS Entry Mode",             icon:"🖲️", type:"N",   maxLen:3,  fixed:true},
+  23: {name:"Card Sequence Number",       icon:"🔗", type:"N",   maxLen:3,  fixed:true},
+  24: {name:"NII / Function Code",        icon:"🔧", type:"N",   maxLen:3,  fixed:true},
+  25: {name:"POS Condition Code",         icon:"📟", type:"N",   maxLen:2,  fixed:true},
+  26: {name:"POS PIN Capture Code",       icon:"🔐", type:"N",   maxLen:2,  fixed:true},
+  27: {name:"Approval Code Length",       icon:"📏", type:"N",   maxLen:1,  fixed:true},
+  28: {name:"Transaction Fee Amount",     icon:"💸", type:"AN",  maxLen:9,  fixed:true},
+  29: {name:"Settlement Fee Amount",      icon:"🏧", type:"AN",  maxLen:9,  fixed:true},
+  30: {name:"Transaction Processing Fee", icon:"⚖️", type:"AN",  maxLen:9,  fixed:true},
+  31: {name:"Settlement Processing Fee",  icon:"📊", type:"AN",  maxLen:9,  fixed:true},
+  32: {name:"Acquiring Institution ID",   icon:"🏢", type:"N",   maxLen:11},
+  33: {name:"Forwarding Institution ID",  icon:"➡️", type:"N",   maxLen:11},
+  34: {name:"PAN Extended",               icon:"💳", type:"NS",  maxLen:28},
+  35: {name:"Track 2 Data",               icon:"📶", type:"Z",   maxLen:37},
+  36: {name:"Track 3 Data",               icon:"📶", type:"Z",   maxLen:104},
+  37: {name:"Retrieval Reference Number", icon:"🔍", type:"AN",  maxLen:12, fixed:true},
+  38: {name:"Authorization ID Response",  icon:"✅", type:"AN",  maxLen:6,  fixed:true},
+  39: {name:"Response Code",              icon:"📤", type:"AN",  maxLen:2,  fixed:true},
+  40: {name:"Service Restriction Code",   icon:"🔒", type:"AN",  maxLen:3,  fixed:true},
+  41: {name:"Card Acceptor Terminal ID",  icon:"🖥️", type:"ANS", maxLen:8,  fixed:true},
+  42: {name:"Card Acceptor ID Code",      icon:"🏷️", type:"ANS", maxLen:15, fixed:true},
+  43: {name:"Card Acceptor Name/Location",icon:"📍", type:"ANS", maxLen:40, fixed:true},
+  44: {name:"Additional Response Data",   icon:"📎", type:"AN",  maxLen:25},
+  45: {name:"Track 1 Data",               icon:"📶", type:"ANS", maxLen:76},
+  46: {name:"Additional Data — ISO",      icon:"📄", type:"ANS", maxLen:999},
+  47: {name:"Additional Data — National", icon:"📄", type:"ANS", maxLen:999},
+  48: {name:"Additional Data — Private",  icon:"🔏", type:"ANS", maxLen:999},
+  49: {name:"Currency Code — Transaction",icon:"💱", type:"N",   maxLen:3,  fixed:true},
+  50: {name:"Currency Code — Settlement", icon:"💱", type:"N",   maxLen:3,  fixed:true},
+  51: {name:"Currency Code — Cardholder", icon:"💱", type:"N",   maxLen:3,  fixed:true},
+  52: {name:"PIN Data",                   icon:"🔑", type:"B",   maxLen:8,  fixed:true},
+  53: {name:"Security Related Ctrl Info", icon:"🛡️", type:"B",   maxLen:48},
+  54: {name:"Additional Amounts",         icon:"➕", type:"ANS", maxLen:120},
+  55: {name:"ICC Data / EMV Data",        icon:"📡", type:"B",   maxLen:999},
+  56: {name:"Reserved — ISO",             icon:"🔳", type:"ANS", maxLen:999},
+  57: {name:"Reserved — National",        icon:"🔳", type:"ANS", maxLen:999},
+  58: {name:"Reserved — National",        icon:"🔳", type:"ANS", maxLen:999},
+  59: {name:"Reserved — National",        icon:"🔳", type:"ANS", maxLen:999},
+  60: {name:"Reserved — Private",         icon:"🔳", type:"ANS", maxLen:999},
+  61: {name:"Reserved — Private",         icon:"🔳", type:"ANS", maxLen:999},
+  62: {name:"Reserved — Private",         icon:"🔳", type:"ANS", maxLen:999},
+  63: {name:"Reserved — Private",         icon:"🔳", type:"ANS", maxLen:999},
+  64: {name:"MAC / Message Auth Code",    icon:"🛡️", type:"B",   maxLen:8,  fixed:true},
+  65: {name:"Bitmap — Extended",          icon:"🗺️", type:"B",   maxLen:8,  fixed:true},
+  66: {name:"Settlement Code",            icon:"📊", type:"N",   maxLen:1,  fixed:true},
+  67: {name:"Extended Payment Code",      icon:"💳", type:"N",   maxLen:2,  fixed:true},
+  70: {name:"Network Management Code",    icon:"📡", type:"N",   maxLen:3,  fixed:true},
+  90: {name:"Original Data Elements",     icon:"🔍", type:"N",   maxLen:42, fixed:true},
+  95: {name:"Replacement Amounts",        icon:"🔄", type:"AN",  maxLen:42, fixed:true},
+  100:{name:"Receiving Institution ID",   icon:"🏦", type:"N",   maxLen:11},
+  102:{name:"Account Identification 1",   icon:"🏧", type:"ANS", maxLen:28},
+  103:{name:"Account Identification 2",   icon:"🏧", type:"ANS", maxLen:28},
+  128:{name:"MAC — Secondary",            icon:"🛡️", type:"B",   maxLen:8,  fixed:true},
+};
+
+const SAMPLE = {
+  2:"4111111111111111", 3:"000000", 4:"000000010000",
+  7:"0412153022", 11:"123456", 12:"153022", 13:"0412",
+  14:"2612", 18:"5411", 22:"051", 25:"00",
+  37:"123456789012", 38:"AUTH01", 39:"00",
+  41:"TERM0001", 42:"MERCHANTID00001",
+  43:"SUPERMERCADO EXEMPLO    SAO PAULO BR",
+  49:"986", 52:"A1B2C3D4E5F60718"
+};
+
+let fields = {};
+let view = 'list';
+
+function setView(v){
+  view = v;
+  document.getElementById('btnList').classList.toggle('active', v==='list');
+  document.getElementById('btnGrid').classList.toggle('active', v==='grid');
+  renderFields();
+}
+
+function loadSample(){
+  document.getElementById('isoInput').value =
+    '0200 ' + Object.entries(SAMPLE).map(([k,v])=>`DE${k}:${v}`).join(' ');
+  fields = {};
+  Object.entries(SAMPLE).forEach(([k,v])=>{ fields[+k] = v; });
+  showResults();
+  updateCharCount();
+}
+
+function parseISO(){
+  const raw = document.getElementById('isoInput').value.trim();
+  if(!raw) return;
+  fields = {};
+  const matches = [...raw.matchAll(/DE(\d+):([^\s]+)/g)];
+  if(matches.length){
+    matches.forEach(m => { fields[+m[1]] = m[2]; });
+  } else {
+    const pairs = raw.split(/\s+/);
+    pairs.forEach(p => {
+      const m = p.match(/^(\d+)[=:](.+)$/);
+      if(m) fields[+m[1]] = m[2];
+    });
+  }
+  showResults();
+}
+
+function showResults(){
+  const keys = Object.keys(fields).map(Number).sort((a,b)=>a-b);
+  const hasDEs = keys.length > 0;
+  document.getElementById('toolbar').style.display = hasDEs ? 'flex' : 'none';
+  document.getElementById('bitmapSection').style.display = hasDEs ? 'block' : 'none';
+  if(hasDEs){
+    renderBitmap(keys);
+    document.getElementById('resultsMeta').innerHTML =
+      `<span>${keys.length}</span> data elements encontrados`;
+  }
+  renderFields();
+}
+
+function renderBitmap(keys){
+  const set = new Set(keys);
+  let h = '';
+  for(let i=1;i<=64;i++){
+    h += `<div class="bit-cell${set.has(i)?' on':''}" title="DE${i}">${i}</div>`;
+  }
+  document.getElementById('bitmapCells').innerHTML = h;
+}
+
+function renderFields(){
+  const el = document.getElementById('results');
+  const keys = Object.keys(fields).map(Number).sort((a,b)=>a-b);
+  if(!keys.length){
+    el.innerHTML = '<div class="empty"><div class="empty-icon">🗂️</div><div class="empty-text">Cole uma mensagem ISO 8583 e clique em Parsear</div></div>';
+    return;
+  }
+  const wrapCls = view==='list' ? 'cards-list' : 'cards-grid';
+  const layoutCls = view==='list' ? 'layout-list' : 'layout-grid';
+  let h = `<div class="${wrapCls}">`;
+  keys.forEach((de,idx) => {
+    const info = DE_MAP[de] || {name:`DE ${de}`,icon:'🔳',type:'AN',maxLen:999};
+    const val = fields[de] || '';
+    const over = info.maxLen < 999 && val.length > info.maxLen;
+    const lenStr = info.maxLen >= 999 ? `${val.length} chars` : `${val.length}/${info.maxLen}`;
+    const delay = Math.min(idx * 0.03, 0.4);
+    h += `
+<div class="de-card ${layoutCls}${over?' invalid-card':''}" id="card${de}" style="animation-delay:${delay}s">
+  <div class="card-icon">
+    <span>${info.icon}</span>
+    ${view==='grid' ? `<span style="font-family:var(--mono);font-size:10px;font-weight:600;color:var(--accent);letter-spacing:.06em">DE ${de}</span>` : ''}
+  </div>
+  <div class="card-body">
+    <div class="card-meta">
+      ${view==='list' ? `<div class="de-badge">DE ${de}</div>` : ''}
+      <div class="de-name">${info.name}</div>
+      <div class="de-type">${info.type}${info.fixed?' · FIXED':' · VAR'} · max ${info.maxLen>=999?'∞':info.maxLen}</div>
+    </div>
+    <div class="card-value">
+      <input class="field-input${over?' over':''}" id="inp${de}" value="${esc(val)}"
+        ${info.maxLen < 999 ? `maxlength="${info.maxLen}"` : ''}
+        oninput="onInput(${de},this)" title="Max ${info.maxLen} chars"/>
+      <span class="len-badge${over?' over':''}" id="len${de}">${lenStr}</span>
+    </div>
+  </div>
+</div>`;
+  });
+  h += '</div>';
+  el.innerHTML = h;
+}
+
+function onInput(de, el){
+  const info = DE_MAP[de] || {maxLen:999};
+  const val = el.value;
+  fields[de] = val;
+  const over = info.maxLen < 999 && val.length > info.maxLen;
+  const lenStr = info.maxLen >= 999 ? `${val.length} chars` : `${val.length}/${info.maxLen}`;
+  const lenEl = document.getElementById('len'+de);
+  if(lenEl){ lenEl.textContent = lenStr; lenEl.className = 'len-badge'+(over?' over':''); }
+  el.className = 'field-input'+(over?' over':'');
+  const card = document.getElementById('card'+de);
+  if(card){
+    const lc = view==='list'?'layout-list':'layout-grid';
+    card.className = `de-card ${lc}${over?' invalid-card':''}`;
+  }
+}
+
+function clearAll(){
+  document.getElementById('isoInput').value = '';
+  fields = {};
+  document.getElementById('toolbar').style.display = 'none';
+  document.getElementById('bitmapSection').style.display = 'none';
+  document.getElementById('results').innerHTML =
+    '<div class="empty"><div class="empty-icon">🗂️</div><div class="empty-text">Cole uma mensagem ISO 8583 e clique em Parsear</div></div>';
+  updateCharCount();
+}
+
+function updateCharCount(){
+  const v = document.getElementById('isoInput').value;
+  document.getElementById('charCount').textContent = v.length ? `${v.length} chars` : '';
+}
+
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+document.getElementById('isoInput').addEventListener('input', updateCharCount);
+</script>
+</body>
+</html>
